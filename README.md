@@ -3,9 +3,10 @@
 - [Remix Docs](https://remix.run/docs)
 
 ## TODO:
+
+- [ ] use flowbite
 - [ ] Display text in tiptap
 - [ ] text highlight/mark from URL Params (`mark-start`, `mark-end`)
-
 
 ## Development
 
