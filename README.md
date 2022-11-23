@@ -2,6 +2,11 @@
 
 - [Remix Docs](https://remix.run/docs)
 
+## TODO:
+- [ ] Display text in tiptap
+- [ ] text highlight/mark from URL Params (`mark-start`, `mark-end`)
+
+
 ## Development
 
 From your terminal:
