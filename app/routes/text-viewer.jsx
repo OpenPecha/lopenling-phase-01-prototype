@@ -1,11 +1,10 @@
 import { useLoaderData, useSearchParams } from "@remix-run/react"
 
-import { EditorContent, useEditor } from "@tiptap/react"
-
 import Document from "@tiptap/extension-document"
 import Highlight from '@tiptap/extension-highlight'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
+import { EditorContent, useEditor } from "@tiptap/react"
 
 export async function loader() {
     // const text = await fetch("https://raw.githubusercontent.com/OpenPecha-Data/P000001/master/P000001.opf/base/v001.txt")
@@ -17,7 +16,7 @@ function highlight(text, spanStart, spanEnd)  {
     const textBeginning = text.slice(0, spanStart)
     const textMiddle = text.slice(spanStart, spanEnd)
     const textEnd = text.slice(spanEnd)
-    return `${textBeginning}<mark>${textMiddle}</mark>${textEnd}`
+    return `${textBeginning}<mark style="background-color: #ffeda7">${textMiddle}</mark>${textEnd}`
 }
 
 export default function () {
@@ -31,7 +30,12 @@ export default function () {
     }
 
     const editor = useEditor({
-        extensions: [Document, Paragraph, Text, Highlight],
+        extensions: [
+            Document,
+            Paragraph,
+            Text,
+            Highlight.configure({ multicolor: true })
+        ],
         content: `<p>${text}</p>`,
         editable: false,
     })
