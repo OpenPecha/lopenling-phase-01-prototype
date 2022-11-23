@@ -17,10 +17,17 @@ export default function () {
     })
 
     return (
-        <main>
-            <h1>Text Viewer</h1>
+        <main style={{ width: '60%', margin: 'auto'}}>
+            <h1 style={{ textAlign: 'center'}}>Text Viewer</h1>
             <section>
-                <EditorContent editor={editor} />
+                <EditorContent
+                    editor={editor}
+                    style={{
+                        border: '1px solid #c5c0c0',
+                        borderRadius: '0.5rem',
+                        padding: '1.3rem'
+                    }}
+                />
             </section>
         </main>
     )
