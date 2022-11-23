@@ -1,4 +1,4 @@
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 
@@ -10,24 +10,24 @@ export async function loader() {
 
 export default function () {
     const text = useLoaderData()
+    const [searchParams] = useSearchParams()
 
     const editor = useEditor({
         extensions: [StarterKit],
         content: `<p>${text}</p>`,
     })
 
+    const selectionSpanStart = parseInt(searchParams.get("selectionStart") ?? '0')
+    const selectionSpanEnd= parseInt(searchParams.get("selectionEnd") ?? '0')
+    if (selectionSpanEnd !==0) {
+        editor?.chain().focus().setTextSelection({from: selectionSpanStart , to: selectionSpanEnd}).run()
+    }
+
     return (
         <main style={{ width: '60%', margin: 'auto'}}>
             <h1 style={{ textAlign: 'center'}}>Text Viewer</h1>
             <section>
-                <EditorContent
-                    editor={editor}
-                    style={{
-                        border: '1px solid #c5c0c0',
-                        borderRadius: '0.5rem',
-                        padding: '1.3rem'
-                    }}
-                />
+                <EditorContent editor={editor} />
             </section>
         </main>
     )
