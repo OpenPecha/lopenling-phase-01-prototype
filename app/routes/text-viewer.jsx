@@ -1,6 +1,11 @@
 import { useLoaderData, useSearchParams } from "@remix-run/react"
+
 import { EditorContent, useEditor } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
+
+import Document from "@tiptap/extension-document"
+import Highlight from '@tiptap/extension-highlight'
+import Paragraph from '@tiptap/extension-paragraph'
+import Text from '@tiptap/extension-text'
 
 export async function loader() {
     // const text = await fetch("https://raw.githubusercontent.com/OpenPecha-Data/P000001/master/P000001.opf/base/v001.txt")
@@ -8,20 +13,28 @@ export async function loader() {
     return text
 }
 
-export default function () {
-    const text = useLoaderData()
-    const [searchParams] = useSearchParams()
+function highlight(text, spanStart, spanEnd)  {
+    const textBeginning = text.slice(0, spanStart)
+    const textMiddle = text.slice(spanStart, spanEnd)
+    const textEnd = text.slice(spanEnd)
+    return `${textBeginning}<mark>${textMiddle}</mark>${textEnd}`
+}
 
-    const editor = useEditor({
-        extensions: [StarterKit],
-        content: `<p>${text}</p>`,
-    })
+export default function () {
+    let text = useLoaderData()
+    const [searchParams] = useSearchParams()
 
     const selectionSpanStart = parseInt(searchParams.get("selectionStart") ?? '0')
     const selectionSpanEnd= parseInt(searchParams.get("selectionEnd") ?? '0')
     if (selectionSpanEnd !==0) {
-        editor?.chain().focus().setTextSelection({from: selectionSpanStart , to: selectionSpanEnd}).run()
+        text = highlight(text, selectionSpanStart, selectionSpanEnd)
     }
+
+    const editor = useEditor({
+        extensions: [Document, Paragraph, Text, Highlight],
+        content: `<p>${text}</p>`,
+    })
+
 
     return (
         <main style={{ width: '60%', margin: 'auto'}}>
