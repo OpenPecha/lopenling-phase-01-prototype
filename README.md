@@ -4,8 +4,8 @@
 
 ## TODO:
 
-- [ ] Display text in tiptap
-- [ ] text highlight/mark from URL Params (`selectionStart`, `selectionEnd`)
+- [x] Display text in tiptap
+- [x] text highlight/mark from URL Params (`selectionStart`, `selectionEnd`)
 - [ ] generate text selection URL
 
 ## Development
