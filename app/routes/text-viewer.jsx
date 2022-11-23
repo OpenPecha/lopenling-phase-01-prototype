@@ -33,6 +33,7 @@ export default function () {
     const editor = useEditor({
         extensions: [Document, Paragraph, Text, Highlight],
         content: `<p>${text}</p>`,
+        editable: false,
     })
 
 
