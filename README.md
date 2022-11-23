@@ -4,9 +4,9 @@
 
 ## TODO:
 
-- [ ] use flowbite
 - [ ] Display text in tiptap
-- [ ] text highlight/mark from URL Params (`mark-start`, `mark-end`)
+- [ ] text highlight/mark from URL Params (`selectionStart`, `selectionEnd`)
+- [ ] generate text selection URL
 
 ## Development
 
