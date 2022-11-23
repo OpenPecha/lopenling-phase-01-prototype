@@ -50,8 +50,7 @@ export default function () {
 
     editor.on("selectionUpdate", ({editor}) => {
         const { from, to } = editor.state.selection
-        console.log(from, to)
-        setSelectionSpan({start: from, end: to})
+        setSelectionSpan({start: from-1, end: to-1})
     })
 
     function shareSelectedText() {
