@@ -1,4 +1,5 @@
 import { useLoaderData, useSearchParams } from "@remix-run/react"
+import * as React from "react"
 
 import Document from "@tiptap/extension-document"
 import Highlight from '@tiptap/extension-highlight'
@@ -24,6 +25,8 @@ export default function () {
     let text = useLoaderData()
     const [searchParams] = useSearchParams()
 
+    const [selectionSpan, setSelectionSpan] = React.useState({})
+
     const selectionSpanStart = parseInt(searchParams.get("selectionStart") ?? '0')
     const selectionSpanEnd= parseInt(searchParams.get("selectionEnd") ?? '0')
     if (selectionSpanEnd !==0) {
@@ -45,9 +48,21 @@ export default function () {
         return null
     }
 
+    editor.on("selectionUpdate", ({editor}) => {
+        const { from, to } = editor.state.selection
+        console.log(from, to)
+        setSelectionSpan({start: from, end: to})
+    })
+
+    function shareSelectedText() {
+        const selectionUrl = `http://localhost:3001/text-viewer?selectionStart=${selectionSpan.start}&selectionEnd=${selectionSpan.end}`
+        alert(selectionUrl)
+    }
+
     return (
         <main style={{ width: '60%', margin: 'auto'}}>
             <h1 style={{ textAlign: 'center'}}>Text Viewer</h1>
+            <button onClick={shareSelectedText}>Share</button>
             <section>
                 <EditorContent editor={editor} />
             </section>
