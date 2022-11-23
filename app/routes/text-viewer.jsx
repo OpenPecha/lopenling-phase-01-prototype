@@ -19,6 +19,7 @@ function highlight(text, spanStart, spanEnd)  {
     return `${textBeginning}<mark style="background-color: #ffeda7">${textMiddle}</mark>${textEnd}`
 }
 
+
 export default function () {
     let text = useLoaderData()
     const [searchParams] = useSearchParams()
@@ -40,6 +41,9 @@ export default function () {
         editable: false,
     })
 
+    if (!editor) {
+        return null
+    }
 
     return (
         <main style={{ width: '60%', margin: 'auto'}}>
