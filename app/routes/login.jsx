@@ -2,6 +2,8 @@ import { redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { commitSession, getSession } from "~/services/session.server";
 
+import { db } from "~/utils/db.server";
+
 export let loader = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   const url = new URL(request.url);
@@ -18,8 +20,8 @@ export let loader = async ({ request }) => {
       let email = params.get("email");
       let admin = params.get("admin");
       let name = params.get("name");
-      console.log(email, admin, name);
       session.set("user", { email, admin, name });
+      console.log(session.data);
     } catch (e) {
       session.flash("error", {
         error: e,
