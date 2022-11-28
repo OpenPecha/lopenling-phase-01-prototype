@@ -6,6 +6,8 @@
 
 - [x] Display text in tiptap
 - [x] text highlight/mark from URL Params (`selectionStart`, `selectionEnd`)
+- [ ] authentication using lopenling sso
+- [ ] store user information using prisma ORM
 - [ ] generate text selection URL
 
 ## Development
