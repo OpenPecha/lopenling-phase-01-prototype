@@ -5,7 +5,7 @@ export default function Header({ user }) {
     return (
       <Form method="post">
         <input type="text" name="logout" defaultValue={"logout"} hidden />
-        <button type="submit">logout</button>
+        <button type="submit">logout {user.name}</button>
       </Form>
     );
 
