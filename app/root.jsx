@@ -12,6 +12,7 @@ import {
   getUserSession,
   destroySession,
   login,
+  commitSession,
 } from "./services/session.server";
 import { json, redirect } from "@remix-run/node";
 import Headers from "~/components/Header";
@@ -30,8 +31,9 @@ export const action = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   if (request.method === "POST") {
     const body = await request.formData();
+    let redirectTo = body.get("redirectTo");
     if (body.get("logout") === "logout") {
-      return redirect("/", {
+      return redirect(redirectTo, {
         headers: {
           "set-cookie": await destroySession(request),
         },
@@ -39,20 +41,23 @@ export const action = async ({ request }) => {
     }
     if (body.get("login") === "login") {
       if (!session.get("user")) {
-        let requireSession = await login(request, (session) => {
-          return session;
-        });
+        let requireSession = await login(
+          request,
+          (session) => {
+            return session;
+          },
+          redirectTo
+        );
         return requireSession;
       }
-      return redirect("/");
+      return redirect(redirectTo);
     }
   }
   return redirect("/");
 };
 
 export default function App() {
-  let session = useLoaderData();
-
+  let { user } = useLoaderData();
   return (
     <html lang="en">
       <head>
@@ -60,7 +65,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Headers user={session.user} />
+        <Headers user={user} />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

@@ -18,20 +18,18 @@ export async function getUserSession(request) {
   return user;
 }
 
-export async function login(request, next) {
+export async function login(request, next, redirectTo) {
   let session = await getSession(request.headers.get("Cookie"));
   if (!session.get("user")) {
     let url = await redirectDiscourse();
-    return redirect(url);
+    session.set("success-redirect", redirectTo);
+    return redirect(url, {
+      headers: {
+        "set-cookie": await commitSession(session),
+      },
+    });
   }
   return next(session);
 }
-export async function logout(request) {
-  const session = await getUserSession(request);
-  return redirect("/login", {
-    headers: {
-      "Set-Cookie": await destroySession(session),
-    },
-  });
-}
+
 export { getSession, commitSession, destroySession };

@@ -2,10 +2,10 @@ import { redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { commitSession, getSession } from "~/services/session.server";
 
-import { db } from "~/utils/db.server";
-
 export let loader = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
+  console.log(session.data);
+
   const url = new URL(request.url);
   const sso = url.searchParams.get("sso");
   const sig = url.searchParams.get("sig");
@@ -21,14 +21,16 @@ export let loader = async ({ request }) => {
       let admin = params.get("admin");
       let name = params.get("name");
       session.set("user", { email, admin, name });
-      console.log(session.data);
     } catch (e) {
       session.flash("error", {
         error: e,
       });
     }
   }
-  return redirect("/", {
+  let redirectUrl = session.data["success-redirect"]
+    ? session.data["success-redirect"]
+    : "/";
+  return redirect(redirectUrl, {
     headers: {
       "set-cookie": await commitSession(session),
     },

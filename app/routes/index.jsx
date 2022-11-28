@@ -5,7 +5,7 @@ import { db } from "~/utils/db.server";
 // import env from "~/services/discourse_sso";
 
 export const loader = async ({ request }) => {
-  let data = { user: [] };
+  let data = { user: { name: "User" } };
   const session = await getSession(request.headers.get("Cookie"));
   const { user } = session.data;
   if (user?.name) {
@@ -38,9 +38,9 @@ export const loader = async ({ request }) => {
 
 export default function Index() {
   const data = useLoaderData();
-  console.log(data);
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+      <p>Welcome {data.user.name}</p>
       <Link to="/text-viewer"> text viewer</Link>
     </div>
   );
