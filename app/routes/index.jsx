@@ -8,29 +8,14 @@ export const loader = async ({ request }) => {
   let data = { user: { name: "User" } };
   const session = await getSession(request.headers.get("Cookie"));
   const { user } = session.data;
-  if (user?.name) {
-    data.user = await db.user.findUnique({
-      where: { email: user.email },
-    });
-    if (!data.user) {
-      const newUser = await db.user.create({
-        data: {
-          name: user.name,
-          email: user.email,
-          isAdmin: user.admin === "true" ? true : false,
-          userPreference: {
-            create: {
-              language: "en",
-              fontSize: 14,
-              theme: "light",
-            },
-          },
-        },
-        select: {
-          userPreference: true,
-        },
+  if (user?.email) {
+    try {
+      let findUserInDatabase = await db.user.findUnique({
+        where: { email: user.email },
       });
-      data.user = newUser;
+      data.user = findUserInDatabase;
+    } catch (e) {
+      data.message = e.message;
     }
   }
   return data;
@@ -40,7 +25,7 @@ export default function Index() {
   const data = useLoaderData();
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <p>Welcome {data.user.name}</p>
+      <p>Welcome {data.user.username}</p>
       <Link to="/text-viewer"> text viewer</Link>
     </div>
   );

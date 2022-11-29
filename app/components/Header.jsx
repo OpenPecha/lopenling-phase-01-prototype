@@ -5,15 +5,18 @@ export default function Header({ user }) {
 
   if (user)
     return (
-      <Form method="post">
-        <input type="hidden" name="logout" defaultValue={"logout"} />
-        <input
-          type="hidden"
-          name="redirectTo"
-          defaultValue={location.pathname}
-        />
-        <button type="submit">logout</button>
-      </Form>
+      <>
+        <div>{user.name}</div>
+        <Form method="post">
+          <input type="hidden" name="logout" defaultValue={"logout"} />
+          <input
+            type="hidden"
+            name="redirectTo"
+            defaultValue={location.pathname}
+          />
+          <button type="submit">logout</button>
+        </Form>
+      </>
     );
 
   if (!user)

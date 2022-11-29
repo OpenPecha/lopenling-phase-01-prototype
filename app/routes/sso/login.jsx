@@ -1,10 +1,10 @@
 import { redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { commitSession, getSession } from "~/services/session.server";
+import { db } from "~/utils/db.server";
 
 export let loader = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
-  console.log(session.data);
 
   const url = new URL(request.url);
   const sso = url.searchParams.get("sso");
@@ -20,13 +20,39 @@ export let loader = async ({ request }) => {
       let email = params.get("email");
       let admin = params.get("admin");
       let name = params.get("name");
-      session.set("user", { email, admin, name });
+      let username = params.get("username");
+      session.set("user", { email, admin, name, username });
+      let findUserInDatabase = await db.user.findUnique({
+        where: { username },
+      });
+      if (!findUserInDatabase) {
+        const newUser = await db.user.create({
+          data: {
+            username: username,
+            name: name,
+            email: email,
+            isAdmin: admin === "true" ? true : false,
+            userPreference: {
+              create: {
+                language: "en",
+                fontSize: 14,
+                theme: "light",
+              },
+            },
+          },
+          select: {
+            userPreference: true,
+          },
+        });
+      }
     } catch (e) {
+      console.log(e);
       session.flash("error", {
         error: e,
       });
     }
   }
+
   let redirectUrl = session.data["success-redirect"]
     ? session.data["success-redirect"]
     : "/";

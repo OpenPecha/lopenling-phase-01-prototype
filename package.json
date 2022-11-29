@@ -16,6 +16,7 @@
     "@tiptap/extension-paragraph": "^2.0.0-beta.202",
     "@tiptap/extension-text": "^2.0.0-beta.202",
     "@tiptap/react": "^2.0.0-beta.202",
+    "axios": "^1.2.0",
     "crypto-js": "^4.1.1",
     "discourse-sso": "^1.0.5",
     "isbot": "^3.6.5",

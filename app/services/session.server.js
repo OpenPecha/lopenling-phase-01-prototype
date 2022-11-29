@@ -9,6 +9,7 @@ let { getSession, commitSession, destroySession } = createCookieSessionStorage({
     name: "__session",
     secrets: [process.env.COOKIE_SECRET],
     sameSite: "lax",
+    // maxAge: 100,
   },
 });
 
