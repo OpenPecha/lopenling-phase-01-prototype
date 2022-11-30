@@ -7,8 +7,10 @@
 - [x] Display text in tiptap
 - [x] text highlight/mark from URL Params (`selectionStart`, `selectionEnd`)
 - [x] authentication using lopenling sso
-- [ ] store user information using prisma ORM
-- [x] generate text selection URL
+- [x] store user information using prisma ORM
+- [x] generate text selection URL+redirect settings
+- [x] provide link in discourse Topic
+
 
 ## Development
 
