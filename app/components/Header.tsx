@@ -1,8 +1,7 @@
 import { Form, useLocation } from "@remix-run/react";
-
+import React from "react";
 export default function Header({ user }) {
   const location = useLocation();
-
   if (user)
     return (
       <>

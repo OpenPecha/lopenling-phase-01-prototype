@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Links,
   LiveReload,
@@ -10,32 +11,38 @@ import {
 import {
   getSession,
   getUserSession,
-  destroySession,
   login,
-  commitSession,
+  destroyUserSession,
 } from "./services/session.server";
-import { json, redirect } from "@remix-run/node";
+import {
+  ActionFunction,
+  json,
+  LoaderFunction,
+  redirect,
+} from "@remix-run/node";
 import Headers from "~/components/Header";
-
-export async function loader({ request }) {
+export const loader: LoaderFunction = async ({ request }) => {
   let user = await getUserSession(request);
   return json({ user });
-}
+};
 export const meta = () => ({
   charset: "utf-8",
   title: "New Remix App",
   viewport: "width=device-width,initial-scale=1",
 });
 
-export const action = async ({ request }) => {
+export const action: ActionFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   if (request.method === "POST") {
     const body = await request.formData();
-    let redirectTo = body.get("redirectTo");
+    let redirectTo = body.get("redirectTo")?.toString();
+    if (!redirectTo) {
+      throw new Error("no redirect in form");
+    }
     if (body.get("logout") === "logout") {
       return redirect(redirectTo, {
         headers: {
-          "set-cookie": await destroySession(request),
+          "set-cookie": await destroyUserSession(request),
         },
       });
     }
@@ -43,7 +50,7 @@ export const action = async ({ request }) => {
       if (!session.get("user")) {
         let requireSession = await login(
           request,
-          (session) => {
+          (session: any) => {
             return session;
           },
           redirectTo

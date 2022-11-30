@@ -1,13 +1,18 @@
+import { LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { getSession } from "~/services/session.server";
 import { db } from "~/utils/db.server";
-
+import React from "react";
+import { getUserSession } from "../services/session.server";
 // import env from "~/services/discourse_sso";
 
-export const loader = async ({ request }) => {
-  let data = { user: { name: "User" } };
-  const session = await getSession(request.headers.get("Cookie"));
-  const { user } = session.data;
+export const loader: LoaderFunction = async ({ request }) => {
+  type dataType = {
+    user: any;
+    message: string;
+  };
+  let data: dataType = { user: { name: "User" }, message: "" };
+  const user = await getUserSession(request);
+
   if (user?.email) {
     try {
       let findUserInDatabase = await db.user.findUnique({

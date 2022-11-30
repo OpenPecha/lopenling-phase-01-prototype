@@ -21,6 +21,8 @@ model User {
   userPreferenceId String?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  Question         Question[]
+  Annotation       Annotation[]
 
   @@index([email])
 }
@@ -36,4 +38,28 @@ model UserPreference {
 enum Role {
   BASIC
   SCHOLAR
+}
+
+model Question {
+  id      String @id @default(uuid())
+  topicId Int
+  topic   String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  start   Int
+  end     Int
+}
+
+model Annotation {
+  id              String   @id @default(uuid())
+  creator_user    User     @relation(fields: [userId], references: [id])
+  userId          String
+  start           Int
+  length          Int
+  is_deleted      Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  type            String
+  original        String
+  modifiedContent String
 }
