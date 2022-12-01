@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "~/styles/tailwind.css";
 import {
   Links,
   LiveReload,
@@ -31,6 +32,9 @@ export const meta = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
+export function links() {
+  return [{ rel: "stylesheet", href: styles }];
+}
 export const action: ActionFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   if (request.method === "POST") {

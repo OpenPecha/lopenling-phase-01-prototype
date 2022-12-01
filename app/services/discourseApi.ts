@@ -17,6 +17,51 @@ class DiscourseApi {
     return auth_headers;
   }
 
+  async fetchCategoryList(id: string | undefined) {
+    const res = await fetch(
+      `${this.DiscourseUrl}/categories.json?include_subcategories=true`
+    );
+    const categories = await res.json();
+    const filterCategory = categories.category_list.categories.find(
+      (l) => l.id === parseInt(id)
+    );
+    if (!filterCategory.subcategory_ids.length) return null;
+    return filterCategory.subcategory_list;
+  }
+  async addCategory(
+    username: string,
+    categoryName: string,
+    categoryColor: string,
+    text_color: string,
+    parent_category_id: number
+  ) {
+    let auth_headers = this.authHeader(username);
+
+    let newCategoryData = {
+      name: categoryName,
+      color: categoryColor,
+      text_color,
+      parent_category_id,
+    };
+    let params = new URLSearchParams(newCategoryData).toString();
+    try {
+      const response = await fetch(
+        `${this.DiscourseUrl}/categories.json?` + params,
+        {
+          method: "POST",
+          mode: "cors", // no-cors, *cors, same-origin
+          cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+          credentials: "same-origin",
+          headers: auth_headers,
+        }
+      );
+      let res = await response.json();
+      return res;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async addTopic(
     username: string,
     category_id: number,
@@ -24,13 +69,13 @@ class DiscourseApi {
     start: number,
     end: number,
     QuestionArea: string | FormDataEntryValue,
-    bodyContent: string | FormDataEntryValue
+    bodyContent: string | FormDataEntryValue,
+    textId: number
   ) {
     let auth_headers = this.authHeader(username);
-    let post_text = `<blockquote>${QuestionArea}</blockquote><br/>${bodyContent}`;
-    console.log(post_text);
+    let post_text = `<br/>${bodyContent}`;
     let new_Topic_data = {
-      title: topic_name,
+      title: QuestionArea,
       category: category_id,
       raw: post_text,
     };
@@ -57,10 +102,12 @@ class DiscourseApi {
         const createQuestion = await db.question.create({
           data: {
             topicId: data["topic_id"],
+            categoryId: category_id,
             userId: user.id,
             start,
             end,
             topic: QuestionArea,
+            textId,
           },
         });
         console.log(createQuestion);
@@ -70,6 +117,59 @@ class DiscourseApi {
     }
 
     return data;
+  }
+}
+
+export async function createQuestion(
+  username: string,
+  topic_name: FormDataEntryValue | null,
+  QuestionArea: FormDataEntryValue | null,
+  bodyContent: FormDataEntryValue | null,
+  start: FormDataEntryValue | null,
+  end: FormDataEntryValue | null,
+  DiscourseUrl: string,
+  api: string,
+  parent_category_id: string,
+  textId: number
+) {
+  if (!start || !end) {
+    throw new Error("start and end values not available");
+  }
+  if (!topic_name || !QuestionArea || !bodyContent)
+    throw new Error("failed to access Topic Id");
+  const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
+  let response = await apiObj.fetchCategoryList(parent_category_id);
+  let checkIfCategoryPresent = response?.find((l) => l.name === topic_name);
+
+  if (!checkIfCategoryPresent) {
+    let res = await apiObj.addCategory(
+      username,
+      topic_name.toString(),
+      "red",
+      "black",
+      parent_category_id
+    );
+    return apiObj.addTopic(
+      username,
+      res.category.id,
+      topic_name,
+      parseInt(start.toString()),
+      parseInt(end.toString()),
+      QuestionArea,
+      bodyContent,
+      textId
+    );
+  } else {
+    return apiObj.addTopic(
+      username,
+      checkIfCategoryPresent.id,
+      topic_name,
+      parseInt(start.toString()),
+      parseInt(end.toString()),
+      QuestionArea,
+      bodyContent,
+      textId
+    );
   }
 }
 

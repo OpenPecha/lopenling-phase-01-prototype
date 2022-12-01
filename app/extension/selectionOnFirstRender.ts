@@ -13,9 +13,12 @@ const SelectTextOnRender = Extension.create({
         from: parseInt(start),
         to: parseInt(end),
       });
+      url.searchParams.delete("start");
+      url.searchParams.delete("end");
+
       if (window.history.replaceState) {
         //prevents browser from storing history with each change:
-        window.history.replaceState({}, "", "/text-viewer");
+        window.history.replaceState({}, "", url);
       }
     }
   },

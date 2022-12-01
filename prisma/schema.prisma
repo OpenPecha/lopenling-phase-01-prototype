@@ -41,13 +41,15 @@ enum Role {
 }
 
 model Question {
-  id      String @id @default(uuid())
-  topicId Int
-  topic   String
-  user    User   @relation(fields: [userId], references: [id])
-  userId  String
-  start   Int
-  end     Int
+  id         String @id @default(uuid())
+  categoryId Int
+  topicId    Int
+  topic      String
+  user       User   @relation(fields: [userId], references: [id])
+  userId     String
+  start      Int
+  end        Int
+  textId     Int
 }
 
 model Annotation {

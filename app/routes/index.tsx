@@ -31,7 +31,6 @@ export default function Index() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
       <p>Welcome {data.user.username}</p>
-      <Link to="/text-viewer"> text viewer</Link>
     </div>
   );
 }
