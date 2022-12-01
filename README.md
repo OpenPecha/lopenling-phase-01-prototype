@@ -10,6 +10,9 @@
 - [x] store user information using prisma ORM
 - [x] generate text selection URL+redirect settings
 - [x] provide link in discourse Topic
+- [x] create new category on discourse when new text question is added
+- [x] tailwind css ready
+- [x] text selection added
 
 
 ## Development
