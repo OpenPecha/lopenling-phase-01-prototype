@@ -17,22 +17,25 @@ import { getSession, getUserSession } from "~/services/session.server";
 import { ActionFunction, json, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { QuestionMark } from "~/extension/questionTag";
-import QuestionList from "~/components/Question";
+import QuestionList from "~/components/QuestionList";
 import { db } from "~/utils/db.server";
 import SelectTextOnRender from "~/extension/selectionOnFirstRender";
-import { getText, getTextList } from "~/models/getText.server";
+import { getText, getTextList } from "~/services/getText.server";
 import TextList from "~/components/TextList";
+import QuestionForm from "~/components/QuestionForm";
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const session = await getSession(request.headers.get("Cookie"));
-  const { user } = session.data;
+  const user = await getUserSession(request);
   const text = await getText(params);
   const questionlist = await db.question.findMany({
     include: {
       user: true,
     },
   });
+  let filteredQuestionList = questionlist.filter((question) => {
+    return question.textId === parseInt(text?.id);
+  });
   const textList = await getTextList();
-  const data = { user, text, questionlist, textList };
+  const data = { user, text, questionlist: filteredQuestionList, textList };
   return json(data);
 };
 
@@ -50,7 +53,7 @@ export const action: ActionFunction = async ({ request }) => {
   let topic_name = formData.get("topic");
   let textId = formData.get("textId");
   let bodyContent = formData.get("body");
-  let QuestionArea = formData.get("textTopic");
+  let QuestionArea = formData.get("QuestionArea");
   let start = formData.get("start");
   let end = formData.get("end");
   let questionId = formData.get("questionId");
@@ -91,8 +94,12 @@ type selectionType = {
 export default function () {
   const data = useLoaderData();
   const transition = useTransition();
-  const actionData = useActionData();
   const formRef = React.useRef<any>(null);
+
+  React.useEffect(() => {
+    editor?.commands.setContent(data.text.witness?.content);
+  }, [data.text]);
+
   const [selectionSpan, setSelectionSpan] =
     React.useState<selectionType | null>(null);
   const [questionRange, setQuestionRange] = React.useState<{
@@ -125,7 +132,6 @@ export default function () {
 
   const [QuestionArea, setQuestionArea] = React.useState("");
   const [openQuestionPortal, setOpenQuestionPortal] = React.useState(false);
-
   const editor = useEditor({
     extensions: [
       Document,
@@ -165,7 +171,6 @@ export default function () {
   if (!editor) {
     return null;
   }
-
   editor.on("selectionUpdate", ({ editor }) => {
     const { from, to } = editor.state.selection;
     setSelectionSpan({ start: from - 1, end: to - 1 });
@@ -173,7 +178,7 @@ export default function () {
   const shareSelectedText = () => {
     const url =
       window.location.origin +
-      `/texts/${data.text.id}?start=${selectionSpan.start}&end=${selectionSpan.end}`;
+      `/texts/${data.text.id}?start=${selectionSpan?.start}&end=${selectionSpan?.end}`;
     navigator.clipboard.writeText(url);
     alert("Copied the text: " + url);
   };
@@ -197,6 +202,7 @@ export default function () {
       >
         <div style={{ overflow: "hidden", flex: 1 }}>
           <QuestionList
+            QuestionTitle={"Question for text " + data.text.id}
             list={
               questionRange
                 ? data.questionlist.filter(
@@ -207,57 +213,12 @@ export default function () {
                 : data.questionlist
             }
           />
-          <section>
-            {openQuestionPortal && (
-              <Form
-                ref={formRef}
-                method="post"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  background: "#eee",
-                  alignItems: "center",
-                }}
-              >
-                ask question here: {QuestionArea}
-                <input
-                  type="hidden"
-                  defaultValue={editor.state.selection.from}
-                  name="start"
-                ></input>
-                <input
-                  type="hidden"
-                  defaultValue={editor.state.selection.to}
-                  name="end"
-                ></input>
-                <input
-                  type="text"
-                  name="textTopic"
-                  hidden
-                  defaultValue={QuestionArea}
-                ></input>
-                <input
-                  type="text"
-                  name="textId"
-                  hidden
-                  defaultValue={data.text.id}
-                ></input>
-                <input
-                  placeholder="topic"
-                  type="text"
-                  name="topic"
-                  hidden
-                  defaultValue={data.text.name}
-                ></input>
-                <textarea
-                  style={{ width: 400, height: 100 }}
-                  name="body"
-                ></textarea>
-                <button type="submit">click to question</button>
-              </Form>
-            )}
-            {actionData?.message && <div>{actionData.message}</div>}
-          </section>
+          <QuestionForm
+            editor={editor}
+            QuestionArea={QuestionArea}
+            openQuestionPortal={openQuestionPortal}
+            ref={formRef}
+          />
         </div>
 
         <section style={{ flex: 1, border: "1px solid grey", padding: 10 }}>

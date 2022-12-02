@@ -65,17 +65,16 @@ class DiscourseApi {
   async addTopic(
     username: string,
     category_id: number,
-    topic_name: string | FormDataEntryValue,
     start: number,
     end: number,
-    QuestionArea: string | FormDataEntryValue,
+    topic_name: string | FormDataEntryValue,
     bodyContent: string | FormDataEntryValue,
     textId: number
   ) {
     let auth_headers = this.authHeader(username);
     let post_text = `<br/>${bodyContent}`;
     let new_Topic_data = {
-      title: QuestionArea,
+      title: topic_name,
       category: category_id,
       raw: post_text,
     };
@@ -102,11 +101,11 @@ class DiscourseApi {
         const createQuestion = await db.question.create({
           data: {
             topicId: data["topic_id"],
-            categoryId: category_id,
+            topic: topic_name,
             userId: user.id,
+            categoryId: category_id,
             start,
             end,
-            topic: QuestionArea,
             textId,
           },
         });
@@ -121,8 +120,8 @@ class DiscourseApi {
 }
 
 export async function createQuestion(
-  username: string,
-  topic_name: FormDataEntryValue | null,
+  userName: string,
+  textName: FormDataEntryValue | null,
   QuestionArea: FormDataEntryValue | null,
   bodyContent: FormDataEntryValue | null,
   start: FormDataEntryValue | null,
@@ -135,24 +134,22 @@ export async function createQuestion(
   if (!start || !end) {
     throw new Error("start and end values not available");
   }
-  if (!topic_name || !QuestionArea || !bodyContent)
+  if (!textName || !QuestionArea || !bodyContent)
     throw new Error("failed to access Topic Id");
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   let response = await apiObj.fetchCategoryList(parent_category_id);
-  let checkIfCategoryPresent = response?.find((l) => l.name === topic_name);
-
+  let checkIfCategoryPresent = response?.find((l) => l.name === textName);
   if (!checkIfCategoryPresent) {
     let res = await apiObj.addCategory(
-      username,
-      topic_name.toString(),
+      userName,
+      textName.toString(),
       "red",
       "black",
-      parent_category_id
+      parseInt(parent_category_id)
     );
     return apiObj.addTopic(
-      username,
+      userName,
       res.category.id,
-      topic_name,
       parseInt(start.toString()),
       parseInt(end.toString()),
       QuestionArea,
@@ -161,9 +158,8 @@ export async function createQuestion(
     );
   } else {
     return apiObj.addTopic(
-      username,
+      userName,
       checkIfCategoryPresent.id,
-      topic_name,
       parseInt(start.toString()),
       parseInt(end.toString()),
       QuestionArea,

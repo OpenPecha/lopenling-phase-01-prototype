@@ -1,5 +1,5 @@
 import { redirect } from "@remix-run/node";
-import { Form, FormProps, useLoaderData } from "@remix-run/react";
+import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import React from "react";
 
 type TextListProps = {
@@ -9,16 +9,15 @@ type TextListProps = {
   };
 };
 export default function TextList({ selectedText }: TextListProps) {
-  let formRef = React.useRef();
   const { textList } = useLoaderData();
+  const fetcher = useFetcher();
   const handleChangeTextSelect = (e) => {
-    formRef.current?.submit();
+    fetcher.submit({ changeText: e.target.value }, { method: "post" });
   };
   return (
     <div>
-      <Form ref={formRef} method="post">
+      <fetcher.Form method="post">
         <select
-          name="changeText"
           defaultValue={selectedText.id}
           onChange={handleChangeTextSelect}
         >
@@ -30,7 +29,7 @@ export default function TextList({ selectedText }: TextListProps) {
             );
           })}
         </select>
-      </Form>
+      </fetcher.Form>
     </div>
   );
 }

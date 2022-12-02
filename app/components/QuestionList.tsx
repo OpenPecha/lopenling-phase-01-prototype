@@ -6,6 +6,7 @@ type QuestionProps = {
     {
       id: number;
       topic: string;
+      topicId: number;
       start: number;
       end: number;
       user: {
@@ -13,20 +14,23 @@ type QuestionProps = {
       };
     }
   ];
+  QuestionTitle: string;
 };
 
 export default function QuestionList(props: QuestionProps) {
-  const { user, text } = useLoaderData();
+  const { user } = useLoaderData();
   if (!props.list) return null;
   return (
     <div>
-      <h2 className="text-1xl font-bold underline">Questions</h2>
+      <h2 className="text-1xl font-bold underline">{props.QuestionTitle}</h2>
       {props.list
-        .filter((l) => l.textId.toString() === text.id)
+        .sort((a, b) => b.topicId - a.topicId)
         .map((l) => {
+          let showDeleteButton =
+            user?.isAdmin || user?.username === l.user.username;
           return (
             <div
-              key={l.id}
+              key={"question-" + l.id}
               style={{
                 border: "3px solid black",
                 borderRadius: "10px",
@@ -48,7 +52,7 @@ export default function QuestionList(props: QuestionProps) {
               >
                 visit discussion
               </a>
-              {user?.admin === "true" && (
+              {showDeleteButton && (
                 <Form method="post">
                   <input type="hidden" value={l.id} name="questionId"></input>
                   <button

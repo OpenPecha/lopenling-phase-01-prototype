@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, useLocation } from "@remix-run/react";
+import { Form, Link, useLocation } from "@remix-run/react";
 export default function Header({ user }: any) {
   const location = useLocation();
   return (
@@ -7,6 +7,7 @@ export default function Header({ user }: any) {
       className="container flex flex-wrap items-center justify-between mx-auto
       bg-red-200 mb-3 border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-900"
     >
+      <Link to="/">Home</Link>
       {user ? (
         <>
           <div>{user.name}</div>

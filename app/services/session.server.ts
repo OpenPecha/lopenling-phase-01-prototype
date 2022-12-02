@@ -6,24 +6,24 @@ if (!secret) {
 }
 let { getSession, commitSession, destroySession } = createCookieSessionStorage({
   cookie: {
-    name: "__session",
+    name: "parkhang_userSession",
     secrets: [secret],
     sameSite: "lax",
-    // maxAge: 100,
+    maxAge: 1000,
   },
 });
 
-export async function getUserSession(request) {
+export async function getUserSession(request: Request) {
   const session = await getSession(request.headers.get("Cookie"));
   let user = session.get("user");
   return user;
 }
-export async function destroyUserSession(request) {
+export async function destroyUserSession(request: Request) {
   const session = await getSession(request.headers.get("Cookie"));
   return await destroySession(session);
 }
 
-export async function login(request, next, redirectTo) {
+export async function login(request: Request, next: any, redirectTo: string) {
   let session = await getSession(request.headers.get("Cookie"));
   if (!session.get("user")) {
     let url = await redirectDiscourse();

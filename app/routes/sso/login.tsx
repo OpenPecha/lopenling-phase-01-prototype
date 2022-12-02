@@ -1,9 +1,8 @@
-import { redirect } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { LoaderFunction, redirect } from "@remix-run/node";
 import { commitSession, getSession } from "~/services/session.server";
 import { db } from "~/utils/db.server";
 
-export let loader = async ({ request }) => {
+export let loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
 
   const url = new URL(request.url);
@@ -21,6 +20,9 @@ export let loader = async ({ request }) => {
       let admin = params.get("admin");
       let name = params.get("name");
       let username = params.get("username");
+      if (!email || !name || !username) {
+        throw new Error("discourse SSO returned error URL");
+      }
       session.set("user", { email, admin, name, username });
       let findUserInDatabase = await db.user.findUnique({
         where: { username },
@@ -44,6 +46,7 @@ export let loader = async ({ request }) => {
             userPreference: true,
           },
         });
+        console.log(newUser);
       }
     } catch (e) {
       console.log(e);
@@ -62,7 +65,3 @@ export let loader = async ({ request }) => {
     },
   });
 };
-
-export default function Login() {
-  return <></>;
-}

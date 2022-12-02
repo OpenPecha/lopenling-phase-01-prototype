@@ -5,7 +5,8 @@ export async function getText(params: any) {
     const res = await fetch(url);
     const text = await res.json();
     const textName = await getTextList();
-    const name = textName.find((l) => l.id === parseInt(params.textId)).name;
+    if (!textName) throw new Error("textName not defined");
+    const name = textName.find((l) => l?.id === parseInt(params.textId)).name;
     const responseText = {
       name,
       id: params.textId,
@@ -17,7 +18,9 @@ export async function getText(params: any) {
     console.log(e.message);
   }
 }
-export async function getTextList() {
+export async function getTextList(): Promise<
+  [{ id: number; name: string }] | undefined
+> {
   const apiUrl = "https://parkhang.lopenling.org/api/";
   try {
     const url = apiUrl + "texts/";
