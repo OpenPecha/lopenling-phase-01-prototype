@@ -23,6 +23,17 @@ From your terminal:
 npm run dev
 ```
 
+To access ORM database
+ ```sh
+npx prisma studio 
+```
+
+Migration of Database 
+```sh
+npx prisma migrate dev --name test6   //test6 can be anyname
+```
+
+
 This starts your app in development mode, rebuilding assets on file changes.
 
 ## Deployment
