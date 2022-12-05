@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: ./postgres/Dockerfile
+    image: parkhang_production_postgres
+    container_name: parkhang_postgres_123
+    env_file:
+      - ./.env
+    ports:
+      - "5432:5432"
+  remix:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: parkhang-remix
+    container_name: parkhang
+    depends_on:
+      - postgres
+    volumes:
+      - ./app:/app:z
+    env_file:
+      - ./.env
+    ports:
+      - "3000:3000"

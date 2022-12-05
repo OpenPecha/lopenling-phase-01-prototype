@@ -36,7 +36,7 @@ export function links() {
   return [{ rel: "stylesheet", href: styles }];
 }
 export const action: ActionFunction = async ({ request }) => {
-  const session = await getSession(request.headers.get("Cookie"));
+  const user = await getUserSession(request);
   if (request.method === "POST") {
     const body = await request.formData();
     let redirectTo = body.get("redirectTo")?.toString();
@@ -51,7 +51,7 @@ export const action: ActionFunction = async ({ request }) => {
       });
     }
     if (body.get("login") === "login") {
-      if (!session.get("user")) {
+      if (!user) {
         let requireSession = await login(
           request,
           (session: any) => {
@@ -64,7 +64,6 @@ export const action: ActionFunction = async ({ request }) => {
       return redirect(redirectTo);
     }
   }
-  return redirect("/");
 };
 
 export default function App() {

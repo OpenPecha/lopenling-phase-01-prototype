@@ -55,7 +55,6 @@ export let loader: LoaderFunction = async ({ request }) => {
       });
     }
   }
-
   let redirectUrl = session.data["success-redirect"]
     ? session.data["success-redirect"]
     : "/";

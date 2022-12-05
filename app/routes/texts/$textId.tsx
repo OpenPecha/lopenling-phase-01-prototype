@@ -25,6 +25,17 @@ import TextList from "~/components/TextList";
 import QuestionForm from "~/components/QuestionForm";
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUserSession(request);
+  let userInfo;
+  if (user?.email) {
+    try {
+      let findUserInDatabase = await db.user.findUnique({
+        where: { email: user.email },
+      });
+      userInfo = findUserInDatabase;
+    } catch (e) {
+      if (e) console.log(e);
+    }
+  }
   const text = await getText(params);
   const questionlist = await db.question.findMany({
     include: {
@@ -35,7 +46,12 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     return question.textId === parseInt(text?.id);
   });
   const textList = await getTextList();
-  const data = { user, text, questionlist: filteredQuestionList, textList };
+  const data = {
+    user: userInfo,
+    text,
+    questionlist: filteredQuestionList,
+    textList,
+  };
   return json(data);
 };
 
@@ -212,6 +228,7 @@ export default function () {
                   )
                 : data.questionlist
             }
+            editor={editor}
           />
           <QuestionForm
             editor={editor}
@@ -224,7 +241,9 @@ export default function () {
         <section style={{ flex: 1, border: "1px solid grey", padding: 10 }}>
           <h1 style={{ textAlign: "center" }}>Text Viewer</h1>
           <TextList selectedText={data.text} />
-          <EditorContent editor={editor} />
+          <div style={{ maxHeight: "500px", overflow: "scroll" }}>
+            <EditorContent editor={editor} />
+          </div>
           {editor && (
             <BubbleMenu
               className="BubbleMenu"

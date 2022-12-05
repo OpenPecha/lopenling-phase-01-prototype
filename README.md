@@ -14,7 +14,6 @@
 - [x] tailwind css ready
 - [x] text selection added
 
-
 ## Development
 
 From your terminal:
@@ -24,15 +23,31 @@ npm run dev
 ```
 
 To access ORM database
- ```sh
-npx prisma studio 
+
+```sh
+npx prisma studio
 ```
 
-Migration of Database 
+Migration of Database
+
 ```sh
 npx prisma migrate dev --name test6   //test6 can be anyname
 ```
 
+## using Docker
+
+build docker image + start container
+
+```sh
+docker-compose -f local.yml build
+docker-compose -f local.yml up
+```
+
+run migration on docker postgres
+
+```sh
+docker-compose -f local.yml exec remix npx prisma migrate dev
+```
 
 This starts your app in development mode, rebuilding assets on file changes.
 

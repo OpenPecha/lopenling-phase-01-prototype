@@ -31,16 +31,14 @@ class DiscourseApi {
   async addCategory(
     username: string,
     categoryName: string,
-    categoryColor: string,
-    text_color: string,
     parent_category_id: number
   ) {
     let auth_headers = this.authHeader(username);
-
+    var randomColor = () => Math.floor(Math.random() * 16777215).toString(16);
     let newCategoryData = {
       name: categoryName,
-      color: categoryColor,
-      text_color,
+      color: randomColor(),
+      text_color: randomColor(),
       parent_category_id,
     };
     let params = new URLSearchParams(newCategoryData).toString();
@@ -143,8 +141,6 @@ export async function createQuestion(
     let res = await apiObj.addCategory(
       userName,
       textName.toString(),
-      "red",
-      "black",
       parseInt(parent_category_id)
     );
     return apiObj.addTopic(

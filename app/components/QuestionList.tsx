@@ -15,10 +15,21 @@ type QuestionProps = {
     }
   ];
   QuestionTitle: string;
+  editor: any;
 };
 
 export default function QuestionList(props: QuestionProps) {
   const { user } = useLoaderData();
+  const handleMouseOver = (start: number, end: number) => {
+    if (props.editor) {
+      props.editor
+        .chain()
+        .focus()
+        .setTextSelection(start)
+        .scrollIntoView()
+        .run();
+    }
+  };
   if (!props.list) return null;
   return (
     <div>
@@ -38,6 +49,7 @@ export default function QuestionList(props: QuestionProps) {
                 marginBlock: 4,
                 padding: 4,
               }}
+              onMouseEnter={() => handleMouseOver(l.start, l.end)}
             >
               {l.topic} - {l.start} - {l.end}
               <br />
