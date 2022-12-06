@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "~/styles/tailwind.css";
 import globalstyles from "~/styles/global.css";
+import type { MetaFunction } from "@remix-run/node"; // or cloudflare/deno
 
 import {
   Links,
@@ -28,10 +29,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   let user = await getUserSession(request);
   return json({ user });
 };
-export const meta = () => ({
+export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "New Remix App",
+  title: "Lopenling-App-Prototype",
   viewport: "width=device-width,initial-scale=1",
+  description: "annotation of text and discussion on budhist text",
 });
 
 export function links() {
