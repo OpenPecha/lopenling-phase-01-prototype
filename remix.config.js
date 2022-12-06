@@ -6,3 +6,6 @@ module.exports = {
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
 };
+exports.watchPaths = async () => {
+  return ["/app*"];
+};

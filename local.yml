@@ -16,12 +16,15 @@ services:
       context: .
       dockerfile: Dockerfile
     image: parkhang-remix
-    container_name: parkhang
+    container_name: parkhang-remix
     depends_on:
       - postgres
     volumes:
       - ./app:/app:z
+      - /app/node_modules
+      - /app/.cache
     env_file:
       - ./.env
     ports:
       - "3000:3000"
+      - "5555:5555"

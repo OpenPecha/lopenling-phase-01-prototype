@@ -49,6 +49,12 @@ run migration on docker postgres
 docker-compose -f local.yml exec remix npx prisma migrate dev
 ```
 
+start prisma studio
+
+```sh
+docker-compose -f local.yml exec remix npx prisma studio
+```
+
 This starts your app in development mode, rebuilding assets on file changes.
 
 ## Deployment

@@ -16,13 +16,16 @@ import { EditorContent, useEditor, BubbleMenu } from "@tiptap/react";
 import { getSession, getUserSession } from "~/services/session.server";
 import { ActionFunction, json, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
-import { QuestionMark } from "~/extension/questionTag";
+import { annotationMark } from "~/extension/annotationMark";
 import QuestionList from "~/components/QuestionList";
 import { db } from "~/utils/db.server";
 import SelectTextOnRender from "~/extension/selectionOnFirstRender";
 import { getText, getTextList } from "~/services/getText.server";
 import TextList from "~/components/TextList";
 import QuestionForm from "~/components/QuestionForm";
+import { getAnnotations } from "~/services/getAnnotations.server";
+import applyAnnotation from "~/extension/applyAnnotations";
+import { appliedAnnotation } from "~/extension/appliedAnnotation";
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUserSession(request);
   let userInfo;
@@ -37,6 +40,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
   }
   const text = await getText(params);
+  const annotations = await getAnnotations(params);
+
   const questionlist = await db.question.findMany({
     include: {
       user: true,
@@ -51,6 +56,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     text,
     questionlist: filteredQuestionList,
     textList,
+    annotations,
   };
   return json(data);
 };
@@ -112,10 +118,6 @@ export default function () {
   const transition = useTransition();
   const formRef = React.useRef<any>(null);
 
-  React.useEffect(() => {
-    editor?.commands.setContent(data.text.witness?.content);
-  }, [data.text]);
-
   const [selectionSpan, setSelectionSpan] =
     React.useState<selectionType | null>(null);
   const [questionRange, setQuestionRange] = React.useState<{
@@ -154,10 +156,12 @@ export default function () {
       Paragraph,
       Text,
       Highlight.configure({ multicolor: true }),
-      QuestionMark,
+      annotationMark(data.annotations),
+      applyAnnotation(data.annotations),
       SelectTextOnRender,
     ],
-    content: `<p>${data.text.witness?.content}</p>`,
+
+    content: "<p>" + data.text.witness?.content + "</p>",
     editable: true,
     editorProps: {
       handleDOMEvents: {

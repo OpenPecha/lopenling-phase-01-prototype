@@ -1,13 +1,15 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import { redirectDiscourse } from "~/services/discourse_sso";
-let secret = process.env.COOKIE_SECRET;
-if (!secret) {
-  throw new Error("set a COOKIE_SECRET in env");
-}
+// let secret = process.env.COOKIE_SECRET;
+
+// if (!secret) {
+//   throw new Error("set a COOKIE_SECRET in env");
+// }
+
 let { getSession, commitSession, destroySession } = createCookieSessionStorage({
   cookie: {
     name: "parkhang_userSession",
-    secrets: [secret],
+    secrets: ["fasd"],
     sameSite: "lax",
     maxAge: 1000,
   },

@@ -1,5 +1,7 @@
 import React from "react";
 import styles from "~/styles/tailwind.css";
+import globalstyles from "~/styles/global.css";
+
 import {
   Links,
   LiveReload,
@@ -33,7 +35,10 @@ export const meta = () => ({
 });
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }];
+  return [
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: globalstyles },
+  ];
 }
 export const action: ActionFunction = async ({ request }) => {
   const user = await getUserSession(request);
