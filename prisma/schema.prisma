@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgres"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  // url      = env("DATABASE_URL")
+  url      = "file:./sqlite.db"
 }
 
 model User {
@@ -15,7 +16,7 @@ model User {
   name             String
   username         String          @unique
   email            String          @unique
-  role             Role            @default(BASIC)
+  // role             Role            @default(BASIC)
   isAdmin          Boolean
   userPreference   UserPreference? @relation(fields: [userPreferenceId], references: [id])
   userPreferenceId String?
@@ -35,10 +36,10 @@ model UserPreference {
   User     User[]
 }
 
-enum Role {
-  BASIC
-  SCHOLAR
-}
+// enum Role {
+//   BASIC
+//   SCHOLAR
+// }
 
 model Question {
   id         String @id @default(uuid())
