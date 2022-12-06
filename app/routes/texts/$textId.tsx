@@ -221,6 +221,7 @@ export default function () {
         }}
       >
         <div style={{ overflow: "hidden", flex: 1 }}>
+          <div className="annotationOptions" />
           <QuestionList
             QuestionTitle={"Question for text " + data.text.id}
             list={

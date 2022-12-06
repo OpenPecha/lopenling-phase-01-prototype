@@ -35,8 +35,20 @@ export const annotationMark = (annotations) =>
       elem.addEventListener("click", (e) => {
         let startId = elem.id;
         let selectedAnnotation = annotations[startId];
-        console.log(selectedAnnotation);
-        selectedAnnotation.map((l) => console.log(l.content));
+        let annotationContainer = document.querySelector(".annotationOptions");
+        while (annotationContainer.hasChildNodes()) {
+          annotationContainer.removeChild(annotationContainer.firstChild);
+        }
+        let createElement = document.createElement("span");
+        createElement.classList.add("annotationList");
+        createElement.innerHTML = "<h4>annotation in different versions</h4>";
+        selectedAnnotation.map((l) => {
+          let appendElement = `<div>${
+            l.creator_witness + "-" + l.content
+          }</div>`;
+          createElement.innerHTML += appendElement;
+        });
+        annotationContainer?.append(createElement);
       });
 
       return elem;
