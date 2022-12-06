@@ -11,6 +11,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useTransition,
 } from "@remix-run/react";
 import {
   getSession,
@@ -75,6 +76,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function App() {
   let { user } = useLoaderData();
+  let { state } = useTransition();
   return (
     <html lang="en">
       <head>
@@ -83,7 +85,7 @@ export default function App() {
       </head>
       <body>
         <Headers user={user} />
-        <Outlet />
+        {state === "loading" ? <div>loading</div> : <Outlet />}
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
