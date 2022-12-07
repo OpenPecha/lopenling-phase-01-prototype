@@ -1,7 +1,7 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher, useFetchers, useLoaderData } from "@remix-run/react";
 import { db } from "~/utils/db.server";
-import React from "react";
+import React, { useMemo } from "react";
 import { getUserSession } from "../services/session.server";
 import { getTextList } from "~/services/getText.server";
 import QuestionList from "~/components/QuestionList";
@@ -55,6 +55,12 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Index() {
   const data = useLoaderData();
+  const searchedText = useFetcher();
+
+  const list = useMemo(
+    () => searchedText.data || data.textList,
+    [data.textList, searchedText.data]
+  );
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
       <p>Welcome {data.user?.username}</p>
@@ -70,7 +76,17 @@ export default function Index() {
           className="textList"
           style={{ maxHeight: 600, overflowY: "scroll" }}
         >
-          {data.textList.map((list: { id: number; name: string }) => {
+          <searchedText.Form method="get" action="/search/text-search">
+            <input
+              type="text"
+              name="textSearch"
+              placeholder="search text"
+            ></input>
+            <button type="submit" style={{ background: "#eee", padding: 4 }}>
+              search
+            </button>
+          </searchedText.Form>
+          {list.map((list: { id: number; name: string }) => {
             return (
               <p key={"textList-" + list.id}>
                 <strong>{list.id}</strong>
