@@ -1,5 +1,11 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { Link, useFetcher, useFetchers, useLoaderData } from "@remix-run/react";
+import {
+  Link,
+  useFetcher,
+  useFetchers,
+  useLoaderData,
+  useTransition,
+} from "@remix-run/react";
 import { db } from "~/utils/db.server";
 import React, { useMemo } from "react";
 import { getUserSession } from "../services/session.server";
@@ -56,7 +62,13 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Index() {
   const data = useLoaderData();
   const searchedText = useFetcher();
-
+  const { state } = useTransition();
+  const stateMessage =
+    state === "submitting"
+      ? "Saving..."
+      : state === "loading"
+      ? "Saved!"
+      : null;
   const list = useMemo(
     () => searchedText.data || data.textList,
     [data.textList, searchedText.data]
@@ -86,16 +98,22 @@ export default function Index() {
               search
             </button>
           </searchedText.Form>
-          {list.map((list: { id: number; name: string }) => {
-            return (
-              <p key={"textList-" + list.id}>
-                <strong>{list.id}</strong>
-                <Link to={"/texts/" + list.id} key={list.id} prefetch="intent">
-                  {list.name}
-                </Link>
-              </p>
-            );
-          })}
+          {stateMessage
+            ? stateMessage
+            : list.map((list: { id: number; name: string }) => {
+                return (
+                  <p key={"textList-" + list.id}>
+                    <strong>{list.id}</strong>
+                    <Link
+                      to={"/texts/" + list.id}
+                      key={list.id}
+                      prefetch="intent"
+                    >
+                      {list.name}
+                    </Link>
+                  </p>
+                );
+              })}
         </div>
         <div className="questionList">
           <QuestionList
