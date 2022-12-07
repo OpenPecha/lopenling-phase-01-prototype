@@ -2,7 +2,7 @@ import React from "react";
 import styles from "~/styles/tailwind.css";
 import globalstyles from "~/styles/global.css";
 import type { MetaFunction } from "@remix-run/node"; // or cloudflare/deno
-
+import { withSentry } from "@sentry/remix";
 import {
   Links,
   LiveReload,
@@ -74,7 +74,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function App() {
+function App() {
   let { user } = useLoaderData();
   let { state } = useTransition();
   return (
@@ -93,3 +93,4 @@ export default function App() {
     </html>
   );
 }
+export default withSentry(App);
