@@ -154,7 +154,7 @@ export default function () {
   }, [isAdding]);
   const [QuestionArea, setQuestionArea] = React.useState("");
   const [openQuestionPortal, setOpenQuestionPortal] = React.useState(false);
-  if (!data.content) return null;
+
   const editor = useEditor({
     extensions: [
       Document,
@@ -165,8 +165,7 @@ export default function () {
       applyAnnotation(data.annotations),
       SelectTextOnRender,
     ],
-
-    content: "<p>" + data.content.slice(0, indexRef.current) + "</p>",
+    content: "<p>" + data?.content?.slice(0, indexRef.current) + "</p>",
     editable: true,
     editorProps: {
       handleDOMEvents: {
@@ -218,7 +217,7 @@ export default function () {
   document.addEventListener("dragstart", (e) => {
     e.preventDefault();
   });
-
+  console.log(data);
   return (
     <>
       <main
