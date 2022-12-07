@@ -27,6 +27,7 @@ import { getAnnotations } from "~/services/getAnnotations.server";
 import applyAnnotation from "~/extension/applyAnnotations";
 import { appliedAnnotation } from "~/extension/appliedAnnotation";
 import { getSources } from "~/services/getSources.server";
+import applyAnnotationFunction from "~/extension/applyAnnotationFunction";
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUserSession(request);
   let userInfo;
@@ -53,9 +54,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   });
   const textList = await getTextList();
   let content = text?.witness.find((t) => t.is_working === true).content;
-  if (content.length > 10000) {
-    content = content.slice(0, 10000);
-  }
   const data = {
     user: userInfo,
     text,
@@ -124,7 +122,7 @@ export default function () {
   const data = useLoaderData();
   const transition = useTransition();
   const formRef = React.useRef<any>(null);
-
+  const indexRef = React.useRef(10000);
   const [selectionSpan, setSelectionSpan] =
     React.useState<selectionType | null>(null);
   const [questionRange, setQuestionRange] = React.useState<{
@@ -154,7 +152,6 @@ export default function () {
       setQuestionRange(null);
     }
   }, [isAdding]);
-
   const [QuestionArea, setQuestionArea] = React.useState("");
   const [openQuestionPortal, setOpenQuestionPortal] = React.useState(false);
   const editor = useEditor({
@@ -168,7 +165,7 @@ export default function () {
       SelectTextOnRender,
     ],
 
-    content: "<p>" + data.content + "</p>",
+    content: "<p>" + data.content.slice(0, indexRef.current) + "</p>",
     editable: true,
     editorProps: {
       handleDOMEvents: {
@@ -194,6 +191,11 @@ export default function () {
       );
     },
   });
+  const loadMore = () => {
+    indexRef.current = indexRef.current + 10000;
+    let content = data.content.slice(0, indexRef.current);
+    applyAnnotationFunction(editor, data.annotations, content);
+  };
 
   if (!editor) {
     return null;
@@ -254,13 +256,14 @@ export default function () {
           <TextList selectedText={data.text} />
           <div
             style={{
-              maxHeight: "500px",
-              minHeight: "400px",
+              maxHeight: "400px",
+              minHeight: "300px",
               overflow: "scroll",
             }}
           >
             <EditorContent editor={editor} />
           </div>
+          <button onClick={loadMore}>loadmore</button>
           {editor && (
             <BubbleMenu
               className="BubbleMenu"
