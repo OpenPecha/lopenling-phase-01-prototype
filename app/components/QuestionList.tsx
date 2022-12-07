@@ -58,7 +58,9 @@ export default function QuestionList(props: QuestionProps) {
                 style={{
                   textDecoration: "none",
                   cursor: "pointer",
+                  width: "100%",
                 }}
+                className="bg-blue-500 hover:bg-blue-700 text-white px-2 rounded-full"
                 target=" _blank"
                 href={`https://lopenling.org/t/${l.topicId}`}
               >

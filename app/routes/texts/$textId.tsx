@@ -52,6 +52,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     return question.textId === parseInt(text?.id);
   });
   const textList = await getTextList();
+  let content = text?.witness.find((t) => t.is_working === true).content;
+  if (content.length > 10000) {
+    content = content.slice(0, 10000);
+  }
   const data = {
     user: userInfo,
     text,
@@ -59,6 +63,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     textList,
     annotations,
     sources,
+    content,
   };
   return json(data);
 };
@@ -163,10 +168,7 @@ export default function () {
       SelectTextOnRender,
     ],
 
-    content:
-      "<p>" +
-      data.text.witness?.find((t) => t.is_working === true).content +
-      "</p>",
+    content: "<p>" + data.content + "</p>",
     editable: true,
     editorProps: {
       handleDOMEvents: {
