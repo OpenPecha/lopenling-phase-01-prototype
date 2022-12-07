@@ -28,6 +28,6 @@ export default function applyAnnotationFunction(
       }
     }
   });
-  html += "</p>";
+  html += "</p> ";
   editor?.commands.setContent(html);
 }
