@@ -74,11 +74,13 @@ export default function Index() {
   );
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <p>Welcome {data.user?.username}</p>
+      <p style={{ display: "flex", justifyContent: "center" }}>
+        Welcome {data.user?.username}
+      </p>
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "space-around",
           flexDirection: "row",
           padding: 20,
         }}
@@ -87,13 +89,20 @@ export default function Index() {
           className="textList"
           style={{ maxHeight: 600, overflowY: "scroll" }}
         >
+          <h1>Available Text</h1>
           <searchedText.Form method="get" action="/search/text-search">
             <input
               type="text"
               name="textSearch"
               placeholder="search text"
             ></input>
-            <button type="submit" style={{ background: "#eee", padding: 4 }}>
+            <button
+              type="submit"
+              style={{
+                background: searchedText.state === "idle" ? "#eee" : "#ccc",
+                padding: 4,
+              }}
+            >
               search
             </button>
           </searchedText.Form>

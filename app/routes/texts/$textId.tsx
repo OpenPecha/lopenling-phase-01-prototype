@@ -26,6 +26,7 @@ import QuestionForm from "~/components/QuestionForm";
 import { getAnnotations } from "~/services/getAnnotations.server";
 import applyAnnotation from "~/extension/applyAnnotations";
 import { appliedAnnotation } from "~/extension/appliedAnnotation";
+import { getSources } from "~/services/getSources.server";
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUserSession(request);
   let userInfo;
@@ -40,8 +41,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
   }
   const text = await getText(params);
+  const sources = await getSources();
   const annotations = await getAnnotations(params);
-
   const questionlist = await db.question.findMany({
     include: {
       user: true,
@@ -57,6 +58,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     questionlist: filteredQuestionList,
     textList,
     annotations,
+    sources,
   };
   return json(data);
 };
@@ -156,12 +158,15 @@ export default function () {
       Paragraph,
       Text,
       Highlight.configure({ multicolor: true }),
-      annotationMark(data.annotations),
+      annotationMark(data),
       applyAnnotation(data.annotations),
       SelectTextOnRender,
     ],
 
-    content: "<p>" + data.text.witness?.content + "</p>",
+    content:
+      "<p>" +
+      data.text.witness?.find((t) => t.is_working === true).content +
+      "</p>",
     editable: true,
     editorProps: {
       handleDOMEvents: {
@@ -213,8 +218,7 @@ export default function () {
     <>
       <main
         style={{
-          width: "100%",
-          margin: "auto",
+          marginInline: 40,
           display: "flex",
           flexDirection: "row",
           gap: 10,
@@ -243,10 +247,16 @@ export default function () {
           />
         </div>
 
-        <section style={{ flex: 1, border: "1px solid grey", padding: 10 }}>
+        <section style={{ flex: 1, border: "1px solid grey", padding: 5 }}>
           <h1 style={{ textAlign: "center" }}>Text Viewer</h1>
           <TextList selectedText={data.text} />
-          <div style={{ maxHeight: "500px", overflow: "scroll" }}>
+          <div
+            style={{
+              maxHeight: "500px",
+              minHeight: "400px",
+              overflow: "scroll",
+            }}
+          >
             <EditorContent editor={editor} />
           </div>
           {editor && (

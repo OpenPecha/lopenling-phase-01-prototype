@@ -1,6 +1,6 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
 
-export const annotationMark = (annotations) =>
+export const annotationMark = (data) =>
   Mark.create({
     name: "annotation",
 
@@ -28,11 +28,13 @@ export const annotationMark = (annotations) =>
     },
     renderHTML({ HTMLAttributes }) {
       const elem = document.createElement("span");
+      const annotations = data.annotations;
+      const sources = data.sources;
       Object.entries(
         mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)
       ).forEach(([attr, val]) => elem.setAttribute(attr, val));
 
-      elem.addEventListener("click", (e) => {
+      elem.addEventListener("mouseover", (e) => {
         let startId = elem.id;
         let selectedAnnotation = annotations[startId];
         let annotationContainer = document.querySelector(".annotationOptions");
@@ -42,15 +44,27 @@ export const annotationMark = (annotations) =>
         let createElement = document.createElement("span");
         createElement.classList.add("annotationList");
         createElement.innerHTML = "<h4>annotation in different versions</h4>";
+
         selectedAnnotation.map((l) => {
-          let appendElement = `<div>${
-            l.creator_witness + "-" + l.content
-          }</div>`;
+          let creator = l.creator_user;
+          if (!creator) {
+            let SourceId = data.text.witness.find(
+              (w) => w.id === l.creator_witness
+            ).source;
+            creator = sources.find((s) => s.id === SourceId).name;
+          }
+          let content = l.content === "" ? "deleted" : l.content;
+          let appendElement = `<div>${creator + "  ->  " + content}</div>`;
           createElement.innerHTML += appendElement;
         });
         annotationContainer?.append(createElement);
       });
-
+      elem.addEventListener("mouseleave", (e) => {
+        let annotationContainer = document.querySelector(".annotationOptions");
+        while (annotationContainer?.hasChildNodes()) {
+          annotationContainer.removeChild(annotationContainer.firstChild);
+        }
+      });
       return elem;
     },
     addCommands(): any {

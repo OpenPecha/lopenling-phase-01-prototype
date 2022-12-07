@@ -10,7 +10,7 @@ export async function getText(params: any) {
     const responseText = {
       name,
       id: params.textId,
-      witness: text.find((t) => t.is_working === true),
+      witness: text,
     };
 
     return responseText;

@@ -5,8 +5,8 @@ type paramsType = {
 };
 export async function getAnnotations(params: paramsType) {
   const apiUrl = "https://parkhang.lopenling.org/api/";
-  const witness = await getText({ textId: params.textId });
-  const witnessId = witness?.witness.id;
+  const text = await getText({ textId: params.textId });
+  const witnessId = text.witness?.find((t) => t.is_working === true).id;
   try {
     const url =
       apiUrl +
