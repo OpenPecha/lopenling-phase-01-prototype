@@ -88,8 +88,7 @@ export default function App() {
         {state === "loading" ? <div>loading</div> : <Outlet />}
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
-        <footer>parkhang</footer>
+        {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>
     </html>
   );
