@@ -89,6 +89,7 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <footer>parkhang</footer>
       </body>
     </html>
   );
