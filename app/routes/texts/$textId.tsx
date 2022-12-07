@@ -154,6 +154,7 @@ export default function () {
   }, [isAdding]);
   const [QuestionArea, setQuestionArea] = React.useState("");
   const [openQuestionPortal, setOpenQuestionPortal] = React.useState(false);
+  if (!data.content) return null;
   const editor = useEditor({
     extensions: [
       Document,
