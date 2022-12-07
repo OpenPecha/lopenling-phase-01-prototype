@@ -154,7 +154,7 @@ export default function () {
   }, [isAdding]);
   const [QuestionArea, setQuestionArea] = React.useState("");
   const [openQuestionPortal, setOpenQuestionPortal] = React.useState(false);
-
+  let textContent = data.content ? data.content.slice(0, indexRef.current) : "";
   const editor = useEditor({
     extensions: [
       Document,
@@ -165,7 +165,7 @@ export default function () {
       applyAnnotation(data.annotations),
       SelectTextOnRender,
     ],
-    content: "<p>" + data?.content?.slice(0, indexRef.current) + "</p>",
+    content: textContent ? "<p>" + textContent + "</p>" : "<p/>",
     editable: true,
     editorProps: {
       handleDOMEvents: {
