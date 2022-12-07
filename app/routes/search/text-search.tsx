@@ -5,6 +5,5 @@ import { getTextList } from "~/services/getText.server";
 export let loader: LoaderFunction = async ({ request }) => {
   const textList = await getTextList();
   const searchText = new URL(request.url).searchParams.get("textSearch") ?? "";
-  console.log(searchText);
   return json(textList?.filter(({ name }) => name.includes(searchText)));
 };

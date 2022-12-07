@@ -62,12 +62,11 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Index() {
   const data = useLoaderData();
   const searchedText = useFetcher();
-  const { state } = useTransition();
   const stateMessage =
-    state === "submitting"
-      ? "Saving..."
-      : state === "loading"
-      ? "Saved!"
+    searchedText.state === "submitting"
+      ? "Loading"
+      : searchedText.state === "loading"
+      ? "Loaded"
       : null;
   const list = useMemo(
     () => searchedText.data || data.textList,
