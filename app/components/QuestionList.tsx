@@ -59,6 +59,7 @@ function EachQuestion({ l, props, key }: any) {
         background: "#eee",
         marginBlock: 4,
         padding: 4,
+        opacity: deleting ? 0.4 : 1,
       }}
       onMouseEnter={() => handleMouseOver(l.start, l.end)}
     >

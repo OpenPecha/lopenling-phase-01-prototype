@@ -58,7 +58,7 @@ const QuestionForm = (
             hidden
             defaultValue={data.text.name}
           ></input>
-          <textarea name="body" ref={inputRef}></textarea>
+          <input name="body" ref={inputRef}></input>
           <button type="submit" name="_action" value="createQuestion">
             {stateMessage ? stateMessage : "submit"}
           </button>

@@ -12,6 +12,8 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useParams,
+  useResolvedPath,
   useTransition,
 } from "@remix-run/react";
 import {
@@ -48,6 +50,7 @@ export function links() {
 function App() {
   let { user } = useLoaderData();
   let { state } = useTransition();
+  let params = useParams();
   return (
     <html lang="en">
       <head>
@@ -55,7 +58,7 @@ function App() {
         <Links />
       </head>
       <body>
-        <Headers user={user} />
+        {!params.annotation && <Headers user={user} />}
         {state !== "idle" ? (
           <div
             style={{
