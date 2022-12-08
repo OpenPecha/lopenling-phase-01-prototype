@@ -1,19 +1,12 @@
-import {
-  Form,
-  useActionData,
-  useLoaderData,
-  useSearchParams,
-  useTransition,
-} from "@remix-run/react";
+import { useLoaderData, useTransition } from "@remix-run/react";
 import _ from "lodash";
 import * as React from "react";
-import { createQuestion } from "~/services/discourseApi";
 import Document from "@tiptap/extension-document";
 import Highlight from "@tiptap/extension-highlight";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import { EditorContent, useEditor, BubbleMenu } from "@tiptap/react";
-import { getSession, getUserSession } from "~/services/session.server";
+import { getUserSession } from "~/services/session.server";
 import { ActionFunction, json, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { annotationMark } from "~/extension/annotationMark";
@@ -25,7 +18,6 @@ import TextList from "~/components/TextList";
 import QuestionForm from "~/components/QuestionForm";
 import { getAnnotations } from "~/services/getAnnotations.server";
 import applyAnnotation from "~/extension/applyAnnotations";
-import { appliedAnnotation } from "~/extension/appliedAnnotation";
 import { getSources } from "~/services/getSources.server";
 import applyAnnotationFunction from "~/extension/applyAnnotationFunction";
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -67,50 +59,12 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const user = await getUserSession(request);
-
-  let DiscourseUrl = process.env.DISCOURSE_SITE;
-  let api = process.env.DISCOURSE_API_KEY;
-  let parent_category_id = process.env.DISCOURSE_QA_CATEGORY_ID;
   let formData = await request.formData();
   let changeText = formData.get("changeText");
   if (changeText) {
     return redirect("/texts/" + changeText);
   }
-  let topic_name = formData.get("topic");
-  let textId = formData.get("textId");
-  let bodyContent = formData.get("body");
-  let QuestionArea = formData.get("QuestionArea");
-  let start = formData.get("start");
-  let end = formData.get("end");
-  let questionId = formData.get("questionId");
-
-  if (questionId) {
-    const deleted = await db.question.delete({
-      where: {
-        id: questionId.toString(),
-      },
-    });
-    return json({ message: "question deleted", deleted });
-  }
-  let url =
-    process.env.ORIGIN_LOCATION + `/texts/${textId}?start=${start}&end=${end}`;
-  if (!DiscourseUrl || !api || !parent_category_id) {
-    throw new Error("set a DISCOURSE_SITE/DISCOURSE_API_KEY in env");
-  }
-  await createQuestion(
-    user.username,
-    topic_name,
-    QuestionArea,
-    addLinktoQuestion(bodyContent, url),
-    start,
-    end,
-    DiscourseUrl,
-    api,
-    parent_category_id,
-    parseInt(textId)
-  );
-  return json({ message: "question created" });
+  return null;
 };
 
 type selectionType = {
@@ -146,14 +100,15 @@ export default function () {
       debounce_fun();
     }
   }, [selectionSpan?.end]);
+  const [openQuestionPortal, setOpenQuestionPortal] = React.useState(false);
   React.useEffect(() => {
     if (!isAdding) {
       formRef?.current?.reset();
       setQuestionRange(null);
+      setOpenQuestionPortal(false);
     }
-  }, [isAdding]);
+  }, [isAdding, data.questionlist]);
   const [QuestionArea, setQuestionArea] = React.useState("");
-  const [openQuestionPortal, setOpenQuestionPortal] = React.useState(false);
   let textContent = data.content ? data.content.slice(0, indexRef.current) : "";
   const editor = useEditor({
     extensions: [
@@ -217,7 +172,6 @@ export default function () {
   document.addEventListener("dragstart", (e) => {
     e.preventDefault();
   });
-  console.log(data);
   return (
     <>
       <main
@@ -243,12 +197,13 @@ export default function () {
             }
             editor={editor}
           />
-          <QuestionForm
-            editor={editor}
-            QuestionArea={QuestionArea}
-            openQuestionPortal={openQuestionPortal}
-            ref={formRef}
-          />
+          {openQuestionPortal && (
+            <QuestionForm
+              editor={editor}
+              QuestionArea={QuestionArea}
+              ref={formRef}
+            />
+          )}
         </div>
 
         <section style={{ flex: 1, border: "1px solid grey", padding: 5 }}>
@@ -289,8 +244,4 @@ export default function () {
       </main>
     </>
   );
-}
-
-function addLinktoQuestion(question: string, url: string) {
-  return `<a href="${url}" target='_blank'>${question}</a>`;
 }

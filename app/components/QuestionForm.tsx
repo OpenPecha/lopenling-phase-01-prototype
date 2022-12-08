@@ -1,6 +1,6 @@
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
 import { Editor } from "@tiptap/react";
-import React from "react";
+import React, { Ref, useState } from "react";
 
 type QuestionFormProps = {
   editor: Editor;
@@ -13,63 +13,60 @@ const QuestionForm = (
   ref
 ) => {
   const data = useLoaderData();
+  const createQuestion = useFetcher();
   const actionData = useActionData();
+  const inputRef = React.useRef(null);
+  const stateMessage =
+    createQuestion.state === "submitting"
+      ? "Loading"
+      : createQuestion.state === "loading"
+      ? "Loaded"
+      : null;
+  React.useLayoutEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, []);
   return (
     <section>
-      {openQuestionPortal && (
-        <>
-          {data.user ? (
-            <Form
-              ref={ref}
-              method="post"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                background: "#eee",
-                alignItems: "center",
-              }}
-            >
-              ask question here: {QuestionArea}
-              <input
-                type="hidden"
-                defaultValue={editor.state.selection.from}
-                name="start"
-              ></input>
-              <input
-                type="hidden"
-                defaultValue={editor.state.selection.to}
-                name="end"
-              ></input>
-              <input
-                type="text"
-                name="QuestionArea"
-                hidden
-                defaultValue={QuestionArea}
-              ></input>
-              <input
-                type="text"
-                name="textId"
-                hidden
-                defaultValue={data.text.id}
-              ></input>
-              <input
-                placeholder="topic"
-                type="text"
-                name="topic"
-                hidden
-                defaultValue={data.text.name}
-              ></input>
-              <textarea
-                style={{ width: 400, height: 100 }}
-                name="body"
-              ></textarea>
-              <button type="submit">click to question</button>
-            </Form>
-          ) : (
-            <div style={{ color: "red" }}>u must login first</div>
-          )}
-        </>
+      {data.user ? (
+        <createQuestion.Form
+          ref={ref}
+          method="post"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            background: "#eee",
+            alignItems: "center",
+          }}
+          action="/api/question"
+        >
+          ask question here: {QuestionArea}
+          <input
+            type="hidden"
+            defaultValue={editor.state.selection.from}
+            name="start"
+          ></input>
+          <input
+            type="hidden"
+            defaultValue={editor.state.selection.to}
+            name="end"
+          ></input>
+          <input name="QuestionArea" hidden defaultValue={QuestionArea}></input>
+          <input name="textId" hidden defaultValue={data.text.id}></input>
+          <input
+            placeholder="topic"
+            name="topic"
+            hidden
+            defaultValue={data.text.name}
+          ></input>
+          <textarea name="body" ref={inputRef}></textarea>
+          <button type="submit" name="_action" value="createQuestion">
+            {stateMessage ? stateMessage : "submit"}
+          </button>
+        </createQuestion.Form>
+      ) : (
+        <div style={{ color: "red" }}>u must login first</div>
       )}
+
       {actionData?.message && <div>{actionData.message}</div>}
     </section>
   );

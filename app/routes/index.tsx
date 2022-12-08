@@ -45,29 +45,10 @@ export const loader: LoaderFunction = async ({
   return { user: userinFo, message, textList, questionList };
 };
 
-export const action: ActionFunction = async ({ request }) => {
-  let formData = await request.formData();
-  let questionId = formData.get("questionId");
-
-  if (questionId) {
-    const deleted = await db.question.delete({
-      where: {
-        id: questionId.toString(),
-      },
-    });
-    return json({ message: "question deleted", deleted });
-  }
-};
-
 export default function Index() {
   const data = useLoaderData();
   const searchedText = useFetcher();
-  const stateMessage =
-    searchedText.state === "submitting"
-      ? "Loading"
-      : searchedText.state === "loading"
-      ? "Loaded"
-      : null;
+
   const list = useMemo(
     () => searchedText.data || data.textList,
     [data.textList, searchedText.data]
@@ -90,7 +71,7 @@ export default function Index() {
           style={{ maxHeight: 600, overflowY: "scroll" }}
         >
           <h1>Available Text</h1>
-          <searchedText.Form method="get" action="/search/text-search">
+          <searchedText.Form method="get" action="/api/text-search">
             <input
               type="text"
               name="textSearch"
@@ -106,22 +87,16 @@ export default function Index() {
               search
             </button>
           </searchedText.Form>
-          {stateMessage
-            ? stateMessage
-            : list.map((list: { id: number; name: string }) => {
-                return (
-                  <p key={"textList-" + list.id}>
-                    <strong>{list.id}</strong>
-                    <Link
-                      to={"/texts/" + list.id}
-                      key={list.id}
-                      prefetch="intent"
-                    >
-                      {list.name}
-                    </Link>
-                  </p>
-                );
-              })}
+          {list.map((list: { id: number; name: string }) => {
+            return (
+              <p key={"textList-" + list.id}>
+                <strong>{list.id}</strong>
+                <Link to={"/texts/" + list.id} key={list.id} prefetch="intent">
+                  {list.name}
+                </Link>
+              </p>
+            );
+          })}
         </div>
         <div className="questionList">
           <QuestionList

@@ -1,5 +1,11 @@
-import { LoaderFunction, redirect } from "@remix-run/node";
-import { commitSession, getSession } from "~/services/session.server";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
+import {
+  commitSession,
+  destroyUserSession,
+  getSession,
+  getUserSession,
+  login,
+} from "~/services/session.server";
 import { db } from "~/utils/db.server";
 
 export let loader: LoaderFunction = async ({ request }) => {
@@ -63,4 +69,36 @@ export let loader: LoaderFunction = async ({ request }) => {
       "set-cookie": await commitSession(session),
     },
   });
+};
+
+export let action: ActionFunction = async ({ request }) => {
+  const user = await getUserSession(request);
+  const body = await request.formData();
+  let { redirectTo, _action, ...values } = Object.fromEntries(body);
+  if (_action === "auth") {
+    if (!redirectTo) {
+      throw new Error("no redirect in form");
+    }
+    redirectTo = redirectTo.toString();
+    if (values.logout === "logout") {
+      return redirect(redirectTo, {
+        headers: {
+          "set-cookie": await destroyUserSession(request),
+        },
+      });
+    }
+    if (values.login === "login") {
+      if (!user) {
+        let requireSession = await login(
+          request,
+          (session: any) => {
+            return session;
+          },
+          redirectTo
+        );
+        return requireSession;
+      }
+      return redirect(redirectTo);
+    }
+  }
 };

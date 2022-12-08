@@ -43,36 +43,6 @@ export function links() {
     { rel: "stylesheet", href: globalstyles },
   ];
 }
-export const action: ActionFunction = async ({ request }) => {
-  const user = await getUserSession(request);
-  if (request.method === "POST") {
-    const body = await request.formData();
-    let redirectTo = body.get("redirectTo")?.toString();
-    if (!redirectTo) {
-      throw new Error("no redirect in form");
-    }
-    if (body.get("logout") === "logout") {
-      return redirect(redirectTo, {
-        headers: {
-          "set-cookie": await destroyUserSession(request),
-        },
-      });
-    }
-    if (body.get("login") === "login") {
-      if (!user) {
-        let requireSession = await login(
-          request,
-          (session: any) => {
-            return session;
-          },
-          redirectTo
-        );
-        return requireSession;
-      }
-      return redirect(redirectTo);
-    }
-  }
-};
 
 function App() {
   let { user } = useLoaderData();
