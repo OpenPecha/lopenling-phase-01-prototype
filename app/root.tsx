@@ -3,6 +3,7 @@ import styles from "~/styles/tailwind.css";
 import globalstyles from "~/styles/global.css";
 import type { MetaFunction } from "@remix-run/node"; // or cloudflare/deno
 import { withSentry } from "@sentry/remix";
+import { Audio } from "react-loader-spinner";
 import {
   Links,
   LiveReload,
@@ -55,7 +56,26 @@ function App() {
       </head>
       <body>
         <Headers user={user} />
-        {state === "loading" ? <div>loading</div> : <Outlet />}
+        {state !== "idle" ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+            }}
+          >
+            <Audio
+              height="80"
+              width="80"
+              radius="9"
+              color="green"
+              ariaLabel="loading"
+            />
+          </div>
+        ) : (
+          <Outlet />
+        )}
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}

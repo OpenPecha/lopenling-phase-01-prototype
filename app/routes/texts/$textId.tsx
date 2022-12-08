@@ -218,7 +218,9 @@ export default function () {
           >
             <EditorContent editor={editor} />
           </div>
-          <button onClick={loadMore}>loadmore</button>
+          {data.content.length > 10000 && (
+            <button onClick={loadMore}>loadmore</button>
+          )}
           {editor && (
             <BubbleMenu
               className="BubbleMenu"
