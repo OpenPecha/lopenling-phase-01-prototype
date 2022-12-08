@@ -70,8 +70,11 @@ class DiscourseApi {
     textId: number
   ) {
     let auth_headers = this.authHeader(username);
-    let post_text = `<iframe width="560" height="315" src="https://lopenling-phase-01-prototype-rust.vercel.app/embed/3" ></iframe>
-    <br/>${bodyContent}`;
+    let post_text = `<div>
+<p>${bodyContent}</p>
+<br/>
+<iframe width="150" height="90" src="https://lopenling-phase-01-prototype-rust.vercel.app/embed/3"
+></iframe>`;
 
     let new_Topic_data = {
       title: topic_name,
