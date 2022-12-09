@@ -39,6 +39,8 @@ export const loader: LoaderFunction = async ({
   questionList = await db.question.findMany({
     include: {
       createrUser: true,
+      likes: true,
+      dislikes: true,
     },
   });
 

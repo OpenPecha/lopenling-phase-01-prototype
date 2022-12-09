@@ -43,6 +43,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       dislikes: true,
     },
   });
+  console.log(questionlist);
   let filteredQuestionList = questionlist.filter((question) => {
     return question.textId === parseInt(text?.id);
   });
