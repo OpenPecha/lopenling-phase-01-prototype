@@ -26,7 +26,11 @@ export default function Vote({ questionDetail }) {
           name="redirectTo"
           value={location.pathname}
         ></input>
-        <input type="hidden" name="questionId" value={questionId}></input>
+        <input
+          type="hidden"
+          name="questionId"
+          defaultValue={questionId}
+        ></input>
         <button
           name="_action"
           value="likeVote"

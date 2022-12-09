@@ -45,38 +45,56 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 //       username,
 //     },
 //   });
-//   if (actionType === "likeVote") {
-//     try {
-//       const likes = await db.Likes.create({
+//  if (actionType === "likeVote") {
+//   try {
+//     const like = await db.likes.findFirst({
+//       where: {
+//         userId: user?.id,
+//       },
+//     });
+//     if (!like) {
+//       await db.likes.create({
 //         data: {
 //           userId: user?.id,
 //           questionId,
 //         },
 //       });
-//     } catch (e) {
+//     } else {
 //       await db.likes.delete({
 //         where: {
 //           userId: user?.id,
 //         },
 //       });
 //     }
+//   } catch (e) {
+//     console.log(e);
 //   }
-//   if (actionType === "dislikeVote") {
-//     try {
-//       const dislike = await db.disLikes.create({
+// }
+// if (actionType === "dislikeVote") {
+//   try {
+//     const dislike = await db.disLikes.findFirst({
+//       where: {
+//         userId: user?.id,
+//       },
+//     });
+//     if (!dislike) {
+//       await db.disLikes.create({
 //         data: {
 //           userId: user?.id,
 //           questionId,
 //         },
 //       });
-//     } catch (e) {
+//     } else {
 //       await db.disLikes.delete({
 //         where: {
 //           userId: user?.id,
 //         },
 //       });
 //     }
+//   } catch (e) {
+//     console.log(e);
 //   }
+// }
 //   return json({
 //     message: actionType,
 //   });
@@ -84,19 +102,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export default function embed() {
   let loaderData = useLoaderData();
-  // if (!loaderData.user)
-  //   React.useEffect(
-  //     () =>
-  //       fetcher.submit(
-  //         {
-  //           login: "login",
-  //           redirectTo: location.pathname,
-  //           _action: "auth",
-  //         },
-  //         { method: "post", action: "/sso/login" }
-  //       ),
-  //     []
-  //   );
   return (
     <>
       <Form method="post" style={{ display: "flex", gap: 10 }}>
