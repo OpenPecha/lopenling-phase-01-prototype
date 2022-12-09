@@ -4,12 +4,7 @@ import {
   json,
   LoaderFunction,
 } from "@remix-run/node";
-import {
-  Form,
-  useActionData,
-  useLoaderData,
-  useLocation,
-} from "@remix-run/react";
+import { Form, useLoaderData, useLocation } from "@remix-run/react";
 
 import { getUserSession } from "~/services/session.server";
 import { db } from "~/utils/db.server";
@@ -78,7 +73,6 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function embed() {
   let loaderData = useLoaderData();
-  let actionData = useActionData();
   const location = useLocation();
 
   if (!loaderData.user)
@@ -93,6 +87,7 @@ export default function embed() {
         <button type="submit" name="_action" value="auth">
           login{" "}
         </button>
+        {/* <a href="https://lopenling.org/signup">/signup</a> */}
       </Form>
     );
   return (

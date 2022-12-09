@@ -1,6 +1,6 @@
 import { Form, useFetcher, useLoaderData } from "@remix-run/react";
 import React from "react";
-
+import Vote from "./Vote";
 type QuestionProps = {
   list: [
     {
@@ -79,6 +79,7 @@ function EachQuestion({ l, props, key }: any) {
       >
         visit discussion
       </a>
+      <Vote questionDetail={l} />
       {showDeleteButton && (
         <deleteQuestion.Form method="post" action="/api/question">
           <input type="hidden" value={l.id} name="questionId"></input>

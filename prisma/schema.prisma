@@ -52,8 +52,8 @@ model Question {
   start       Int
   end         Int
   textId      Int
-  likes       Likes[]    @relation(fields: [], references: [])
-  dislikes    DisLikes[] @relation(fields: [], references: [])
+  likes       Likes[]
+  dislikes    DisLikes[]
 }
 
 model Likes {
