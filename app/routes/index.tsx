@@ -36,13 +36,17 @@ export const loader: LoaderFunction = async ({
     }
   }
   textList = await getTextList();
-  questionList = await db.question.findMany({
-    include: {
-      createrUser: true,
-      likes: true,
-      dislikes: true,
-    },
-  });
+  try {
+    questionList = await db.question.findMany({
+      include: {
+        createrUser: true,
+        likes: true,
+        dislikes: true,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
 
   return { user: userinFo, message, textList, questionList };
 };

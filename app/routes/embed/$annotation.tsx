@@ -15,6 +15,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   let likes = await db.likes.findMany();
   let dislikes = await db.disLikes.findMany();
+
   return {
     user,
     questionId,
