@@ -1,5 +1,5 @@
 import { db } from "~/utils/db.server";
-
+import { v4 as uuidv4 } from "uuid";
 class DiscourseApi {
   DiscourseUrl: string;
   apiKey: string;
@@ -70,10 +70,11 @@ class DiscourseApi {
     textId: number
   ) {
     let auth_headers = this.authHeader(username);
+    let questionId = uuidv4();
     let post_text = `<div>
 <p>${bodyContent}</p>
 <br/>
-<iframe width="150" height="90" src="https://lopenling-phase-01-prototype-rust.vercel.app/embed/3"
+<iframe width="150" height="90" src="https://lopenling-phase-01-prototype-rust.vercel.app/embed/${questionId}"
 ></iframe>`;
 
     let new_Topic_data = {
@@ -103,6 +104,7 @@ class DiscourseApi {
       if (data["topic_id"] > 0 && user) {
         const createQuestion = await db.question.create({
           data: {
+            id: questionId,
             topicId: data["topic_id"],
             topic: topic_name,
             userId: user.id,

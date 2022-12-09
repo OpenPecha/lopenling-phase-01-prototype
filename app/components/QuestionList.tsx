@@ -39,7 +39,8 @@ function EachQuestion({ l, props, key }: any) {
   const deleteQuestion = useFetcher();
   let deleting = deleteQuestion.state !== "idle";
 
-  let showDeleteButton = user?.isAdmin || user?.username === l.user.username;
+  let showDeleteButton =
+    user?.isAdmin || user?.username === l?.createrUser?.username;
 
   const handleMouseOver = (start: number, end: number) => {
     if (props.editor) {
@@ -65,7 +66,7 @@ function EachQuestion({ l, props, key }: any) {
     >
       {l.topic} - {l.start} - {l.end}
       <br />
-      <p>{l.user.username}</p>
+      <p>{l?.createrUser?.username}</p>
       <a
         style={{
           textDecoration: "none",

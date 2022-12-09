@@ -38,7 +38,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const annotations = await getAnnotations(params);
   const questionlist = await db.question.findMany({
     include: {
-      user: true,
+      createrUser: true,
     },
   });
   let filteredQuestionList = questionlist.filter((question) => {

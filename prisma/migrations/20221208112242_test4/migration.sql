@@ -7,6 +7,7 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'BASIC',
     "isAdmin" BOOLEAN NOT NULL,
     "userPreferenceId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -40,6 +41,20 @@ CREATE TABLE "Question" (
 );
 
 -- CreateTable
+CREATE TABLE "Likes" (
+    "id" SERIAL NOT NULL,
+    "userId" TEXT NOT NULL,
+    "questionId" TEXT
+);
+
+-- CreateTable
+CREATE TABLE "DisLikes" (
+    "id" SERIAL NOT NULL,
+    "userId" TEXT NOT NULL,
+    "questionId" TEXT
+);
+
+-- CreateTable
 CREATE TABLE "Annotation" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -67,11 +82,29 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 -- CreateIndex
 CREATE INDEX "User_email_idx" ON "User"("email");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Likes_id_key" ON "Likes"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DisLikes_id_key" ON "DisLikes"("id");
+
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_userPreferenceId_fkey" FOREIGN KEY ("userPreferenceId") REFERENCES "UserPreference"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Question" ADD CONSTRAINT "Question_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Likes" ADD CONSTRAINT "Likes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Likes" ADD CONSTRAINT "Likes_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "Question"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DisLikes" ADD CONSTRAINT "DisLikes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DisLikes" ADD CONSTRAINT "DisLikes_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "Question"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Annotation" ADD CONSTRAINT "Annotation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
