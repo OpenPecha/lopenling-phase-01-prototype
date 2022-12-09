@@ -12,16 +12,26 @@ import { db } from "~/utils/db.server";
 export const loader: LoaderFunction = async ({ request, params }) => {
   const questionId = params.annotation;
   let user = await getUserSession(request);
-
-  let likes = await db.likes.findMany();
-  let dislikes = await db.disLikes.findMany();
-
-  return {
-    user,
-    questionId,
-    likeCount: likes.length,
-    dislikeCount: dislikes.length,
-  };
+  try {
+    let likes = await db.likes.findMany({
+      where: {
+        questionId,
+      },
+    });
+    let dislikes = await db.disLikes.findMany({
+      where: {
+        questionId,
+      },
+    });
+    return {
+      user,
+      questionId,
+      likeCount: likes.length,
+      dislikeCount: dislikes.length,
+    };
+  } catch (e) {
+    throw new Error("couldnt load vote data");
+  }
 };
 
 // export const action: ActionFunction = async ({ request }) => {
