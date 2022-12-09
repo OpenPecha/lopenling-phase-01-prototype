@@ -13,8 +13,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const questionId = params.annotation;
   let user = await getUserSession(request);
 
-  let likes = await db.Likes.findMany();
-  let dislikes = await db.DisLikes.findMany();
+  let likes = await db.likes.findMany();
+  let dislikes = await db.disLikes.findMany();
   return {
     user,
     questionId,
