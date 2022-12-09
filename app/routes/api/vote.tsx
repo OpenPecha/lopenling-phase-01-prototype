@@ -36,14 +36,20 @@ export const action: ActionFunction = async ({ request }) => {
       username,
     },
   });
-  if (actionType === "likeVote") {
-    try {
-      const like = await db.likes.findFirst({
-        where: {
-          userId: user?.id,
-          questionId: questionId,
-        },
-      });
+  try {
+    const like = await db.likes.findFirst({
+      where: {
+        userId: user?.id,
+        questionId: questionId,
+      },
+    });
+    const dislike = await db.disLikes.findFirst({
+      where: {
+        userId: user?.id,
+        questionId: questionId,
+      },
+    });
+    if (actionType === "likeVote") {
       if (!like) {
         await db.likes.create({
           data: {
@@ -51,6 +57,12 @@ export const action: ActionFunction = async ({ request }) => {
             questionId,
           },
         });
+        if (dislike)
+          await db.disLikes.delete({
+            where: {
+              id: dislike.id,
+            },
+          });
       } else {
         await db.likes.delete({
           where: {
@@ -58,19 +70,8 @@ export const action: ActionFunction = async ({ request }) => {
           },
         });
       }
-    } catch (e) {
-      console.log(e);
     }
-  }
-  if (actionType === "dislikeVote") {
-    try {
-      const dislike = await db.disLikes.findFirst({
-        where: {
-          userId: user?.id,
-          questionId: questionId,
-        },
-      });
-      console.log(dislike);
+    if (actionType === "dislikeVote") {
       if (!dislike) {
         await db.disLikes.create({
           data: {
@@ -78,6 +79,12 @@ export const action: ActionFunction = async ({ request }) => {
             questionId,
           },
         });
+        if (like)
+          await db.likes.delete({
+            where: {
+              id: like.id,
+            },
+          });
       } else {
         await db.disLikes.delete({
           where: {
@@ -85,9 +92,10 @@ export const action: ActionFunction = async ({ request }) => {
           },
         });
       }
-    } catch (e) {
-      console.log(e);
     }
+  } catch (e) {
+    console.log(e);
   }
+
   return redirect(redirectTo);
 };

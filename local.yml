@@ -18,6 +18,7 @@ services:
     ports:
       - 3000:3000
       - 5555:5555
+      - 8002:8002
     env_file:
       - ./.env
     command: npm run dev
