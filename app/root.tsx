@@ -59,26 +59,7 @@ function App() {
       </head>
       <body>
         {!params.annotation && <Headers user={user} />}
-        {state !== "idle" ? (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh",
-            }}
-          >
-            <Audio
-              height="80"
-              width="80"
-              radius="9"
-              color="green"
-              ariaLabel="loading"
-            />
-          </div>
-        ) : (
-          <Outlet />
-        )}
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}

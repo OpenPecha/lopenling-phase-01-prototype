@@ -4,8 +4,8 @@ import {
   json,
   LoaderFunction,
 } from "@remix-run/node";
-import { Form, useLoaderData, useLocation } from "@remix-run/react";
-
+import { Form, useFetcher, useLoaderData, useLocation } from "@remix-run/react";
+import React from "react";
 import { getUserSession } from "~/services/session.server";
 import { db } from "~/utils/db.server";
 
@@ -75,47 +75,47 @@ export const action: ActionFunction = async ({ request }) => {
 export default function embed() {
   let loaderData = useLoaderData();
   const location = useLocation();
-
+  const fetcher = useFetcher();
   if (!loaderData.user)
-    return (
-      <Form method="post" action="/sso/login">
-        <input type="hidden" name="login" defaultValue={"login"} />
-        <input
-          type="hidden"
-          name="redirectTo"
-          defaultValue={location.pathname}
-        />
-        <button type="submit" name="_action" value="auth">
-          login{" "}
-        </button>
-        {/* <a href="https://lopenling.org/signup">/signup</a> */}
-      </Form>
+    React.useEffect(
+      () =>
+        fetcher.submit(
+          {
+            login: "login",
+            redirectTo: location.pathname,
+            _action: "auth",
+          },
+          { method: "post", action: "/sso/login" }
+        ),
+      []
     );
-  return (
-    <>
-      <Form method="post" style={{ display: "flex", gap: 10 }}>
-        <input
-          type="hidden"
-          name="questionId"
-          value={loaderData.questionId}
-        ></input>
-        <button
-          name="_action"
-          value="likeVote"
-          type="submit"
-          className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          {loaderData.likeCount}
-        </button>
-        <button
-          name="_action"
-          value="dislikeVote"
-          type="submit"
-          className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          {loaderData.dislikeCount}
-        </button>
-      </Form>
-    </>
-  );
+  if (loaderData.user) {
+    return (
+      <>
+        <Form method="post" style={{ display: "flex", gap: 10 }}>
+          <input
+            type="hidden"
+            name="questionId"
+            value={loaderData.questionId}
+          ></input>
+          <button
+            name="_action"
+            value="likeVote"
+            type="submit"
+            className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            {loaderData.likeCount}
+          </button>
+          <button
+            name="_action"
+            value="dislikeVote"
+            type="submit"
+            className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            {loaderData.dislikeCount}
+          </button>
+        </Form>
+      </>
+    );
+  }
 }

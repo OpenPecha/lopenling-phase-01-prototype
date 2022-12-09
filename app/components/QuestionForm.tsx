@@ -25,6 +25,7 @@ const QuestionForm = (
   React.useLayoutEffect(() => {
     if (inputRef.current) inputRef.current.focus();
   }, []);
+  console.log(data);
   return (
     <section>
       {data.user ? (

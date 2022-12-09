@@ -8,14 +8,18 @@ export default function Vote({ questionDetail }) {
   let questionId = questionDetail.id;
   let likeCount = questionDetail.likes.length || 0;
   let dislikeCount = questionDetail.dislikes.length || 0;
-
+  let questionFetcher = useFetcher();
   const location = useLocation();
   return (
     <>
-      <Form
+      <questionFetcher.Form
         action="/api/vote"
         method="post"
-        style={{ display: "flex", gap: 10 }}
+        style={{
+          display: "flex",
+          gap: 10,
+          opacity: questionFetcher.state !== "idle" ? 0.3 : 1,
+        }}
       >
         <input
           type="hidden"
@@ -41,7 +45,7 @@ export default function Vote({ questionDetail }) {
         >
           {dislikeCount}👎
         </button>
-      </Form>
+      </questionFetcher.Form>
     </>
   );
 }
