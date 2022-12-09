@@ -1,0 +1,35 @@
+version: "3"
+
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+
+services:
+  remix:
+    build:
+      context: .
+      dockerfile: ./compose/development/remix/Dockerfile
+    image: parkhang_local_remix2
+    volumes:
+      - ./app/public:/usr/server/app/public:z
+    container_name: remixproject_parkhang2
+    depends_on:
+      - postgres
+    ports:
+      - 3000:3000
+      - 5555:5555
+    env_file:
+      - ./.env
+    command: npm run dev
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: parkhang_production_postgres2
+    container_name: parkhang_postgres2
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data:Z
+      - local_postgres_data_backups:/backups:z
+    env_file:
+      - ./.env

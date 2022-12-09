@@ -41,6 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
       const like = await db.likes.findFirst({
         where: {
           userId: user?.id,
+          questionId: questionId,
         },
       });
       if (!like) {
@@ -50,15 +51,10 @@ export const action: ActionFunction = async ({ request }) => {
             questionId,
           },
         });
-        await db.disLikes.delete({
-          where: {
-            userId: user?.id,
-          },
-        });
       } else {
         await db.likes.delete({
           where: {
-            userId: user?.id,
+            id: like.id,
           },
         });
       }
@@ -71,8 +67,10 @@ export const action: ActionFunction = async ({ request }) => {
       const dislike = await db.disLikes.findFirst({
         where: {
           userId: user?.id,
+          questionId: questionId,
         },
       });
+      console.log(dislike);
       if (!dislike) {
         await db.disLikes.create({
           data: {
@@ -80,15 +78,10 @@ export const action: ActionFunction = async ({ request }) => {
             questionId,
           },
         });
-        await db.likes.delete({
-          where: {
-            userId: user?.id,
-          },
-        });
       } else {
         await db.disLikes.delete({
           where: {
-            userId: user?.id,
+            id: dislike.id,
           },
         });
       }
