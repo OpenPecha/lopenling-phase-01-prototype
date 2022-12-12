@@ -6,6 +6,7 @@ type QuestionProps = {
     {
       id: number;
       topic: string;
+      postId: number;
       topicId: number;
       start: number;
       end: number;
@@ -36,9 +37,9 @@ export default function QuestionList(props: QuestionProps) {
 
 function EachQuestion({ l, props, key }: any) {
   const { user } = useLoaderData();
-  const deleteQuestion = useFetcher();
-  let deleting = deleteQuestion.state !== "idle";
-
+  const deleteFetcher = useFetcher();
+  const replyFetcher = useFetcher();
+  let deleting = deleteFetcher.state !== "idle";
   let showDeleteButton =
     user?.isAdmin || user?.username === l?.createrUser?.username;
 
@@ -81,8 +82,9 @@ function EachQuestion({ l, props, key }: any) {
       </a>
       <Vote questionDetail={l} />
       {showDeleteButton && (
-        <deleteQuestion.Form method="post" action="/api/question">
+        <deleteFetcher.Form method="post" action="/api/question">
           <input type="hidden" value={l.id} name="questionId"></input>
+          <input type="hidden" value={l.topicId} name="topicId"></input>
 
           <button
             type="submit"
@@ -93,7 +95,31 @@ function EachQuestion({ l, props, key }: any) {
           >
             {deleting ? "deleting" : "delete"}
           </button>
-        </deleteQuestion.Form>
+        </deleteFetcher.Form>
+      )}
+      <replyFetcher.Form method="post" action="/api/question">
+        <input hidden name="topicId" defaultValue={l.topicId}></input>
+        <button
+          type="submit"
+          name="_action"
+          value="fetchReplies"
+          className="bg-blue-400 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+        >
+          replies
+        </button>
+      </replyFetcher.Form>
+      {replyFetcher.data && (
+        <div>
+          {" "}
+          <p>post on topic</p>
+          {replyFetcher.data.post_stream.posts.map((post: any) => {
+            return (
+              <div key={post.id}>
+                <a href={`https://lopenling.org/p/${post.id}`}>{post.id}</a>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

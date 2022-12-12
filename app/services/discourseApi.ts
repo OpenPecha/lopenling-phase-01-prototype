@@ -28,6 +28,13 @@ class DiscourseApi {
     if (!filterCategory.subcategory_ids.length) return null;
     return filterCategory.subcategory_list;
   }
+  async fetchposts(topicId: number) {
+    if (topicId) {
+      const res = await fetch(`${this.DiscourseUrl}/t/${topicId}/posts.json`);
+      const data = await res.json();
+      return data;
+    }
+  }
   async addCategory(
     username: string,
     categoryName: string,
@@ -106,6 +113,7 @@ class DiscourseApi {
           data: {
             id: questionId,
             topicId: data["topic_id"],
+            postId: data.id,
             topic: topic_name,
             userId: user.id,
             categoryId: category_id,
@@ -121,6 +129,19 @@ class DiscourseApi {
     }
 
     return data;
+  }
+
+  async deleteTopic(id: number, username: string) {
+    let auth_headers = this.authHeader(username);
+    try {
+      const response = await fetch(`${this.DiscourseUrl}/t/${id}.json`, {
+        method: "DELETE",
+        headers: auth_headers,
+      });
+      return response.status;
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
@@ -143,33 +164,45 @@ export async function createQuestion(
     throw new Error("failed to access Topic Id");
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   let response = await apiObj.fetchCategoryList(parent_category_id);
-  let checkIfCategoryPresent = response?.find((l) => l.name === textName);
+  let checkIfCategoryPresent = response?.find((l: any) => l.name === textName);
   if (!checkIfCategoryPresent) {
     let res = await apiObj.addCategory(
       userName,
       textName.toString(),
       parseInt(parent_category_id)
     );
-    return apiObj.addTopic(
-      userName,
-      res.category.id,
-      parseInt(start.toString()),
-      parseInt(end.toString()),
-      QuestionArea,
-      bodyContent,
-      textId
-    );
-  } else {
-    return apiObj.addTopic(
-      userName,
-      checkIfCategoryPresent.id,
-      parseInt(start.toString()),
-      parseInt(end.toString()),
-      QuestionArea,
-      bodyContent,
-      textId
-    );
+    checkIfCategoryPresent.id = res.category.id;
   }
+  return apiObj.addTopic(
+    userName,
+    checkIfCategoryPresent.id,
+    parseInt(start.toString()),
+    parseInt(end.toString()),
+    QuestionArea,
+    bodyContent,
+    textId
+  );
+}
+
+export async function deleteQuestion(
+  DiscourseUrl: string,
+  api: string,
+  userName: string,
+  topicId: number
+) {
+  const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
+  const res = apiObj.deleteTopic(topicId, userName);
+  return res;
+}
+
+export async function getposts(
+  topicId: number,
+  DiscourseUrl: string,
+  api: string
+) {
+  const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
+  const res = apiObj.fetchposts(topicId);
+  return res;
 }
 
 export default DiscourseApi;

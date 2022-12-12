@@ -43,7 +43,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       dislikes: true,
     },
   });
-  console.log(questionlist);
   let filteredQuestionList = questionlist.filter((question) => {
     return question.textId === parseInt(text?.id);
   });
@@ -112,7 +111,7 @@ export default function () {
     }
   }, [isAdding, data.questionlist]);
   const [QuestionArea, setQuestionArea] = React.useState("");
-  let textContent = data.content ? data.content.slice(0, indexRef.current) : "";
+
   const editor = useEditor({
     extensions: [
       Document,
@@ -123,7 +122,7 @@ export default function () {
       applyAnnotation(data.annotations),
       SelectTextOnRender,
     ],
-    content: textContent ? "<p>" + textContent + "</p>" : "<p/>",
+    content: data.content,
     editable: true,
     editorProps: {
       handleDOMEvents: {
@@ -131,6 +130,12 @@ export default function () {
           if (![37, 38, 39, 40].includes(event.keyCode)) {
             event.preventDefault();
           }
+        },
+        drop: (value, e) => {
+          e.preventDefault();
+        },
+        dragstart: (value, e) => {
+          e.preventDefault();
         },
       },
     },
@@ -149,11 +154,6 @@ export default function () {
       );
     },
   });
-  const loadMore = () => {
-    indexRef.current = indexRef.current + 10000;
-    let content = data.content.slice(0, indexRef.current);
-    applyAnnotationFunction(editor, data.annotations, content);
-  };
 
   if (!editor) {
     return null;
@@ -172,19 +172,9 @@ export default function () {
   const toggleQuestion = () => {
     setOpenQuestionPortal((prev) => !prev);
   };
-  document.addEventListener("dragstart", (e) => {
-    e.preventDefault();
-  });
   return (
     <>
-      <main
-        style={{
-          marginInline: 40,
-          display: "flex",
-          flexDirection: "row",
-          gap: 10,
-        }}
-      >
+      <main className="editorPage">
         <div style={{ overflow: "hidden", flex: 1 }}>
           <div className="annotationOptions" />
           <QuestionList
@@ -208,7 +198,6 @@ export default function () {
             />
           )}
         </div>
-
         <section style={{ flex: 1, border: "1px solid grey", padding: 5 }}>
           <h1 style={{ textAlign: "center" }}>Text Viewer</h1>
           <TextList selectedText={data.text} />
@@ -220,31 +209,28 @@ export default function () {
             }}
           >
             <EditorContent editor={editor} />
+            {editor && (
+              <BubbleMenu
+                className="BubbleMenu"
+                editor={editor}
+                tippyOptions={{ duration: 100 }}
+              >
+                <button
+                  className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                  type="button"
+                  onClick={toggleQuestion}
+                >
+                  Question
+                </button>
+                <button
+                  onClick={shareSelectedText}
+                  className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                >
+                  Share
+                </button>
+              </BubbleMenu>
+            )}
           </div>
-          {data.content.length > 10000 && (
-            <button onClick={loadMore}>loadmore</button>
-          )}
-          {editor && (
-            <BubbleMenu
-              className="BubbleMenu"
-              editor={editor}
-              tippyOptions={{ duration: 100 }}
-            >
-              <button
-                className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                type="button"
-                onClick={toggleQuestion}
-              >
-                Question
-              </button>
-              <button
-                onClick={shareSelectedText}
-                className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-              >
-                Share
-              </button>
-            </BubbleMenu>
-          )}
         </section>
       </main>
     </>

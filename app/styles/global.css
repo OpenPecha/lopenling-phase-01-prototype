@@ -4,3 +4,21 @@
 }
 a {
 }
+
+.ProseMirror > p {
+  padding: 10px;
+}
+
+.editorPage {
+  margin-inline: 40px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+@media screen and (max-width: 680px) {
+  .editorPage {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+}
