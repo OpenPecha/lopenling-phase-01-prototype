@@ -97,7 +97,7 @@ export default function Index() {
             return (
               <p key={"textList-" + list.id}>
                 <strong>{list.id}</strong>
-                <Link to={"/texts/" + list.id} key={list.id} prefetch="intent">
+                <Link to={"/texts/" + list.id} key={list.id}>
                   {list.name}
                 </Link>
               </p>

@@ -8,8 +8,8 @@ const applyAnnotation = (annotation: {}) =>
         v_annotation: annotation,
       };
     },
-    onCreate({ editor }) {
-      let content: string = `${editor.getText()}`;
+    onCreate(this: { editor: any }) {
+      let content: string = `${this.editor.getText()}`;
       let annotations: any = annotation;
       let html = "<p>";
       let allkeys: string[] = [];
@@ -34,7 +34,7 @@ const applyAnnotation = (annotation: {}) =>
         }
       });
       html += "</p>";
-      editor.commands.setContent(html);
+      this.editor.commands.setContent(html);
       html = "";
     },
   });

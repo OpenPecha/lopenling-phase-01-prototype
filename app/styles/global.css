@@ -1,4 +1,4 @@
-.annotations {
+.v_annotations {
   color: blue;
   cursor: pointer;
 }
@@ -14,6 +14,9 @@ a {
   display: flex;
   flex-direction: row;
   gap: 10px;
+}
+span:hover {
+  font-weight: bold;
 }
 
 @media screen and (max-width: 680px) {

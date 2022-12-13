@@ -1,4 +1,5 @@
 import { Form, useFetcher, useLoaderData } from "@remix-run/react";
+import { Editor } from "@tiptap/react";
 import React from "react";
 import Vote from "./Vote";
 type QuestionProps = {
@@ -16,7 +17,7 @@ type QuestionProps = {
     }
   ];
   QuestionTitle: string;
-  editor: any;
+  editor: Editor;
 };
 
 export default function QuestionList(props: QuestionProps) {

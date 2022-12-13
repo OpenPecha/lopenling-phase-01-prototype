@@ -36,7 +36,8 @@ export const action: ActionFunction = async ({ request }) => {
       user.username,
       parseInt(topicId.toString())
     );
-    if (statusCode === 200) {
+
+    if (statusCode === 200 || 402) {
       await db.question.delete({
         where: {
           id: questionId?.toString(),

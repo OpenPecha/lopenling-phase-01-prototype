@@ -79,13 +79,15 @@ class DiscourseApi {
     let auth_headers = this.authHeader(username);
     let questionId = uuidv4();
     let post_text = `<div>
+    <blockquote>${topic_name}</blockquote>
+    <div>
 <p>${bodyContent}</p>
 <br/>
 <iframe width="150" height="90" src="https://lopenling-phase-01-prototype-rust.vercel.app/embed/${questionId}"
-></iframe>`;
-
+></iframe><div>`;
+    if (topic_name.length > 20) topic_name = topic_name.slice(0, 19) + "...";
     let new_Topic_data = {
-      title: topic_name,
+      title: topic_name.toString(),
       category: category_id,
       raw: post_text,
     };
@@ -114,7 +116,7 @@ class DiscourseApi {
             id: questionId,
             topicId: data["topic_id"],
             postId: data.id,
-            topic: topic_name,
+            topic: topic_name.toString(),
             userId: user.id,
             categoryId: category_id,
             start,
@@ -122,7 +124,6 @@ class DiscourseApi {
             textId,
           },
         });
-        console.log(createQuestion);
       }
     } catch (e) {
       console.log(e);
