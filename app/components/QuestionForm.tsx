@@ -1,16 +1,15 @@
 import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
 import { Editor } from "@tiptap/react";
-import React, { Ref, useState } from "react";
+import React from "react";
 
 type QuestionFormProps = {
   editor: Editor;
   QuestionArea: string;
-  openQuestionPortal: boolean;
 };
 
 const QuestionForm = (
-  { editor, QuestionArea, openQuestionPortal }: QuestionFormProps,
-  ref
+  { editor, QuestionArea }: QuestionFormProps,
+  ref: any
 ) => {
   const data = useLoaderData();
   const createQuestion = useFetcher();
@@ -25,7 +24,6 @@ const QuestionForm = (
   React.useLayoutEffect(() => {
     if (inputRef.current) inputRef.current.focus();
   }, []);
-  console.log(data);
   return (
     <section>
       {data.user ? (

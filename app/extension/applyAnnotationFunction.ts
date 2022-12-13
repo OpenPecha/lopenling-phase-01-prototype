@@ -1,12 +1,11 @@
 import { Editor } from "@tiptap/react";
 
 export default function applyAnnotationFunction(
-  editor: Editor | null,
   annotation: [],
   content: string
 ) {
   let annotations: any = annotation;
-  let html = "<p>";
+  let _html = "<p>";
   let allkeys: string[] = [];
   for (const [key, value] of Object.entries(annotations)) {
     allkeys.push(key);
@@ -14,20 +13,20 @@ export default function applyAnnotationFunction(
   let skiplength: any = [];
   [...content].forEach((c, i) => {
     if (allkeys.includes(i.toString())) {
-      html += `<span id="` + i + `">`;
+      _html += `<span id="` + i + `">`;
       let annotate = annotations[i];
       let length = annotate[0].length;
       for (let j = i; j < i + length; j++) {
-        if (content[j] !== " ") html += content[j];
+        if (content[j] !== " ") _html += content[j];
         skiplength.push(j);
       }
-      html += "</span>";
+      _html += "</span>";
     } else {
       if (!skiplength.includes(i)) {
-        html += c;
+        _html += c;
       }
     }
   });
-  html += "</p> ";
-  editor?.commands.setContent(html);
+  _html += "</p> ";
+  return _html;
 }

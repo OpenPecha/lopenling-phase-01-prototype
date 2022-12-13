@@ -11,7 +11,6 @@ let { getSession, commitSession, destroySession } = createCookieSessionStorage({
     name: "parkhang_userSession",
     secrets: ["fasd"],
     sameSite: "lax",
-    maxAge: 1000,
   },
 });
 

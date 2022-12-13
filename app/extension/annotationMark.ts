@@ -1,13 +1,13 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
 
-export const annotationMark = (data) =>
+export const annotationMark = (data: any, fetchAnnotation: any) =>
   Mark.create({
-    name: "annotation",
+    name: "annotations",
 
     addOptions() {
       return {
         HTMLAttributes: {
-          class: "annotations",
+          class: "v_annotations",
         },
       };
     },
@@ -28,42 +28,11 @@ export const annotationMark = (data) =>
     },
     renderHTML({ HTMLAttributes }) {
       const elem = document.createElement("span");
-      const annotations = data.annotations;
-      const sources = data.sources;
       Object.entries(
         mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)
       ).forEach(([attr, val]) => elem.setAttribute(attr, val));
-
-      elem.addEventListener("mouseover", (e) => {
-        let startId = elem.id;
-        let selectedAnnotation = annotations[startId];
-        let annotationContainer = document.querySelector(".annotationOptions");
-        while (annotationContainer.hasChildNodes()) {
-          annotationContainer.removeChild(annotationContainer.firstChild);
-        }
-        let createElement = document.createElement("span");
-        createElement.classList.add("annotationList");
-        createElement.innerHTML = "<h4>annotation in different versions</h4>";
-
-        selectedAnnotation.map((l) => {
-          let creator = l.creator_user;
-          if (!creator) {
-            let SourceId = data.text.witness.find(
-              (w) => w.id === l.creator_witness
-            ).source;
-            creator = sources.find((s) => s.id === SourceId).name;
-          }
-          let content = l.content === "" ? "deleted" : l.content;
-          let appendElement = `<div>${creator + "  ->  " + content}</div>`;
-          createElement.innerHTML += appendElement;
-        });
-        annotationContainer?.append(createElement);
-      });
-      elem.addEventListener("mouseleave", (e) => {
-        let annotationContainer = document.querySelector(".annotationOptions");
-        while (annotationContainer?.hasChildNodes()) {
-          annotationContainer.removeChild(annotationContainer.firstChild);
-        }
+      elem.addEventListener("click", () => {
+        fetchAnnotation(elem.id);
       });
       return elem;
     },
@@ -71,20 +40,19 @@ export const annotationMark = (data) =>
       return {
         setAnnotation:
           () =>
-          ({ commands }) => {
+          ({ commands }: any) => {
             return commands.setMark(this.name);
           },
         toggleAnnotaion:
           () =>
-          ({ commands }) => {
+          ({ commands }: any) => {
             return commands.toggleMark(this.name);
           },
         unsetAnnotation:
           () =>
-          ({ commands }) => {
+          ({ commands }: any) => {
             return commands.unsetMark(this.name);
           },
       };
     },
-    // Your code goes here.
   });

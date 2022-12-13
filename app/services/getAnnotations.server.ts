@@ -1,20 +1,16 @@
 import _ from "lodash";
 import { getText } from "./getText.server";
 type paramsType = {
-  textId: number;
+  textId: string;
 };
-export async function getAnnotations(params: paramsType) {
+export async function getAnnotations({ textId }: paramsType) {
   const apiUrl = "https://parkhang.lopenling.org/api/";
-  const text = await getText({ textId: params.textId });
+  const text = await getText({ textId: textId });
+  if (!text) throw new Error("text Not available");
   const witnessId = text.witness?.find((t) => t.is_working === true).id;
   try {
     const url =
-      apiUrl +
-      "texts/" +
-      params.textId +
-      "/witnesses/" +
-      witnessId +
-      "/annotations/";
+      apiUrl + "texts/" + textId + "/witnesses/" + witnessId + "/annotations/";
     const res = await fetch(url);
     const annotation = await res.json();
     let v_annotations = annotation.filter((l) => l.type === "V");

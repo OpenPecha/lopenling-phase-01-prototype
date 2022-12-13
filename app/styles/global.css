@@ -1,6 +1,27 @@
-.annotations {
+.v_annotations {
   color: blue;
   cursor: pointer;
 }
 a {
+}
+
+.ProseMirror > p {
+  padding: 10px;
+}
+
+.editorPage {
+  margin-inline: 40px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+span:hover {
+  font-weight: bold;
+}
+
+@media screen and (max-width: 680px) {
+  .editorPage {
+    display: flex;
+    flex-direction: column-reverse;
+  }
 }
