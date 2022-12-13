@@ -46,6 +46,7 @@ model Question {
   id          String     @id
   categoryId  Int
   topicId     Int
+  postId      Int
   topic       String
   createrUser User       @relation(fields: [userId], references: [id])
   userId      String
