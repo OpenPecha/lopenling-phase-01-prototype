@@ -1,11 +1,9 @@
-import { useLoaderData } from "@remix-run/react";
 import _ from "lodash";
 import { getUserSession } from "~/services/session.server";
 import { ActionFunction, json, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { db } from "~/utils/db.server";
 import { getText, getTextList } from "~/services/getText.server";
-import TextList from "~/components/TextList";
 import { getAnnotations } from "~/services/getAnnotations.server";
 import { getSources } from "~/services/getSources.server";
 import Editor from "~/components/Editor";
@@ -59,13 +57,11 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function () {
-  const data = useLoaderData();
   return (
     <>
-      <main className="editorPage">
+      <main>
         <section style={{ flex: 1, border: "1px solid grey", padding: 5 }}>
           <h1 style={{ textAlign: "center" }}>Text Viewer</h1>
-          <TextList selectedText={data.text} />
           <Editor />
         </section>
       </main>

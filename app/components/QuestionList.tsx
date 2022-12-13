@@ -21,7 +21,7 @@ type QuestionProps = {
 };
 
 export default function QuestionList(props: QuestionProps) {
-  if (!props.list) return null;
+  if (!props.list.length) return null;
   return (
     <div>
       <h2 className="text-1xl font-bold underline">{props.QuestionTitle}</h2>
