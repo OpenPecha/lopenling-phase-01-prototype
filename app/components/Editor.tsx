@@ -19,10 +19,6 @@ type selectionType = {
 };
 export default function Editor() {
   const [questionArea, setQuestionArea] = React.useState("");
-  const [questionRange, setQuestionRange] = React.useState<{
-    start: number;
-    end: number;
-  } | null>();
   const [openQuestionPortal, setOpenQuestionPortal] =
     React.useState<boolean>(false);
   const [selectedAnnotation, setSelectedAnnotation] = React.useState<number>(0);
@@ -49,29 +45,12 @@ export default function Editor() {
     navigator.clipboard.writeText(url);
     alert("Copied the url with selection: " + url);
   };
-
   React.useEffect(() => {
     if (!isAdding) {
       formRef?.current?.reset();
-      setQuestionRange(null);
       setOpenQuestionPortal(false);
     }
   }, [isAdding, data.questionlist]);
-
-  React.useEffect(() => {
-    if (selectionSpan?.start === selectionSpan?.end) {
-      setQuestionRange(null);
-    } else {
-      var debounce_fun = _.debounce(function () {
-        if (selectionSpan)
-          setQuestionRange({
-            start: selectionSpan.start - 1,
-            end: selectionSpan.end + 1,
-          });
-      }, 500);
-      debounce_fun();
-    }
-  }, [selectionSpan?.end]);
 
   const editor = useEditor({
     extensions: [
@@ -120,11 +99,6 @@ export default function Editor() {
       });
     }
   }, [data.content, data.annotation]);
-  React.useEffect(() => {
-    if (!editor?.isFocused) {
-      setQuestionRange(null);
-    }
-  }, [editor?.isFocused]);
 
   if (!editor) return null;
 
@@ -175,7 +149,6 @@ export default function Editor() {
 
         <Question
           openQuestionPortal={openQuestionPortal}
-          questionRange={questionRange}
           editor={editor}
           questionArea={questionArea}
           ref={formRef}

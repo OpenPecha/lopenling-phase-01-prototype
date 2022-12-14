@@ -5,24 +5,12 @@ import QuestionList, { EachQuestion } from "./QuestionList";
 
 type QuestionFormProps = {
   openQuestionPortal: boolean;
-  questionRange:
-    | {
-        start: number;
-        end: number;
-      }
-    | null
-    | undefined;
   editor: Editor;
   questionArea: string;
 };
 
 const Question = (
-  {
-    editor,
-    questionArea,
-    questionRange,
-    openQuestionPortal,
-  }: QuestionFormProps,
+  { editor, questionArea, openQuestionPortal }: QuestionFormProps,
   ref: any
 ) => {
   const data = useLoaderData();
@@ -31,7 +19,6 @@ const Question = (
   React.useLayoutEffect(() => {
     if (inputRef.current) inputRef.current.focus();
   }, [openQuestionPortal]);
-
   return (
     <section>
       {createQuestion.submission ? (
@@ -84,10 +71,12 @@ const Question = (
       <QuestionList
         QuestionTitle={"Question for text " + data.text.id}
         list={
-          questionRange
+          editor.isFocused &&
+          editor.state.selection.from !== editor.state.selection.to
             ? data.questionlist.filter(
-                (l) =>
-                  l.start > questionRange?.start && l.end < questionRange?.end
+                (l: any) =>
+                  l.start >= editor.state.selection.from &&
+                  l.end <= editor.state.selection.to
               )
             : data.questionlist
         }
