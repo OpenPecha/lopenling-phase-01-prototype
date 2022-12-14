@@ -1,6 +1,7 @@
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { Editor } from "@tiptap/react";
 import Vote from "./Vote";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 type QuestionProps = {
   list: [
     {
@@ -21,8 +22,13 @@ type QuestionProps = {
 
 export default function QuestionList(props: QuestionProps) {
   if (!props.list.length) return null;
+  const [parent, enableAnimations] = useAutoAnimate(/* optional config */);
+
   return (
-    <div style={{ height: "60vh", overflow: "scroll" }}>
+    <div
+      style={{ maxHeight: "60vh", overflow: "scroll", overflowX: "hidden" }}
+      ref={parent}
+    >
       <h2 className="text-1xl font-bold underline">{props.QuestionTitle}</h2>
       {props.list
         .sort((a, b) => b.topicId - a.topicId)
@@ -54,7 +60,6 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
         .run();
     }
   };
-  if (deleteFetcher.submission) return null;
   return (
     <div
       style={{
@@ -65,9 +70,13 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
         padding: 4,
         opacity: deleting ? 0.4 : 1,
       }}
-      onClick={() => pointOnEditor(l.start, l.end)}
     >
-      {l.topic} - {l.start}:{l.end}
+      <span
+        onClick={() => pointOnEditor(l.start, l.end)}
+        style={{ cursor: "pointer" }}
+      >
+        {l.topic} - {l.start}:{l.end}
+      </span>
       <br />
       <p>{l?.createrUser?.username}</p>
       <div style={{ display: "flex", gap: 4 }}>
