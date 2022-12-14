@@ -1,14 +1,12 @@
-import { redirect } from "@remix-run/node";
-import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import React from "react";
-import { Fetcher } from "react-router";
 
 type TextListProps = {
   selectedText: {
     name: string;
     id: number;
   };
-  setTextLoading: () => void;
+  setTextLoading: (e: boolean) => void;
 };
 export default function TextList({
   selectedText,
@@ -20,12 +18,11 @@ export default function TextList({
     if (fetcher.state === "submitting") {
       setTextLoading(true);
     }
-
     if (fetcher.state === "idle") {
       setTextLoading(false);
     }
   }, [fetcher.state]);
-  const handleChangeTextSelect = (e) => {
+  const handleChangeTextSelect = (e: any) => {
     fetcher.submit({ changeText: e.target.value }, { method: "post" });
   };
   return (
@@ -35,7 +32,7 @@ export default function TextList({
           defaultValue={selectedText.id}
           onChange={handleChangeTextSelect}
         >
-          {textList.map((item) => {
+          {textList.map((item: { id: number; name: string }) => {
             return (
               <option key={item.id} value={item.id}>
                 {item.name}

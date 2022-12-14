@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { getUserSession } from "~/services/session.server";
-import { ActionFunction, json, redirect } from "@remix-run/node";
+import { ActionFunction, json, MetaFunction, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { db } from "~/utils/db.server";
 import { getText, getTextList } from "~/services/getText.server";
@@ -55,7 +55,11 @@ export const action: ActionFunction = async ({ request }) => {
   }
   return null;
 };
-
+export const meta: MetaFunction = ({ data }) => {
+  return {
+    title: data.text.name,
+  };
+};
 export default function () {
   return (
     <>

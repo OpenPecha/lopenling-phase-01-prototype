@@ -108,6 +108,7 @@ export default function Index() {
           <QuestionList
             list={data.questionList}
             QuestionTitle={"recent Questions"}
+            editor={null}
           />
         </div>
       </div>

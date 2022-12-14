@@ -17,13 +17,13 @@ type QuestionProps = {
     }
   ];
   QuestionTitle: string;
-  editor: Editor;
+  editor: Editor | null;
 };
 
 export default function QuestionList(props: QuestionProps) {
   if (!props.list.length) return null;
   return (
-    <div>
+    <div style={{ height: "60vh", overflow: "scroll" }}>
       <h2 className="text-1xl font-bold underline">{props.QuestionTitle}</h2>
       {props.list
         .sort((a, b) => b.topicId - a.topicId)
@@ -36,11 +36,12 @@ export default function QuestionList(props: QuestionProps) {
   );
 }
 
-function EachQuestion({ l, props, key }: any) {
+export function EachQuestion({ l, props, linkReady = true }: any) {
   const { user } = useLoaderData();
   const deleteFetcher = useFetcher();
   const replyFetcher = useFetcher();
   let deleting = deleteFetcher.state !== "idle";
+  let replyPosts = replyFetcher.data;
   let showDeleteButton =
     user?.isAdmin || user?.username === l?.createrUser?.username;
 
@@ -66,62 +67,62 @@ function EachQuestion({ l, props, key }: any) {
       }}
       onMouseEnter={() => handleMouseOver(l.start, l.end)}
     >
-      {l.topic} - {l.start} - {l.end}
+      {l.topic} - {l.start}:{l.end}
       <br />
       <p>{l?.createrUser?.username}</p>
-      <a
-        style={{
-          textDecoration: "none",
-          cursor: "pointer",
-          width: "100%",
-        }}
-        className="bg-blue-500 hover:bg-blue-700 text-white px-2 rounded-full"
-        target=" _blank"
-        href={`https://lopenling.org/t/${l.topicId}`}
-      >
-        visit discussion
-      </a>
-      <Vote questionDetail={l} />
-      {showDeleteButton && (
-        <deleteFetcher.Form method="post" action="/api/question">
-          <input type="hidden" value={l.id} name="questionId"></input>
-          <input type="hidden" value={l.topicId} name="topicId"></input>
-
+      <div style={{ display: "flex", gap: 4 }}>
+        <a
+          style={{
+            textDecoration: "none",
+            cursor: "pointer",
+            opacity: !linkReady ? 0.3 : 1,
+          }}
+          className="bg-blue-500 hover:bg-blue-700 text-white px-3 rounded"
+          target=" _blank"
+          href={`https://lopenling.org/t/${l.topicId}`}
+        >
+          visit discussion
+        </a>
+        {linkReady && <Vote questionDetail={l} />}
+        {showDeleteButton && (
+          <deleteFetcher.Form method="post" action="/api/question">
+            <input type="hidden" value={l.id} name="questionId"></input>
+            <input type="hidden" value={l.topicId} name="topicId"></input>
+            <button
+              type="submit"
+              name="_action"
+              value="deleteQuestion"
+              className="bg-blue-400 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+              disabled={deleting}
+            >
+              {deleting ? "deleting" : "delete"}
+            </button>
+          </deleteFetcher.Form>
+        )}
+        <replyFetcher.Form method="post" action="/api/question">
+          <input hidden name="topicId" defaultValue={l.topicId}></input>
           <button
             type="submit"
             name="_action"
-            value="deleteQuestion"
+            value="fetchReplies"
             className="bg-blue-400 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
-            disabled={deleting}
           >
-            {deleting ? "deleting" : "delete"}
+            replies
           </button>
-        </deleteFetcher.Form>
-      )}
-      <replyFetcher.Form method="post" action="/api/question">
-        <input hidden name="topicId" defaultValue={l.topicId}></input>
-        <button
-          type="submit"
-          name="_action"
-          value="fetchReplies"
-          className="bg-blue-400 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
-        >
-          replies
-        </button>
-      </replyFetcher.Form>
-      {replyFetcher.data && (
-        <div>
-          {" "}
-          <p>post on topic</p>
-          {replyFetcher.data.post_stream.posts.map((post: any) => {
-            return (
-              <div key={post.id}>
-                <a href={`https://lopenling.org/p/${post.id}`}>{post.id}</a>
-              </div>
-            );
-          })}
-        </div>
-      )}
+        </replyFetcher.Form>
+        {replyPosts?.post_stream.posts.slice(1).length && (
+          <div>
+            <p>post on topic</p>
+            {replyPosts.post_stream.posts.slice(1).map((post: any) => {
+              return (
+                <div key={post.id}>
+                  <a href={`https://lopenling.org/p/${post.id}`}>{post.id}</a>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

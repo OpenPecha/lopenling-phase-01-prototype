@@ -8,20 +8,6 @@ import { useLocation, useMatches } from "@remix-run/react";
 import * as Sentry from "@sentry/remix";
 import { useEffect } from "react";
 const ABORT_DELAY = 5000;
-if (process.env.NODE_ENV !== "development")
-  Sentry.init({
-    dsn: "https://02e27607d8b74813aa7a8372d73d7e47:aaa4980f4cc246bd98fd8e092473f406@o4504287133171712.ingest.sentry.io/4504287134351360",
-    tracesSampleRate: 1,
-    integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.remixRouterInstrumentation(
-          useEffect,
-          useLocation,
-          useMatches
-        ),
-      }),
-    ],
-  });
 
 export default function handleRequest(
   request,

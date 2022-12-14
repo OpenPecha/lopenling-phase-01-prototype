@@ -8,8 +8,7 @@ import React from "react";
 import { annotationMark } from "~/extension/annotationMark";
 import applyAnnotation from "~/extension/applyAnnotations";
 import SelectTextOnRender from "~/extension/selectionOnFirstRender";
-import QuestionForm from "./QuestionForm";
-import QuestionList from "./QuestionList";
+import Question from "./Question";
 import _ from "lodash";
 import applyAnnotationFunction from "~/extension/applyAnnotationFunction";
 import AnnotationList from "./AnnotationList";
@@ -19,23 +18,38 @@ type selectionType = {
   end: number;
 };
 export default function Editor() {
-  const [QuestionArea, setQuestionArea] = React.useState("");
+  const [questionArea, setQuestionArea] = React.useState("");
   const [questionRange, setQuestionRange] = React.useState<{
     start: number;
     end: number;
   } | null>();
-  const [openQuestionPortal, setOpenQuestionPortal] = React.useState(false);
-  const [selectedAnnotation, setSelectedAnnotation] = React.useState(0);
+  const [openQuestionPortal, setOpenQuestionPortal] =
+    React.useState<boolean>(false);
+  const [selectedAnnotation, setSelectedAnnotation] = React.useState<number>(0);
+  const [selectionSpan, setSelectionSpan] =
+    React.useState<selectionType | null>(null);
+  const [textLoading, setTextLoading] = React.useState<Boolean>(false);
+
   const data = useLoaderData();
   const transition = useTransition();
-  const [textLoading, setTextLoading] = React.useState<Boolean>(false);
   const formRef = React.useRef<any>(null);
+
   let isAdding =
     transition.state === "submitting" &&
     transition.submission.formData.get("start");
+
   const fetchAnnotation = (id: number) => {
     setSelectedAnnotation(id);
   };
+
+  const shareSelectedText = () => {
+    const url =
+      window.location.origin +
+      `/texts/${data.text.id}?start=${selectionSpan?.start}&end=${selectionSpan?.end}`;
+    navigator.clipboard.writeText(url);
+    alert("Copied the url with selection: " + url);
+  };
+
   React.useEffect(() => {
     if (!isAdding) {
       formRef?.current?.reset();
@@ -43,11 +57,7 @@ export default function Editor() {
       setOpenQuestionPortal(false);
     }
   }, [isAdding, data.questionlist]);
-  const toggleQuestion = () => {
-    setOpenQuestionPortal((prev) => !prev);
-  };
-  const [selectionSpan, setSelectionSpan] =
-    React.useState<selectionType | null>(null);
+
   React.useEffect(() => {
     if (selectionSpan?.start === selectionSpan?.end) {
       setQuestionRange(null);
@@ -62,6 +72,7 @@ export default function Editor() {
       debounce_fun();
     }
   }, [selectionSpan?.end]);
+
   const editor = useEditor({
     extensions: [
       Document,
@@ -103,15 +114,8 @@ export default function Editor() {
         )
       );
     },
-    onUpdate() {},
   });
-  const shareSelectedText = () => {
-    const url =
-      window.location.origin +
-      `/texts/${data.text.id}?start=${selectionSpan?.start}&end=${selectionSpan?.end}`;
-    navigator.clipboard.writeText(url);
-    alert("Copied the text: " + url);
-  };
+
   React.useEffect(() => {
     if (editor && data.annotations && data.content) {
       let content = applyAnnotationFunction(data.annotations, data.content);
@@ -120,7 +124,9 @@ export default function Editor() {
       });
     }
   }, [data.content, data.annotation]);
+
   if (!editor) return null;
+
   return (
     <div className="editorPage">
       <div
@@ -131,8 +137,9 @@ export default function Editor() {
         <TextList selectedText={data.text} setTextLoading={setTextLoading} />
         <div
           style={{
-            maxHeight: "400px",
-            minHeight: "300px",
+            maxHeight: "100vh",
+            minHeight: "60vh",
+            height: "80vh",
             overflow: "scroll",
             display: textLoading ? "none" : "block",
           }}
@@ -148,7 +155,7 @@ export default function Editor() {
               <button
                 className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
-                onClick={toggleQuestion}
+                onClick={() => setOpenQuestionPortal((prev) => !prev)}
               >
                 Question
               </button>
@@ -158,37 +165,20 @@ export default function Editor() {
               >
                 Share
               </button>
-              {/* <button
-                onClick={() => editor.commands.toggleAnnotaion()}
-                className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-              >
-                Edit
-              </button> */}
             </BubbleMenu>
           )}
         </div>
       </div>
       <div style={{ overflow: "hidden", flex: 1 }}>
         <AnnotationList selectedId={selectedAnnotation} />
-        <QuestionList
-          QuestionTitle={"Question for text " + data.text.id}
-          list={
-            questionRange
-              ? data.questionlist.filter(
-                  (l) =>
-                    l.start > questionRange?.start && l.end < questionRange?.end
-                )
-              : data.questionlist
-          }
+
+        <Question
+          openQuestionPortal={openQuestionPortal}
+          questionRange={questionRange}
           editor={editor}
+          questionArea={questionArea}
+          ref={formRef}
         />
-        {openQuestionPortal && (
-          <QuestionForm
-            editor={editor}
-            QuestionArea={QuestionArea}
-            ref={formRef}
-          />
-        )}
       </div>
     </div>
   );
