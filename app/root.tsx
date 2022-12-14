@@ -2,7 +2,7 @@ import React from "react";
 import styles from "~/styles/tailwind.css";
 import globalstyles from "~/styles/global.css";
 import type { MetaFunction } from "@remix-run/node"; // or cloudflare/deno
-import { BrowserView, MobileView } from "react-device-detect";
+import { isMobile } from "react-device-detect";
 import {
   Links,
   LiveReload,
@@ -112,16 +112,17 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 function App() {
+  if (isMobile)
+    return (
+      <Document title="mobile device">
+        <p>doesnt work on mobile currently</p>
+      </Document>
+    );
   return (
     <>
-      <BrowserView>
-        <Document title={"Lopenling Application"}>
-          <Outlet />
-        </Document>
-      </BrowserView>
-      <MobileView>
-        <p>check the app on Desktop please.</p>
-      </MobileView>
+      <Document title={"Lopenling Application"}>
+        <Outlet />
+      </Document>
     </>
   );
 }
