@@ -59,7 +59,7 @@ export default function Editor() {
       Text,
       Highlight.configure({ multicolor: true }),
       annotationMark(data, fetchAnnotation),
-      applyAnnotation(data.annotations),
+      applyAnnotation(data.annotations, data.pageBreakers),
       SelectTextOnRender,
     ],
     content: data.content,
@@ -92,12 +92,14 @@ export default function Editor() {
   });
 
   React.useEffect(() => {
-    if (editor && data.annotations && data.content) {
+    let firstRender;
+    if (editor && data.annotations && data.content && firstRender) {
       let content = applyAnnotationFunction(data.annotations, data.content);
       editor.commands.setContent(content, {
         emitUpdate: true,
       });
     }
+    firstRender = true;
   }, [data.content, data.annotation]);
 
   if (!editor) return null;
@@ -109,7 +111,7 @@ export default function Editor() {
           flex: 1,
         }}
       >
-        <TextList selectedText={data.text} setTextLoading={setTextLoading} />
+        {/* <TextList selectedText={data.text} setTextLoading={setTextLoading} /> */}
         <div
           style={{
             maxHeight: "100vh",

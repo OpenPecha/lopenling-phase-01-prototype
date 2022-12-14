@@ -1,6 +1,6 @@
 import { Extension } from "@tiptap/core";
 
-const applyAnnotation = (annotation: {}) =>
+const applyAnnotation = (annotation: {}, pageBreaker: any) =>
   Extension.create({
     name: "v_annotation",
     addStorage() {
@@ -10,14 +10,22 @@ const applyAnnotation = (annotation: {}) =>
     },
     onCreate(this: { editor: any }) {
       let content: string = `${this.editor.getText()}`;
-      let annotations: any = annotation;
+      let annotations = annotation;
       let html = "<p>";
       let allkeys: string[] = [];
+      let allPageBreakerStart: string[] = [];
       for (const [key, value] of Object.entries(annotations)) {
         allkeys.push(key);
       }
+      for (let startid of pageBreaker) {
+        allPageBreakerStart.push(startid.start);
+      }
+      console.log(allPageBreakerStart);
       let skiplength: any = [];
       [...content].forEach((c, i) => {
+        if (allPageBreakerStart.includes(i)) {
+          html += "</p><p>";
+        }
         if (allkeys.includes(i.toString())) {
           html += `<span id="` + i + `">`;
           let annotate = annotations[i];

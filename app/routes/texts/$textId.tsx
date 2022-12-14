@@ -22,7 +22,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
   const text = await getText(params);
   const sources = await getSources();
-  const annotations = await getAnnotations(params);
+  const { v_annotations, p_annotations }: any = await getAnnotations(params);
   const questionlist = await db.question.findMany({
     include: {
       createrUser: true,
@@ -40,7 +40,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     text,
     questionlist: filteredQuestionList,
     textList,
-    annotations,
+    annotations: v_annotations,
+    pageBreakers: p_annotations,
     sources,
     content,
   };

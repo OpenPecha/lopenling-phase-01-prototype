@@ -8,16 +8,20 @@ export async function getAnnotations({ textId }: paramsType) {
   const text = await getText({ textId: textId });
   if (!text) throw new Error("text Not available");
   const witnessId = text.witness?.find((t) => t.is_working === true).id;
+  const baseId = text.witness?.find((t) => t.is_base === true).id;
   try {
     const url =
       apiUrl + "texts/" + textId + "/witnesses/" + witnessId + "/annotations/";
     const res = await fetch(url);
     const annotation = await res.json();
+    let p_annotations = annotation.filter(
+      (l) => l.type === "P" && l.creator_witness === baseId
+    );
     let v_annotations = annotation.filter((l) => l.type === "V");
-    let groupedByStart = _.groupBy(v_annotations, function (l) {
+    v_annotations = _.groupBy(v_annotations, function (l) {
       return l.start;
     });
-    return groupedByStart;
+    return { v_annotations, p_annotations };
   } catch (e) {
     console.log(e.message);
   }

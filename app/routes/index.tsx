@@ -93,7 +93,7 @@ export default function Index() {
               search
             </button>
           </searchedText.Form>
-          {list.map((list: { id: number; name: string }) => {
+          {list.slice(0, 10).map((list: { id: number; name: string }) => {
             return (
               <p key={"textList-" + list.id}>
                 <strong>{list.id}</strong>
