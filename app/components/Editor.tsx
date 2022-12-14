@@ -101,18 +101,14 @@ export default function Editor() {
       },
     },
     onSelectionUpdate: ({ editor }) => {
+      let from = editor.state.selection.from;
+      let to = editor.state.selection.to;
       setSelectionSpan({
-        start: editor.state.selection.from,
-        end: editor.state.selection.to,
+        start: from,
+        end: to,
       });
       setOpenQuestionPortal(false);
-      setQuestionArea(
-        editor?.state.doc.textBetween(
-          editor.state.selection.from,
-          editor.state.selection.to,
-          ""
-        )
-      );
+      setQuestionArea(editor?.state.doc.textBetween(from, to, ""));
     },
   });
 
@@ -124,6 +120,11 @@ export default function Editor() {
       });
     }
   }, [data.content, data.annotation]);
+  React.useEffect(() => {
+    if (!editor?.isFocused) {
+      setQuestionRange(null);
+    }
+  }, [editor?.isFocused]);
 
   if (!editor) return null;
 

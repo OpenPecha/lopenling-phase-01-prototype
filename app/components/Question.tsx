@@ -30,7 +30,7 @@ const Question = (
   const inputRef = React.useRef(null);
   React.useLayoutEffect(() => {
     if (inputRef.current) inputRef.current.focus();
-  }, []);
+  }, [openQuestionPortal]);
 
   return (
     <section>

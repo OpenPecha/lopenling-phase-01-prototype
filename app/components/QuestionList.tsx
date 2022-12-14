@@ -1,6 +1,5 @@
-import { Form, useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { Editor } from "@tiptap/react";
-import React from "react";
 import Vote from "./Vote";
 type QuestionProps = {
   list: [
@@ -45,16 +44,17 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
   let showDeleteButton =
     user?.isAdmin || user?.username === l?.createrUser?.username;
 
-  const handleMouseOver = (start: number, end: number) => {
+  const pointOnEditor = (start: number, end: number) => {
     if (props.editor) {
       props.editor
         .chain()
         .focus()
-        .setTextSelection(start)
+        .setTextSelection({ from: start, to: end })
         .scrollIntoView()
         .run();
     }
   };
+  if (deleteFetcher.submission) return null;
   return (
     <div
       style={{
@@ -65,7 +65,7 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
         padding: 4,
         opacity: deleting ? 0.4 : 1,
       }}
-      onMouseEnter={() => handleMouseOver(l.start, l.end)}
+      onClick={() => pointOnEditor(l.start, l.end)}
     >
       {l.topic} - {l.start}:{l.end}
       <br />
