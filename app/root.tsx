@@ -2,7 +2,7 @@ import React from "react";
 import styles from "~/styles/tailwind.css";
 import globalstyles from "~/styles/global.css";
 import type { MetaFunction } from "@remix-run/node"; // or cloudflare/deno
-import { withSentry } from "@sentry/remix";
+import { BrowserView, MobileView } from "react-device-detect";
 import {
   Links,
   LiveReload,
@@ -113,9 +113,16 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 function App() {
   return (
-    <Document title={"Lopenling Application"}>
-      <Outlet />
-    </Document>
+    <>
+      <BrowserView>
+        <Document title={"Lopenling Application"}>
+          <Outlet />
+        </Document>
+      </BrowserView>
+      <MobileView>
+        <p>check the app on Desktop please.</p>
+      </MobileView>
+    </>
   );
 }
-export default withSentry(App);
+export default App;
