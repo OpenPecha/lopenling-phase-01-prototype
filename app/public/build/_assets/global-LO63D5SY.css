@@ -1,0 +1,23 @@
+/* app/styles/global.css */
+.v_annotations {
+  color: #00f;
+  cursor: pointer;
+}
+.ProseMirror > p {
+  padding: 10px;
+}
+.editorPage {
+  margin-inline: 40px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+span:hover {
+  font-weight: 700;
+}
+@media screen and (max-width: 680px) {
+  .editorPage {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+}
