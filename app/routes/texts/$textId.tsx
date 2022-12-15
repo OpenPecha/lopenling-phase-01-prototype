@@ -45,6 +45,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     sources,
     content,
   };
+  if (!data) throw new Error("data value is not good");
   return json(data);
 };
 
@@ -67,8 +68,7 @@ export default function () {
       <main>
         <section style={{ flex: 1, border: "1px solid grey", padding: 5 }}>
           <h1 style={{ textAlign: "center" }}>Text Viewer</h1>
-          hi
-          {/* {data.content ? <Editor /> : "loading"} */}
+          <Editor />
         </section>
       </main>
     </>
