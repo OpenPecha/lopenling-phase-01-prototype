@@ -5,8 +5,9 @@ export default function AnnotationList({ selectedId, editor }: any) {
   const data = useLoaderData();
   const user = data.user;
   const annotation = data.annotations[selectedId];
-  const from = annotation[0].start;
-  const length = annotation[0].length;
+  if (!annotation) return null;
+  const from = annotation[0]?.start;
+  const length = annotation[0]?.length;
   const to = from + length;
   function questionClicked() {}
   const handleSelectionClick = () => {

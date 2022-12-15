@@ -24,7 +24,6 @@ export default function Editor() {
   const [selectedAnnotation, setSelectedAnnotation] = React.useState<number>(0);
   const [selectionSpan, setSelectionSpan] =
     React.useState<selectionType | null>(null);
-  const [textLoading, setTextLoading] = React.useState<Boolean>(false);
 
   const data = useLoaderData();
   const transition = useTransition();
@@ -89,17 +88,17 @@ export default function Editor() {
       setQuestionArea(editor?.state.doc.textBetween(from, to, ""));
     },
   });
-
-  React.useEffect(() => {
-    let firstRender;
-    if (editor && data.annotations && data.content && firstRender) {
-      let content = applyAnnotationFunction(data.annotations, data.content);
-      editor.commands.setContent(content, {
-        emitUpdate: true,
-      });
-    }
-    firstRender = true;
-  }, [data.content, data.annotation]);
+  //  ----- To update annotation on text change on same page -------
+  // React.useEffect(() => {
+  //   let firstRender;
+  //   if (editor && data.annotations && data.content && firstRender) {
+  //     let content = applyAnnotationFunction(data.annotations, data.content);
+  //     editor.commands.setContent(content, {
+  //       emitUpdate: true,
+  //     });
+  //   }
+  //   firstRender = true;
+  // }, [data.content, data.annotation]);
 
   if (!editor) return null;
 
@@ -117,10 +116,8 @@ export default function Editor() {
             minHeight: "60vh",
             height: "80vh",
             overflow: "scroll",
-            display: textLoading ? "none" : "block",
           }}
         >
-          {textLoading && <div>Loading</div>}
           <EditorContent editor={editor} />
           {editor && (
             <BubbleMenu
