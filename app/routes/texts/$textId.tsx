@@ -22,7 +22,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
   const text = await getText(params);
   const sources = await getSources();
-  const { v_annotations, p_annotations }: any = await getAnnotations(params);
+  // const { v_annotations, p_annotations }: any = await getAnnotations(params);
   const questionlist = await db.question.findMany({
     include: {
       createrUser: true,
@@ -30,22 +30,21 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       dislikes: true,
     },
   });
+  const textList = await getTextList();
   let filteredQuestionList = questionlist.filter((question) => {
     return question.textId === parseInt(text?.id);
   });
-  const textList = await getTextList();
-  let content = "";
+  let content = text?.witness.find((t) => t.is_working === true).content;
   const data = {
     user: userInfo,
     text,
     questionlist: filteredQuestionList,
     textList,
-    annotations: v_annotations,
-    pageBreakers: p_annotations,
+    annotations: [],
+    pageBreakers: [],
     sources,
     content,
   };
-  if (!data) throw new Error("data value is not good");
   return json(data);
 };
 
