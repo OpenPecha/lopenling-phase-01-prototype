@@ -1,4 +1,4 @@
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { Editor } from "@tiptap/react";
 import Vote from "./Vote";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -49,7 +49,6 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
   let replyPosts = replyFetcher.data;
   let showDeleteButton =
     user?.isAdmin || user?.username === l?.createrUser?.username;
-
   const pointOnEditor = (start: number, end: number) => {
     if (props.editor) {
       props.editor
@@ -71,12 +70,18 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
         opacity: deleting ? 0.4 : 1,
       }}
     >
-      <span
-        onClick={() => pointOnEditor(l.start, l.end)}
-        style={{ cursor: "pointer" }}
-      >
-        {l.topic} - {l.start}:{l.end}
-      </span>
+      {props.editor ? (
+        <span
+          onClick={() => pointOnEditor(l.start, l.end)}
+          style={{ cursor: "pointer" }}
+        >
+          {l.topic} - {l.start}:{l.end}
+        </span>
+      ) : (
+        <Link to={"/texts/" + l.textId + `?start=${l.start}&end=${l.end}`}>
+          {l.topic} - {l.start}:{l.end}
+        </Link>
+      )}
       <br />
       <p>{l?.createrUser?.username}</p>
       <div style={{ display: "flex", gap: 4 }}>

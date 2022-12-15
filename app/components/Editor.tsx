@@ -29,7 +29,6 @@ export default function Editor() {
   const data = useLoaderData();
   const transition = useTransition();
   const formRef = React.useRef<any>(null);
-
   let isAdding =
     transition.state === "submitting" &&
     transition.submission.formData.get("start");
@@ -127,7 +126,7 @@ export default function Editor() {
             <BubbleMenu
               className="BubbleMenu"
               editor={editor}
-              tippyOptions={{ duration: 100 }}
+              tippyOptions={{ duration: 800 }}
             >
               <button
                 className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
