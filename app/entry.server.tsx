@@ -4,9 +4,6 @@ import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
-import { useLocation, useMatches } from "@remix-run/react";
-import * as Sentry from "@sentry/remix";
-import { useEffect } from "react";
 const ABORT_DELAY = 5000;
 
 export default function handleRequest(

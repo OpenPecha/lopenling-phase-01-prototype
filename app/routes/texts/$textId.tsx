@@ -7,6 +7,7 @@ import { getText, getTextList } from "~/services/getText.server";
 import { getAnnotations } from "~/services/getAnnotations.server";
 import { getSources } from "~/services/getSources.server";
 import Editor from "~/components/Editor";
+import { useLoaderData } from "@remix-run/react";
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUserSession(request);
   let userInfo;
@@ -35,6 +36,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   });
   const textList = await getTextList();
   let content = text?.witness.find((t) => t.is_working === true).content;
+  console.log(content);
   const data = {
     user: userInfo,
     text,
@@ -62,12 +64,13 @@ export const meta: MetaFunction = ({ data }) => {
   };
 };
 export default function () {
+  let data = useLoaderData();
   return (
     <>
       <main>
         <section style={{ flex: 1, border: "1px solid grey", padding: 5 }}>
           <h1 style={{ textAlign: "center" }}>Text Viewer</h1>
-          <Editor />
+          {data.content ? <Editor /> : "loading"}
         </section>
       </main>
     </>

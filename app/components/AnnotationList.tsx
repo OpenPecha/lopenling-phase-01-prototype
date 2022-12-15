@@ -49,7 +49,7 @@ export default function AnnotationList({ selectedId, editor }: any) {
                 <button
                   name="_action"
                   value="likeVote"
-                  disabled={!user}
+                  disabled={true}
                   type="submit"
                   className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
@@ -59,7 +59,7 @@ export default function AnnotationList({ selectedId, editor }: any) {
                   name="_action"
                   value="dislikeVote"
                   type="submit"
-                  disabled={!user}
+                  disabled={true}
                   className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   {0}👎
