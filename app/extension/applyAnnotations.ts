@@ -20,10 +20,9 @@ const applyAnnotation = (annotation: {}, pageBreaker: any) =>
       for (let startid of pageBreaker) {
         allPageBreakerStart.push(startid.start);
       }
-      console.log(allPageBreakerStart);
       let skiplength: any = [];
       [...content].forEach((c, i) => {
-        if (allPageBreakerStart.includes(i)) {
+        if (allPageBreakerStart.includes(i) && i !== 0) {
           html += "</p><p>";
         }
         if (allkeys.includes(i.toString())) {

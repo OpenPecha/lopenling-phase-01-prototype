@@ -4,7 +4,9 @@
 }
 a {
 }
-
+.ProseMirror {
+  outline: none;
+}
 .ProseMirror > p {
   padding: 10px;
 }

@@ -1,11 +1,30 @@
 import { useLoaderData } from "@remix-run/react";
+import Vote from "./Vote";
 
-export default function AnnotationList({ selectedId }: any) {
+export default function AnnotationList({ selectedId, editor }: any) {
   const data = useLoaderData();
+  const user = data.user;
   const annotation = data.annotations[selectedId];
+  const from = annotation[0].start;
+  const length = annotation[0].length;
+  const to = from + length;
+  function questionClicked() {}
+  const handleSelectionClick = () => {
+    var doc = window.document,
+      sel,
+      range;
+    let select = document.getElementById(from);
+    sel = window.getSelection();
+    range = doc.createRange();
+    range.selectNodeContents(select);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  };
   return (
-    <div>
-      <h3>Default Annotations</h3>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <center>
+        <h3>Default Annotations</h3>
+      </center>
       {annotation?.map((l) => {
         let creator = l.creator_user;
         const sources = data.sources;
@@ -16,7 +35,38 @@ export default function AnnotationList({ selectedId }: any) {
           creator = sources.find((s) => s.id === SourceId).name;
         }
         let content = l.content === "" ? "deleted" : l.content;
-        return <li key={l.id}>{creator + "  ->  " + content}</li>;
+        return (
+          <div
+            style={{ display: "flex", justifyContent: "space-between" }}
+            key={l.id}
+          >
+            <div onClick={handleSelectionClick} style={{ cursor: "pointer" }}>
+              {creator + "  ->  " + content}
+            </div>
+            {content !== "deleted" && (
+              <div style={{ display: "flex", gap: 5 }}>
+                <button
+                  name="_action"
+                  value="likeVote"
+                  disabled={!user}
+                  type="submit"
+                  className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                >
+                  {0} 👍
+                </button>
+                <button
+                  name="_action"
+                  value="dislikeVote"
+                  type="submit"
+                  disabled={!user}
+                  className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                >
+                  {0}👎
+                </button>
+              </div>
+            )}
+          </div>
+        );
       })}
     </div>
   );

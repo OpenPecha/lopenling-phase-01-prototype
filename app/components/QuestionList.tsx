@@ -103,8 +103,9 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
               value="deleteQuestion"
               className="bg-blue-400 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
               disabled={deleting}
+              title="delete"
             >
-              {deleting ? "deleting" : "delete"}
+              {deleting ? "deleting" : "❌"}
             </button>
           </deleteFetcher.Form>
         )}
@@ -115,8 +116,9 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
             name="_action"
             value="fetchReplies"
             className="bg-blue-400 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+            title="reply"
           >
-            replies
+            🖊️
           </button>
         </replyFetcher.Form>
         {replyPosts?.post_stream.posts.slice(1).length && (

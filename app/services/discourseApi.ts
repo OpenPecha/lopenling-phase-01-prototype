@@ -144,6 +144,38 @@ class DiscourseApi {
       console.log(e);
     }
   }
+
+  // async createUser(
+  //   name: string,
+  //   email: string,
+  //   password: string,
+  //   username: string,
+  //   ApiUsername: string = "tenkus47"
+  // ) {
+  //   let auth_headers = this.authHeader(ApiUsername);
+  //   let newUserData = {
+  //     name,
+  //     email,
+  //     password,
+  //     username,
+  //   };
+  //   let params = new URLSearchParams(newUserData).toString();
+  //   try {
+  //     const response = await fetch(
+  //       `${this.DiscourseUrl}/users.json?` + params,
+  //       {
+  //         method: "POST",
+  //         mode: "cors", // no-cors, *cors, same-origin
+  //         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+  //         credentials: "same-origin",
+  //         headers: auth_headers,
+  //       }
+  //     );
+  //     return response;
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }
 }
 
 export async function createQuestion(

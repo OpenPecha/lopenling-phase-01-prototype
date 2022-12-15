@@ -147,7 +147,7 @@ export default function Editor() {
         </div>
       </div>
       <div style={{ overflow: "hidden", flex: 1 }}>
-        <AnnotationList selectedId={selectedAnnotation} />
+        <AnnotationList selectedId={selectedAnnotation} editor={editor} />
         <Question
           openQuestionPortal={openQuestionPortal}
           editor={editor}
