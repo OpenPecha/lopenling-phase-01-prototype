@@ -22,9 +22,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   }
   const text = await getText(params);
   const sources = await getSources();
-  let v_annotations: any = [];
-  let p_annotations: any = [];
-
+  const { v_annotations, p_annotations }: any = await getAnnotations(params);
   const questionlist = await db.question.findMany({
     include: {
       createrUser: true,
@@ -37,9 +35,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     return question.textId === parseInt(text?.id);
   });
   let content = text?.witness.find((t) => t.is_working === true).content;
-  const annotations: any = await getAnnotations(params);
-  v_annotations = annotations.v_annotations;
-  p_annotations = annotations.p_annotations;
   const data = {
     user: userInfo,
     text,

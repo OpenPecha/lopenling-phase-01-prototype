@@ -19,6 +19,7 @@ import {
 import { getUserSession } from "./services/session.server";
 import { json, LoaderFunction } from "@remix-run/node";
 import Headers from "~/components/Header";
+import ErrorPage from "./components/ErrorPage";
 export const loader: LoaderFunction = async ({ request }) => {
   let user = await getUserSession(request);
   return json({ user });
@@ -80,22 +81,16 @@ function Document({ children, title }: any) {
 }
 
 export function CatchBoundary() {
-  let cought = useCatch();
-  switch (cought.status) {
-    case 401:
-    case 404:
-      return (
-        <Document>
-          <h1>
-            {cought.status} {cought.statusText}
-          </h1>
-        </Document>
-      );
-    default:
-      throw new Error(
-        "unexpected Error occured with status code :" + cought.status
-      );
-  }
+  return (
+    <>
+      <head>
+        <Meta />
+        <Links />
+        <title>Error</title>
+      </head>
+      <ErrorPage />;
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
