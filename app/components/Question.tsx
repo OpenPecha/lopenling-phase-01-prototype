@@ -19,15 +19,12 @@ const Question = (
   React.useLayoutEffect(() => {
     if (inputRef.current) inputRef.current.focus();
   }, [openQuestionPortal]);
+  React.useEffect(() => {
+    if (inputRef.current) inputRef.current.value = "";
+  }, [createQuestion.submission]);
   return (
     <section>
-      {createQuestion.submission ? (
-        <EachQuestion
-          l={Object.fromEntries(createQuestion.submission?.formData)}
-          props={{ editor: editor }}
-          linkReady={false}
-        />
-      ) : data.user ? (
+      {data.user ? (
         openQuestionPortal && (
           <createQuestion.Form
             ref={ref}
@@ -67,9 +64,20 @@ const Question = (
       ) : (
         <div style={{ color: "red" }}>u must login first</div>
       )}
+      <center>
+        <h2 className="text-1xl font-bold">
+          Questions for text {data.text.name}
+        </h2>
+      </center>
 
+      {createQuestion.submission && (
+        <EachQuestion
+          l={Object.fromEntries(createQuestion.submission?.formData)}
+          props={{ editor: editor }}
+          linkReady={false}
+        />
+      )}
       <QuestionList
-        QuestionTitle={"Question for text " + data.text.id}
         list={
           editor.isFocused &&
           editor.state.selection.from !== editor.state.selection.to

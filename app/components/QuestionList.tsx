@@ -16,7 +16,6 @@ type QuestionProps = {
       };
     }
   ];
-  QuestionTitle: string;
   editor: Editor | null;
 };
 
@@ -29,7 +28,6 @@ export default function QuestionList(props: QuestionProps) {
       style={{ maxHeight: "60vh", overflow: "scroll", overflowX: "hidden" }}
       ref={parent}
     >
-      <h2 className="text-1xl font-bold underline">{props.QuestionTitle}</h2>
       {props.list
         .sort((a, b) => b.topicId - a.topicId)
         .map((l) => (

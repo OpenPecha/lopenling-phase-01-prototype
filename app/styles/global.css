@@ -17,9 +17,6 @@ a {
   flex-direction: row;
   gap: 10px;
 }
-span:hover {
-  font-weight: bold;
-}
 
 @media screen and (max-width: 680px) {
   .editorPage {

@@ -72,10 +72,7 @@ export default function Index() {
           padding: 20,
         }}
       >
-        <div
-          className="textList"
-          style={{ maxHeight: 600, overflowY: "scroll" }}
-        >
+        <div className="textList">
           <h1>Available Text</h1>
           <searchedText.Form method="get" action="/api/text-search">
             <input
@@ -93,16 +90,18 @@ export default function Index() {
               search
             </button>
           </searchedText.Form>
-          {list.slice(0, 10).map((list: { id: number; name: string }) => {
-            return (
-              <p key={"textList-" + list.id}>
-                <strong>{list.id}</strong>
-                <Link to={"/texts/" + list.id} key={list.id}>
-                  {list.name}
-                </Link>
-              </p>
-            );
-          })}
+          <div style={{ maxHeight: 600, overflowY: "scroll" }}>
+            {list.map((list: { id: number; name: string }) => {
+              return (
+                <p key={"textList-" + list.id}>
+                  <strong>{list.id}</strong>
+                  <Link to={"/texts/" + list.id} key={list.id}>
+                    {list.name}
+                  </Link>
+                </p>
+              );
+            })}
+          </div>
         </div>
         <div className="questionList">
           <QuestionList
