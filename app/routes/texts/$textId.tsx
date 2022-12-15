@@ -34,7 +34,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     return question.textId === parseInt(text?.id);
   });
   const textList = await getTextList();
-  let content = text?.witness.find((t) => t.is_working === true).content;
+  let content = "";
   const data = {
     user: userInfo,
     text,
