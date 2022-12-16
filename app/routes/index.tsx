@@ -61,9 +61,6 @@ export default function Index() {
   );
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <p style={{ display: "flex", justifyContent: "center" }}>
-        Welcome {data.user?.username}
-      </p>
       <div
         style={{
           display: "flex",

@@ -25,11 +25,12 @@ export let loader: LoaderFunction = async ({ request }) => {
       let email = params.get("email");
       let admin = params.get("admin");
       let name = params.get("name");
+      let avatarUrl = params.get("avatar_url");
       let username = params.get("username");
       if (!email || !name || !username) {
         throw new Error("discourse SSO returned error URL");
       }
-      session.set("user", { email, admin, name, username });
+      session.set("user", { email, admin, name, username, avatarUrl });
       let findUserInDatabase = await db.user.findUnique({
         where: { username },
       });
