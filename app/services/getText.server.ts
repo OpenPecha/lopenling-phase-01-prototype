@@ -5,8 +5,8 @@ export async function getText(params: any) {
     const res = await fetch(url);
     const text = await res.json();
     const textName = await getTextList();
-    if (!textName) throw new Error("textName not defined");
-    const name = textName.find((l) => l?.id === parseInt(params.textId)).name;
+    if (typeof textName === "undefined") throw new Error("textName undefined");
+    const name = textName?.find((l) => l?.id === parseInt(params.textId))?.name;
     const responseText = {
       name,
       id: params.textId,
@@ -14,7 +14,7 @@ export async function getText(params: any) {
     };
 
     return responseText;
-  } catch (e) {
+  } catch (e: any) {
     console.log(e.message);
   }
 }

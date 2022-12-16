@@ -104,11 +104,8 @@ export default function Index() {
           </div>
         </div>
         <div className="questionList">
-          <QuestionList
-            list={data.questionList}
-            QuestionTitle={"recent Questions"}
-            editor={null}
-          />
+          <Link to="/questions">Questions</Link>
+          <QuestionList list={data.questionList} editor={null} />
         </div>
       </div>
     </div>

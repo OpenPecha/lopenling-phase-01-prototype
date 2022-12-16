@@ -17,6 +17,7 @@ type QuestionProps = {
     }
   ];
   editor: Editor | null;
+  selectQuestion: number | null;
 };
 
 export default function QuestionList(props: QuestionProps) {
@@ -83,18 +84,22 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
       <br />
       <p>{l?.createrUser?.username}</p>
       <div style={{ display: "flex", gap: 4 }}>
-        <a
-          style={{
-            textDecoration: "none",
-            cursor: "pointer",
-            opacity: !linkReady ? 0.3 : 1,
-          }}
-          className="bg-blue-500 hover:bg-blue-700 text-white px-3 rounded"
-          target=" _blank"
-          href={`https://lopenling.org/t/${l.topicId}`}
-        >
-          visit discussion
-        </a>
+        {props.selectQuestion ? (
+          <Link to={"/questions/" + l.topicId}>view Discussion</Link>
+        ) : (
+          <a
+            style={{
+              textDecoration: "none",
+              cursor: "pointer",
+              opacity: !linkReady ? 0.3 : 1,
+            }}
+            className="bg-blue-500 hover:bg-blue-700 text-white px-3 rounded"
+            target=" _blank"
+            href={`https://lopenling.org/t/${l.topicId}`}
+          >
+            visit discussion
+          </a>
+        )}
         {linkReady && <Vote questionDetail={l} />}
         {showDeleteButton && (
           <deleteFetcher.Form method="post" action="/api/question">
@@ -112,7 +117,7 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
             </button>
           </deleteFetcher.Form>
         )}
-        <replyFetcher.Form method="post" action="/api/question">
+        {/* <replyFetcher.Form method="post" action="/api/question">
           <input hidden name="topicId" defaultValue={l.topicId}></input>
           <button
             type="submit"
@@ -123,7 +128,7 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
           >
             🖊️
           </button>
-        </replyFetcher.Form>
+        </replyFetcher.Form> */}
         {replyPosts?.post_stream.posts.slice(1).length && (
           <div>
             <p>post on topic</p>

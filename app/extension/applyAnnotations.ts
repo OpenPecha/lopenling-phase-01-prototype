@@ -17,7 +17,6 @@ const applyAnnotation = (annotation: {}, pageBreaker: any) =>
       for (const [key, value] of Object.entries(annotations)) {
         allkeys.push(key);
       }
-      console.log(allkeys);
       for (let startid of pageBreaker) {
         allPageBreakerStart.push(startid.start);
       }

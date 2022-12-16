@@ -13,6 +13,8 @@ import _ from "lodash";
 import applyAnnotationFunction from "~/extension/applyAnnotationFunction";
 import AnnotationList from "./AnnotationList";
 import TextList from "./TextList";
+import { FontSize } from "~/extension/fontSize";
+import TextStyle from "@tiptap/extension-text-style";
 type selectionType = {
   start: number;
   end: number;
@@ -49,7 +51,7 @@ export default function Editor() {
       setOpenQuestionPortal(false);
     }
   }, [isAdding, data.questionlist]);
-
+  const editorRef = React.useRef();
   const editor = useEditor({
     extensions: [
       Document,
@@ -58,6 +60,8 @@ export default function Editor() {
       Highlight.configure({ multicolor: true }),
       annotationMark(data, fetchAnnotation),
       applyAnnotation(data.annotations, data.pageBreakers),
+      TextStyle,
+      FontSize,
       SelectTextOnRender,
     ],
     content: data.content,
@@ -110,6 +114,22 @@ export default function Editor() {
         }}
       >
         {/* <TextList selectedText={data.text} setTextLoading={setTextLoading} /> */}
+        <label>fontsize</label>
+        <input
+          onChange={(e) => {
+            let fontSize = e.target.value;
+            editor
+              .chain()
+              .selectAll()
+              .setFontSize(fontSize)
+              .setTextSelection(0)
+              .run();
+          }}
+          defaultValue={16}
+          type="range"
+          min={16}
+          max={30}
+        ></input>
         <div
           style={{
             maxHeight: "100vh",
@@ -118,7 +138,10 @@ export default function Editor() {
             overflow: "scroll",
           }}
         >
-          <EditorContent editor={editor} />
+          <EditorContent
+            editor={editor}
+            style={{ transition: "all ease 0.3s" }}
+          />
           {editor && (
             <BubbleMenu
               className="BubbleMenu"

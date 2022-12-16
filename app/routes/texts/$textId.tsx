@@ -21,8 +21,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
   }
   const text = await getText(params);
-  const sources = await getSources();
   const { v_annotations, p_annotations }: any = await getAnnotations(params);
+  const sources = await getSources();
   const questionlist = await db.question.findMany({
     include: {
       createrUser: true,
@@ -30,7 +30,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       dislikes: true,
     },
   });
-  const textList = await getTextList();
+  let textList = [];
+  textList = await getTextList();
   let filteredQuestionList = questionlist.filter((question) => {
     return question.textId === parseInt(text?.id);
   });

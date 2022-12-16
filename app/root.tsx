@@ -94,6 +94,7 @@ export function CatchBoundary() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
+  console.log(error);
   return (
     <Document title={"error ooh"}>
       <h1>App Error</h1>
