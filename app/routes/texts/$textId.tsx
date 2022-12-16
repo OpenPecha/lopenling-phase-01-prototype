@@ -58,7 +58,7 @@ export const action: ActionFunction = async ({ request }) => {
   return null;
 };
 export const meta: MetaFunction = ({ data }) => {
-  let dataName = data.text.name;
+  let dataName = data?.text?.name;
   let title = dataName ? dataName : "text";
   return {
     title,
