@@ -85,7 +85,12 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
       <p>{l?.createrUser?.username}</p>
       <div style={{ display: "flex", gap: 4 }}>
         {props.selectQuestion ? (
-          <Link to={"/questions/" + l.topicId}>view Discussion</Link>
+          <Link
+            to={"/questions/" + l.topicId}
+            className="bg-blue-500 hover:bg-blue-700 text-white px-3 rounded"
+          >
+            view Discussion
+          </Link>
         ) : (
           <a
             style={{
