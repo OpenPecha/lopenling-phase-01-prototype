@@ -31,8 +31,6 @@ export const action: ActionFunction = async ({ request }) => {
     Object.fromEntries(formData);
   if (_action === "deleteQuestion") {
     const statusCode = await deleteQuestion(
-      DiscourseUrl,
-      api,
       user.username,
       parseInt(topicId.toString())
     );
@@ -59,8 +57,6 @@ export const action: ActionFunction = async ({ request }) => {
       addLinktoQuestion(bodyContent, url),
       value.start,
       value.end,
-      DiscourseUrl,
-      api,
       parent_category_id,
       parseInt(textId)
     );

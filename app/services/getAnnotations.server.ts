@@ -3,7 +3,10 @@ import { getText } from "./getText.server";
 type paramsType = {
   textId: string;
 };
-export async function getAnnotations({ textId }: paramsType) {
+export async function getAnnotations(
+  { textId }: paramsType,
+  userAnnotation: any
+) {
   const apiUrl = "https://parkhang.lopenling.org/api/";
   const text = await getText({ textId: textId });
   if (!text) throw new Error("text Not available");
@@ -13,7 +16,8 @@ export async function getAnnotations({ textId }: paramsType) {
     const url =
       apiUrl + "texts/" + textId + "/witnesses/" + witnessId + "/annotations/";
     const res = await fetch(url);
-    const annotation = await res.json();
+    let annotation = await res.json();
+    annotation = [...annotation, ...userAnnotation];
     let p_annotations = annotation.filter(
       (l) => l.type === "P" && l.creator_witness === baseId
     );

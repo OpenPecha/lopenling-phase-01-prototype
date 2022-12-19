@@ -9,7 +9,6 @@ export default function AnnotationList({ selectedId, editor }: any) {
   const from = annotation[0]?.start;
   const length = annotation[0]?.length;
   const to = from + length;
-  function questionClicked() {}
   const handleSelectionClick = () => {
     var doc = window.document,
       sel,
@@ -27,7 +26,7 @@ export default function AnnotationList({ selectedId, editor }: any) {
         <h3>Default Annotations</h3>
       </center>
       {annotation?.map((l) => {
-        let creator = l.creator_user;
+        let creator = l.creator_user?.name;
         const sources = data.sources;
         if (!creator) {
           let SourceId = data.text.witness.find(

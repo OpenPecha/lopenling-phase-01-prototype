@@ -1,4 +1,9 @@
-import { useFetcher, useLoaderData, useTransition } from "@remix-run/react";
+import {
+  Form,
+  useFetcher,
+  useLoaderData,
+  useTransition,
+} from "@remix-run/react";
 import Document from "@tiptap/extension-document";
 import Highlight from "@tiptap/extension-highlight";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -15,18 +20,21 @@ import AnnotationList from "./AnnotationList";
 import TextList from "./TextList";
 import { FontSize } from "~/extension/fontSize";
 import TextStyle from "@tiptap/extension-text-style";
+import { computeParagraphIndex } from "~/utils/computeParagraphIndex";
 type selectionType = {
   start: number;
   end: number;
 };
+const DefaultFontSize = 20;
 export default function Editor() {
   const [questionArea, setQuestionArea] = React.useState("");
+  const [paragraphIndex, setParagraphIndex] = React.useState(0);
   const [openQuestionPortal, setOpenQuestionPortal] =
     React.useState<boolean>(false);
   const [selectedAnnotation, setSelectedAnnotation] = React.useState<number>(0);
   const [selectionSpan, setSelectionSpan] =
     React.useState<selectionType | null>(null);
-
+  const [fontSize, setFontSize] = React.useState<number>(DefaultFontSize);
   const data = useLoaderData();
   const transition = useTransition();
   const formRef = React.useRef<any>(null);
@@ -51,7 +59,6 @@ export default function Editor() {
       setOpenQuestionPortal(false);
     }
   }, [isAdding, data.questionlist]);
-  const editorRef = React.useRef();
   const editor = useEditor({
     extensions: [
       Document,
@@ -88,6 +95,9 @@ export default function Editor() {
         start: from,
         end: to,
       });
+      let actualStartData = computeParagraphIndex(from, data.pageBreakers);
+      setParagraphIndex(actualStartData);
+
       setOpenQuestionPortal(false);
       setQuestionArea(editor?.state.doc.textBetween(from, to, ""));
     },
@@ -115,27 +125,23 @@ export default function Editor() {
       >
         {/* <TextList selectedText={data.text} setTextLoading={setTextLoading} /> */}
         <label>fontsize</label>
-        <input
-          onChange={(e) => {
-            let fontSize = e.target.value;
-            editor
-              .chain()
-              .selectAll()
-              .setFontSize(fontSize)
-              .setTextSelection(0)
-              .run();
-          }}
-          defaultValue={16}
-          type="range"
-          min={16}
-          max={30}
-        ></input>
+        <select
+          onChange={(e) => setFontSize(parseInt(e.target.value))}
+          defaultValue={DefaultFontSize}
+        >
+          <option value={16}>16</option>
+          <option value={18}>18</option>
+          <option value={20}>20</option>
+          <option value={22}>22</option>
+        </select>
         <div
           style={{
             maxHeight: "100vh",
             minHeight: "60vh",
             height: "80vh",
             overflow: "scroll",
+            fontSize: fontSize,
+            transform: "all ease-in 2s",
           }}
         >
           <EditorContent
@@ -161,6 +167,50 @@ export default function Editor() {
               >
                 Share
               </button>
+              {data.user && (
+                <Form method="post" action="/api/create-user-annotation">
+                  <input
+                    hidden
+                    name="textId"
+                    defaultValue={data.text.id}
+                  ></input>
+                  <input
+                    hidden
+                    name="start"
+                    value={selectionSpan?.start - paragraphIndex - 1}
+                  ></input>
+                  <input
+                    hidden
+                    name="length"
+                    value={selectionSpan?.end - selectionSpan?.start}
+                  ></input>
+                  <input
+                    hidden
+                    name="original"
+                    value={editor.state.doc.textBetween(
+                      selectionSpan?.start,
+                      selectionSpan.end
+                    )}
+                  ></input>
+                  <input
+                    type="text"
+                    name="content"
+                    style={{ border: "1px solid gray" }}
+                    placeholder="type edit here"
+                  ></input>
+                  <input
+                    hidden
+                    name="redirectTo"
+                    defaultValue={window.location.pathname}
+                  ></input>
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                  >
+                    annotate
+                  </button>
+                </Form>
+              )}
             </BubbleMenu>
           )}
         </div>

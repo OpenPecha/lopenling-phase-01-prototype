@@ -83,7 +83,7 @@ class DiscourseApi {
     <div>
 <p>${bodyContent}</p>
 <br/>
-<iframe width="150" height="90" src="https://lopenling-phase-01-prototype-rust.vercel.app/embed/${questionId}"
+<iframe width="150" height="90" src="${process.env.ORIGIN_LOCATION}/embed/${questionId}"
 ></iframe><div>`;
     if (topic_name.length > 20) topic_name = topic_name.slice(0, 19) + "...";
     let new_Topic_data = {
@@ -178,6 +178,9 @@ class DiscourseApi {
   // }
 }
 
+let DiscourseUrl = process.env.DISCOURSE_SITE;
+let api = process.env.DISCOURSE_API_KEY;
+
 export async function createQuestion(
   userName: string,
   textName: FormDataEntryValue | null,
@@ -185,8 +188,6 @@ export async function createQuestion(
   bodyContent: FormDataEntryValue | null,
   start: FormDataEntryValue | null,
   end: FormDataEntryValue | null,
-  DiscourseUrl: string,
-  api: string,
   parent_category_id: string,
   textId: number
 ) {
@@ -195,6 +196,8 @@ export async function createQuestion(
   }
   if (!textName || !QuestionArea || !bodyContent)
     throw new Error("failed to access Topic Id");
+  if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
+
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   let response = await apiObj.fetchCategoryList(parent_category_id);
   let checkIfCategoryPresent = response?.find((l: any) => l.name === textName);
@@ -217,22 +220,15 @@ export async function createQuestion(
   );
 }
 
-export async function deleteQuestion(
-  DiscourseUrl: string,
-  api: string,
-  userName: string,
-  topicId: number
-) {
+export async function deleteQuestion(userName: string, topicId: number) {
+  if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   const res = apiObj.deleteTopic(topicId, userName);
   return res;
 }
 
-export async function getposts(
-  topicId: number,
-  DiscourseUrl: string,
-  api: string
-) {
+export async function getposts(topicId: number) {
+  if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   const res = apiObj.fetchposts(topicId);
   return res;

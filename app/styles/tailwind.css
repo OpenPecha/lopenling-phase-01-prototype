@@ -1133,6 +1133,10 @@ video {
   transition-duration: 150ms;
 }
 
+.ease-in {
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+}
+
 .ease-linear {
   transition-timing-function: linear;
 }

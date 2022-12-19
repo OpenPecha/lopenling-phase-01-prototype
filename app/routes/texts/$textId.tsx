@@ -9,6 +9,7 @@ import { getSources } from "~/services/getSources.server";
 import Editor from "~/components/Editor";
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUserSession(request);
+  const textId = parseInt(params.textId);
   let userInfo;
   if (user?.email) {
     try {
@@ -21,7 +22,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
   }
   const text = await getText(params);
-  const { v_annotations, p_annotations }: any = await getAnnotations(params);
+  let userAnnotation = user
+    ? await db.userAnnotation.findMany({
+        where: {
+          witnessId: textId,
+        },
+        include: {
+          creator_user: true,
+        },
+      })
+    : [];
+  let { v_annotations, p_annotations }: any = await getAnnotations(
+    params,
+    userAnnotation
+  );
   const sources = await getSources();
   const questionlist = await db.question.findMany({
     include: {
@@ -36,6 +50,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     return question.textId === parseInt(text?.id);
   });
   let content = text?.witness.find((t) => t.is_working === true).content;
+
   const data = {
     user: userInfo,
     text,
@@ -45,6 +60,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     pageBreakers: p_annotations,
     sources,
     content,
+    userAnnotation,
   };
   return json(data);
 };

@@ -20,17 +20,16 @@ const applyAnnotation = (annotation: {}, pageBreaker: any) =>
       for (let startid of pageBreaker) {
         allPageBreakerStart.push(startid.start);
       }
+
       let skiplength: any = [];
       [...content].forEach((c, i: number) => {
-        if (allPageBreakerStart.includes(i) && i !== 0) {
-          html += "</p><p>";
-        }
+        if (allPageBreakerStart.includes(i) && i !== 0) html += "</p><p>";
         if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
           html += `<span id="` + i + `">`;
           let annotate = annotations[i];
           let length = annotate[0].length;
           for (let j = i; j < i + length; j++) {
-            if (content[j] !== " ") html += content[j];
+            html += content[j];
             skiplength.push(j);
           }
           html += "</span>";
