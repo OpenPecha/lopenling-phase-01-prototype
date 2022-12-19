@@ -10,7 +10,7 @@ const applyAnnotation = (annotation: {}, pageBreaker: any) =>
     },
     onCreate(this: { editor: any }) {
       let content: string = `${this.editor.getText()}`;
-      let annotations = annotation;
+      let annotations: any = annotation;
       let html = "<p>";
       let allkeys: string[] = [];
       let allPageBreakerStart: string[] = [];
@@ -21,11 +21,11 @@ const applyAnnotation = (annotation: {}, pageBreaker: any) =>
         allPageBreakerStart.push(startid.start);
       }
       let skiplength: any = [];
-      [...content].forEach((c, i) => {
+      [...content].forEach((c, i: number) => {
         if (allPageBreakerStart.includes(i) && i !== 0) {
           html += "</p><p>";
         }
-        if (allkeys.includes(i.toString())) {
+        if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
           html += `<span id="` + i + `">`;
           let annotate = annotations[i];
           let length = annotate[0].length;
@@ -35,9 +35,10 @@ const applyAnnotation = (annotation: {}, pageBreaker: any) =>
           }
           html += "</span>";
         } else {
-          if (!skiplength.includes(i)) {
-            html += c;
+          if (skiplength.includes(i)) {
+            return;
           }
+          html += c;
         }
       });
       html += "</p>";
