@@ -41,6 +41,7 @@ export default function Editor() {
   const userAnnotationFetcher = useFetcher();
   const transition = useTransition();
   const formRef = React.useRef<any>(null);
+  const userannotationRef = React.useRef(null);
   let isAdding =
     transition.state === "submitting" &&
     transition.submission.formData.get("start");
@@ -109,7 +110,8 @@ export default function Editor() {
     },
     [data.annotations]
   );
-
+  if (userAnnotationFetcher.state !== "idle")
+    userannotationRef.current.value = "";
   if (!editor) return null;
 
   return (
@@ -192,7 +194,7 @@ export default function Editor() {
                     name="original"
                     value={editor.state.doc.textBetween(
                       selectionSpan?.start,
-                      selectionSpan.end
+                      selectionSpan?.end
                     )}
                   ></input>
                   <input
@@ -201,6 +203,7 @@ export default function Editor() {
                     style={{ border: "1px solid gray" }}
                     required
                     placeholder="type edit here"
+                    ref={userannotationRef}
                   ></input>
                   <input
                     hidden

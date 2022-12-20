@@ -24,7 +24,7 @@ export default function AnnotationList({ selectedId, editor }: any) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <center>
-        <h3>Default Annotations</h3>
+        <h3>Annotations</h3>
       </center>
       {annotation?.map((l) => {
         let creator = l.creator_user?.name;
