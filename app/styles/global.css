@@ -17,6 +17,12 @@ a {
   flex-direction: row;
   gap: 10px;
 }
+.Text-Image {
+  width: 100%;
+}
+.hideImage img {
+  display: none;
+}
 
 @media screen and (max-width: 680px) {
   .editorPage {

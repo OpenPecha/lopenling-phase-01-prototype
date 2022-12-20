@@ -8,7 +8,7 @@ function computeParagraphIndex(start: number, pagebreaker: any) {
   if (p_index === -1) {
     p_index = pagebreaker.length;
   }
-  return p_index * 2;
+  return p_index * 3;
 }
 
 // function getActualStart(start: number, pagebreaker: any, end: number) {

@@ -1,9 +1,10 @@
 import { Extension } from "@tiptap/core";
+import { Editor } from "@tiptap/react";
 
 export const applyAnnotationFunction = (
-  editor,
-  annotation,
-  pageBreaker,
+  editor: Editor,
+  annotation: [],
+  pageBreaker: [],
   updateContent = null
 ) => {
   let content: string = `${editor.getText()}`;
@@ -11,19 +12,23 @@ export const applyAnnotationFunction = (
     content = updateContent;
   }
   let annotations: any = annotation;
-  let html = "<p>";
+  let imageUrl =
+    "https://iiif.bdrc.io/bdr:I2KG210156::I2KG2101560003.jpg/full/full/0/default.jpg";
+  let html = "<p><img src='" + imageUrl + "'></img>";
   let allkeys: string[] = [];
   let allPageBreakerStart: string[] = [];
   for (const [key, value] of Object.entries(annotations)) {
     allkeys.push(key);
   }
   for (let startid of pageBreaker) {
-    allPageBreakerStart.push(startid.start);
+    allPageBreakerStart.push(startid?.start);
   }
 
   let skiplength: any = [];
   [...content].forEach((c, i: number) => {
-    if (allPageBreakerStart.includes(i) && i !== 0) html += "</p><p>";
+    if (allPageBreakerStart.includes(i) && i !== 0)
+      html += "</p><p><img src='" + imageUrl + "'></img>";
+
     if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
       html += `<span id="` + i + `">`;
       let annotate = annotations[i];

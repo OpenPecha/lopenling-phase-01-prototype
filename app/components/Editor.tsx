@@ -1,11 +1,4 @@
-import {
-  Form,
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useSubmit,
-  useTransition,
-} from "@remix-run/react";
+import { useFetcher, useLoaderData, useTransition } from "@remix-run/react";
 import Document from "@tiptap/extension-document";
 import Highlight from "@tiptap/extension-highlight";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -13,9 +6,7 @@ import Text from "@tiptap/extension-text";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import React from "react";
 import { annotationMark } from "~/extension/annotationMark";
-import applyAnnotation, {
-  applyAnnotationFunction,
-} from "~/extension/applyAnnotations";
+import applyAnnotation from "~/extension/applyAnnotations";
 import SelectTextOnRender from "~/extension/selectionOnFirstRender";
 import Question from "./Question";
 import _ from "lodash";
@@ -23,6 +14,7 @@ import AnnotationList from "./AnnotationList";
 import { FontSize } from "~/extension/fontSize";
 import TextStyle from "@tiptap/extension-text-style";
 import { computeParagraphIndex } from "~/utils/computeParagraphIndex";
+import CustomImage from "~/extension/ImageNode";
 type selectionType = {
   start: number;
   end: number;
@@ -45,7 +37,6 @@ export default function Editor() {
   let isAdding =
     transition.state === "submitting" &&
     transition.submission.formData.get("start");
-
   const fetchAnnotation = (id: number) => {
     setSelectedAnnotation(id);
   };
@@ -71,6 +62,10 @@ export default function Editor() {
         Paragraph,
         Text,
         Highlight.configure({ multicolor: true }),
+        CustomImage.configure({
+          inline: true,
+          allowBase64: true,
+        }),
         annotationMark(data, fetchAnnotation),
         applyAnnotation(data.annotations, data.pageBreakers),
         TextStyle,
@@ -132,6 +127,21 @@ export default function Editor() {
           <option value={20}>20</option>
           <option value={22}>22</option>
         </select>
+        <label htmlFor="showImage">show image</label>
+        <input
+          id="showImage"
+          type="checkbox"
+          defaultChecked={true}
+          onChange={(e) => {
+            editor?.setOptions({
+              editorProps: {
+                attributes: {
+                  class: !e.target.checked ? "hideImage" : "",
+                },
+              },
+            });
+          }}
+        ></input>
         <div
           style={{
             maxHeight: "100vh",
@@ -180,7 +190,7 @@ export default function Editor() {
                     readOnly
                     hidden
                     name="start"
-                    value={selectionSpan?.start - paragraphIndex - 1}
+                    value={selectionSpan?.start - paragraphIndex - 2}
                   ></input>
                   <input
                     hidden
