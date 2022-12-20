@@ -92,13 +92,16 @@ export default function Editor() {
       onSelectionUpdate: ({ editor }) => {
         let from = editor.state.selection.from;
         let to = editor.state.selection.to;
+        console.log(to - from, from, to);
         setSelectionSpan({
           start: from,
           end: to,
         });
         let actualStartData = computeParagraphIndex(from, data.pageBreakers);
-        setParagraphIndex(actualStartData);
-
+        let dif = actualStartData * 3; //offset due to image and p tag
+        dif = dif + 2;
+        if (actualStartData > 0) dif -= actualStartData;
+        setParagraphIndex(dif);
         setOpenQuestionPortal(false);
         setQuestionArea(editor?.state.doc.textBetween(from, to, ""));
       },
@@ -190,7 +193,7 @@ export default function Editor() {
                     readOnly
                     hidden
                     name="start"
-                    value={selectionSpan?.start - paragraphIndex - 2}
+                    value={selectionSpan?.start - paragraphIndex}
                   ></input>
                   <input
                     hidden
