@@ -1,7 +1,9 @@
 import {
   Form,
+  useActionData,
   useFetcher,
   useLoaderData,
+  useSubmit,
   useTransition,
 } from "@remix-run/react";
 import Document from "@tiptap/extension-document";
@@ -11,13 +13,13 @@ import Text from "@tiptap/extension-text";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import React from "react";
 import { annotationMark } from "~/extension/annotationMark";
-import applyAnnotation from "~/extension/applyAnnotations";
+import applyAnnotation, {
+  applyAnnotationFunction,
+} from "~/extension/applyAnnotations";
 import SelectTextOnRender from "~/extension/selectionOnFirstRender";
 import Question from "./Question";
 import _ from "lodash";
-import applyAnnotationFunction from "~/extension/applyAnnotationFunction";
 import AnnotationList from "./AnnotationList";
-import TextList from "./TextList";
 import { FontSize } from "~/extension/fontSize";
 import TextStyle from "@tiptap/extension-text-style";
 import { computeParagraphIndex } from "~/utils/computeParagraphIndex";
@@ -28,7 +30,7 @@ type selectionType = {
 const DefaultFontSize = 20;
 export default function Editor() {
   const [questionArea, setQuestionArea] = React.useState("");
-  const [paragraphIndex, setParagraphIndex] = React.useState(0);
+  const [paragraphIndex, setParagraphIndex] = React.useState<number>(0);
   const [openQuestionPortal, setOpenQuestionPortal] =
     React.useState<boolean>(false);
   const [selectedAnnotation, setSelectedAnnotation] = React.useState<number>(0);
@@ -36,6 +38,7 @@ export default function Editor() {
     React.useState<selectionType | null>(null);
   const [fontSize, setFontSize] = React.useState<number>(DefaultFontSize);
   const data = useLoaderData();
+  const userAnnotationFetcher = useFetcher();
   const transition = useTransition();
   const formRef = React.useRef<any>(null);
   let isAdding =
@@ -59,60 +62,53 @@ export default function Editor() {
       setOpenQuestionPortal(false);
     }
   }, [isAdding, data.questionlist]);
-  const editor = useEditor({
-    extensions: [
-      Document,
-      Paragraph,
-      Text,
-      Highlight.configure({ multicolor: true }),
-      annotationMark(data, fetchAnnotation),
-      applyAnnotation(data.annotations, data.pageBreakers),
-      TextStyle,
-      FontSize,
-      SelectTextOnRender,
-    ],
-    content: data.content,
-    editable: true,
-    editorProps: {
-      handleDOMEvents: {
-        keydown: (value, event) => {
-          if (![37, 38, 39, 40].includes(event.keyCode)) {
-            event.preventDefault();
-          }
-        },
-        drop: (value, e) => {
-          e.preventDefault();
-        },
-        dragstart: (value, e) => {
-          e.preventDefault();
+
+  const editor = useEditor(
+    {
+      extensions: [
+        Document,
+        Paragraph,
+        Text,
+        Highlight.configure({ multicolor: true }),
+        annotationMark(data, fetchAnnotation),
+        applyAnnotation(data.annotations, data.pageBreakers),
+        TextStyle,
+        FontSize,
+        SelectTextOnRender,
+      ],
+      content: data.content,
+      editable: true,
+      editorProps: {
+        handleDOMEvents: {
+          keydown: (value, event) => {
+            if (![37, 38, 39, 40].includes(event.keyCode)) {
+              event.preventDefault();
+            }
+          },
+          drop: (value, e) => {
+            e.preventDefault();
+          },
+          dragstart: (value, e) => {
+            e.preventDefault();
+          },
         },
       },
-    },
-    onSelectionUpdate: ({ editor }) => {
-      let from = editor.state.selection.from;
-      let to = editor.state.selection.to;
-      setSelectionSpan({
-        start: from,
-        end: to,
-      });
-      let actualStartData = computeParagraphIndex(from, data.pageBreakers);
-      setParagraphIndex(actualStartData);
+      onSelectionUpdate: ({ editor }) => {
+        let from = editor.state.selection.from;
+        let to = editor.state.selection.to;
+        setSelectionSpan({
+          start: from,
+          end: to,
+        });
+        let actualStartData = computeParagraphIndex(from, data.pageBreakers);
+        setParagraphIndex(actualStartData);
 
-      setOpenQuestionPortal(false);
-      setQuestionArea(editor?.state.doc.textBetween(from, to, ""));
+        setOpenQuestionPortal(false);
+        setQuestionArea(editor?.state.doc.textBetween(from, to, ""));
+      },
     },
-  });
-  //  ----- To update annotation on text change on same page -------
-  // React.useEffect(() => {
-  //   let firstRender;
-  //   if (editor && data.annotations && data.content && firstRender) {
-  //     let content = applyAnnotationFunction(data.annotations, data.content);
-  //     editor.commands.setContent(content, {
-  //       emitUpdate: true,
-  //     });
-  //   }
-  //   firstRender = true;
-  // }, [data.content, data.annotation]);
+    [data.annotations]
+  );
 
   if (!editor) return null;
 
@@ -168,24 +164,31 @@ export default function Editor() {
                 Share
               </button>
               {data.user && (
-                <Form method="post" action="/api/create-user-annotation">
+                <userAnnotationFetcher.Form
+                  method="post"
+                  action="/api/create-user-annotation"
+                >
                   <input
                     hidden
                     name="textId"
                     defaultValue={data.text.id}
+                    readOnly
                   ></input>
                   <input
+                    readOnly
                     hidden
                     name="start"
                     value={selectionSpan?.start - paragraphIndex - 1}
                   ></input>
                   <input
                     hidden
+                    readOnly
                     name="length"
                     value={selectionSpan?.end - selectionSpan?.start}
                   ></input>
                   <input
                     hidden
+                    readOnly
                     name="original"
                     value={editor.state.doc.textBetween(
                       selectionSpan?.start,
@@ -196,20 +199,23 @@ export default function Editor() {
                     type="text"
                     name="content"
                     style={{ border: "1px solid gray" }}
+                    required
                     placeholder="type edit here"
                   ></input>
                   <input
                     hidden
+                    readOnly
                     name="redirectTo"
                     defaultValue={window.location.pathname}
                   ></input>
                   <button
+                    disabled={userAnnotationFetcher.state !== "idle"}
                     type="submit"
                     className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                   >
                     annotate
                   </button>
-                </Form>
+                </userAnnotationFetcher.Form>
               )}
             </BubbleMenu>
           )}

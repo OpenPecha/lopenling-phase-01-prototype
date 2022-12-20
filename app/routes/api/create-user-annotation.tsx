@@ -1,4 +1,4 @@
-import { ActionFunction, redirect } from "@remix-run/node";
+import { ActionFunction, json, redirect } from "@remix-run/node";
 import { getUserSession } from "~/services/session.server";
 import { db } from "~/utils/db.server";
 
@@ -7,9 +7,9 @@ export const action: ActionFunction = async ({ request }) => {
   let witnessId = form.get("textId")?.toString();
   let start = form.get("start")?.toString();
   let length = form.get("length")?.toString();
-  let redirectTo = form.get("redirectTo");
-  let content = form.get("content");
-  let original = form.get("original");
+  let redirectTo = form.get("redirectTo")?.toString();
+  let content = form.get("content")?.toString();
+  let original = form.get("original")?.toString();
   let user = await getUserSession(request);
   let userFromDatabase = await db.user.findUnique({
     where: {
@@ -31,15 +31,8 @@ export const action: ActionFunction = async ({ request }) => {
     const createAnnotation = await db.userAnnotation.create({
       data,
     });
-    console.log(createAnnotation);
+    return json({ createAnnotation });
   } catch (e) {
-    console.log(e);
+    throw new Error(e.message);
   }
-  let redirectToUrl = redirectTo?.toString();
-  if (!redirectToUrl) throw new Error("redirectUrl error");
-  return redirect(redirectToUrl);
 };
-
-export default function Sho() {
-  return <div>hi</div>;
-}

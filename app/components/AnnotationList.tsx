@@ -1,5 +1,5 @@
 import { useLoaderData } from "@remix-run/react";
-import Vote from "./Vote";
+// import Vote from "./Vote";
 
 export default function AnnotationList({ selectedId, editor }: any) {
   const data = useLoaderData();
@@ -20,6 +20,7 @@ export default function AnnotationList({ selectedId, editor }: any) {
     sel.removeAllRanges();
     sel.addRange(range);
   };
+  if (!annotation) return <div>please refresh the page</div>;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <center>
