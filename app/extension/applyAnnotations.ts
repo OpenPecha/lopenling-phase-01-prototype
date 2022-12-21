@@ -12,9 +12,7 @@ export const applyAnnotationFunction = (
     content = updateContent;
   }
   let annotations: any = annotation;
-  let imageUrl =
-    "https://iiif.bdrc.io/bdr:I2KG210156::I2KG2101560003.jpg/full/full/0/default.jpg";
-  let html = "<p><img src='" + imageUrl + "'></img>";
+  let html = "<p>";
   let allkeys: string[] = [];
   let allPageBreakerStart: string[] = [];
   for (const [key, value] of Object.entries(annotations)) {
@@ -26,9 +24,7 @@ export const applyAnnotationFunction = (
 
   let skiplength: any = [];
   [...content].forEach((c, i: number) => {
-    if (allPageBreakerStart.includes(i) && i !== 0)
-      html += "</p><p><img src='" + imageUrl + "'></img>";
-
+    if (allPageBreakerStart.includes(i) && i !== 0) html += "</p><p>";
     if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
       html += `<span id="` + i + `">`;
       let annotate = annotations[i];

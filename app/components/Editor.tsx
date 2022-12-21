@@ -98,9 +98,8 @@ export default function Editor() {
           end: to,
         });
         let actualStartData = computeParagraphIndex(from, data.pageBreakers);
-        let dif = actualStartData * 3; //offset due to image and p tag
-        dif = dif + 2;
-        if (actualStartData > 0) dif -= actualStartData;
+        let dif = actualStartData * 2; //offset due to image and p tag
+
         setParagraphIndex(dif);
         setOpenQuestionPortal(false);
         setQuestionArea(editor?.state.doc.textBetween(from, to, ""));
