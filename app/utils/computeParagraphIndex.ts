@@ -1,4 +1,4 @@
-function computeParagraphIndex(start: number, pagebreaker: any) {
+function computeParagraphIndex(start: number = 0, pagebreaker: any) {
   pagebreaker = pagebreaker.filter((l) => !(l.start === 0));
   pagebreaker.sort((a, b) => a.start - b.start);
   let pagebreak = pagebreaker.find((value) => {
@@ -11,8 +11,4 @@ function computeParagraphIndex(start: number, pagebreaker: any) {
   return p_index;
 }
 
-// function getActualStart(start: number, pagebreaker: any, end: number) {
-//   let p_index = computeParagraphIndex(start, pagebreaker);
-//   return p_index;
-// }
 export { computeParagraphIndex };

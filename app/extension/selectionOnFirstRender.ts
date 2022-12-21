@@ -14,7 +14,7 @@ const SelectTextOnRender = Extension.create({
           .focus()
           .setTextSelection({
             from: parseInt(start),
-            to: parseInt(end),
+            to: parseInt(++end),
           })
           .scrollIntoView()
           .run();

@@ -23,6 +23,7 @@
     "@sentry/remix": "^7.23.0",
     "@tiptap/extension-color": "^2.0.0-beta.209",
     "@tiptap/extension-document": "^2.0.0-beta.202",
+    "@tiptap/extension-hard-break": "^2.0.0-beta.209",
     "@tiptap/extension-highlight": "^2.0.0-beta.202",
     "@tiptap/extension-image": "^2.0.0-beta.209",
     "@tiptap/extension-paragraph": "^2.0.0-beta.202",

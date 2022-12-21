@@ -24,7 +24,7 @@ export const applyAnnotationFunction = (
 
   let skiplength: any = [];
   [...content].forEach((c, i: number) => {
-    if (allPageBreakerStart.includes(i) && i !== 0) html += "</p><p>";
+    if (allPageBreakerStart.includes(i) && i !== 0) html += "<br>";
     if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
       html += `<span id="` + i + `">`;
       let annotate = annotations[i];

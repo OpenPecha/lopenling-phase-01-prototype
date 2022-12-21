@@ -1,4 +1,4 @@
-import { useFetcher, useLoaderData, useTransition } from "@remix-run/react";
+import { useLoaderData, useTransition } from "@remix-run/react";
 import Document from "@tiptap/extension-document";
 import Highlight from "@tiptap/extension-highlight";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -13,16 +13,17 @@ import _ from "lodash";
 import AnnotationList from "./AnnotationList";
 import { FontSize } from "~/extension/fontSize";
 import TextStyle from "@tiptap/extension-text-style";
-import { computeParagraphIndex } from "~/utils/computeParagraphIndex";
-import CustomImage from "~/extension/ImageNode";
+
+import HardBreak from "@tiptap/extension-hard-break";
+import AddAnnotation from "./AddAnnotation";
 type selectionType = {
   start: number;
   end: number;
 };
 const DefaultFontSize = 20;
 export default function Editor() {
-  const [questionArea, setQuestionArea] = React.useState("");
-  const [paragraphIndex, setParagraphIndex] = React.useState<number>(0);
+  const [selectedText, setSelectedText] = React.useState("");
+  const [edit, setEdit] = React.useState(false);
   const [openQuestionPortal, setOpenQuestionPortal] =
     React.useState<boolean>(false);
   const [selectedAnnotation, setSelectedAnnotation] = React.useState<number>(0);
@@ -30,10 +31,8 @@ export default function Editor() {
     React.useState<selectionType | null>(null);
   const [fontSize, setFontSize] = React.useState<number>(DefaultFontSize);
   const data = useLoaderData();
-  const userAnnotationFetcher = useFetcher();
   const transition = useTransition();
   const formRef = React.useRef<any>(null);
-  const userannotationRef = React.useRef(null);
   let isAdding =
     transition.state === "submitting" &&
     transition.submission.formData.get("start");
@@ -62,10 +61,7 @@ export default function Editor() {
         Paragraph,
         Text,
         Highlight.configure({ multicolor: true }),
-        CustomImage.configure({
-          inline: true,
-          allowBase64: true,
-        }),
+        HardBreak,
         annotationMark(data, fetchAnnotation),
         applyAnnotation(data.annotations, data.pageBreakers),
         TextStyle,
@@ -92,25 +88,19 @@ export default function Editor() {
       onSelectionUpdate: ({ editor }) => {
         let from = editor.state.selection.from;
         let to = editor.state.selection.to;
-        console.log(to - from, from, to);
         setSelectionSpan({
           start: from,
-          end: to,
+          end: from === to ? to : to - 1,
         });
-        let actualStartData = computeParagraphIndex(from, data.pageBreakers);
-        let dif = actualStartData * 2; //offset due to image and p tag
-
-        setParagraphIndex(dif);
         setOpenQuestionPortal(false);
-        setQuestionArea(editor?.state.doc.textBetween(from, to, ""));
+        setSelectedText(editor?.state.doc.textBetween(from, to, ""));
+        setEdit(false);
       },
     },
     [data.annotations]
   );
-  if (userAnnotationFetcher.state !== "idle")
-    userannotationRef.current.value = "";
-  if (!editor) return null;
 
+  if (!editor) return null;
   return (
     <div className="editorPage">
       <div
@@ -129,21 +119,7 @@ export default function Editor() {
           <option value={20}>20</option>
           <option value={22}>22</option>
         </select>
-        <label htmlFor="showImage">show image</label>
-        <input
-          id="showImage"
-          type="checkbox"
-          defaultChecked={true}
-          onChange={(e) => {
-            editor?.setOptions({
-              editorProps: {
-                attributes: {
-                  class: !e.target.checked ? "hideImage" : "",
-                },
-              },
-            });
-          }}
-        ></input>
+
         <div
           style={{
             maxHeight: "100vh",
@@ -178,59 +154,12 @@ export default function Editor() {
                 Share
               </button>
               {data.user && (
-                <userAnnotationFetcher.Form
-                  method="post"
-                  action="/api/create-user-annotation"
+                <button
+                  onClick={() => setEdit(true)}
+                  className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 >
-                  <input
-                    hidden
-                    name="textId"
-                    defaultValue={data.text.id}
-                    readOnly
-                  ></input>
-                  <input
-                    readOnly
-                    hidden
-                    name="start"
-                    value={selectionSpan?.start - paragraphIndex}
-                  ></input>
-                  <input
-                    hidden
-                    readOnly
-                    name="length"
-                    value={selectionSpan?.end - selectionSpan?.start}
-                  ></input>
-                  <input
-                    hidden
-                    readOnly
-                    name="original"
-                    value={editor.state.doc.textBetween(
-                      selectionSpan?.start,
-                      selectionSpan?.end
-                    )}
-                  ></input>
-                  <input
-                    type="text"
-                    name="content"
-                    style={{ border: "1px solid gray" }}
-                    required
-                    placeholder="type edit here"
-                    ref={userannotationRef}
-                  ></input>
-                  <input
-                    hidden
-                    readOnly
-                    name="redirectTo"
-                    defaultValue={window.location.pathname}
-                  ></input>
-                  <button
-                    disabled={userAnnotationFetcher.state !== "idle"}
-                    type="submit"
-                    className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                  >
-                    annotate
-                  </button>
-                </userAnnotationFetcher.Form>
+                  annotate
+                </button>
               )}
             </BubbleMenu>
           )}
@@ -238,10 +167,16 @@ export default function Editor() {
       </div>
       <div style={{ overflow: "hidden", flex: 1 }}>
         <AnnotationList selectedId={selectedAnnotation} editor={editor} />
+        {edit && (
+          <AddAnnotation
+            selectionSpan={selectionSpan}
+            selectedText={selectedText}
+          />
+        )}
         <Question
           openQuestionPortal={openQuestionPortal}
           editor={editor}
-          questionArea={questionArea}
+          questionArea={selectedText}
           ref={formRef}
         />
       </div>
