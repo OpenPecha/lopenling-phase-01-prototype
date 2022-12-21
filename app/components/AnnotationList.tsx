@@ -37,12 +37,15 @@ export default function AnnotationList({ selectedId, editor }: any) {
           creator = sources.find((s) => s.id === SourceId).name;
         }
         let content = l.content === "" ? "deleted" : l.content;
+        if (creator !== user?.name && l.private === true) return null;
         return (
           <div
             style={{ display: "flex", justifyContent: "space-between" }}
             key={l.id}
           >
-            {creator === user?.name && <TogglePrivate />}
+            {creator === user?.name && (
+              <TogglePrivate id={l.id} currentStatus={l.private} />
+            )}
             <div onClick={handleSelectionClick} style={{ cursor: "pointer" }}>
               {creator + "  ->  " + content}
             </div>

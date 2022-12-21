@@ -78,6 +78,7 @@ model UserAnnotation {
   witnessId    Int
   creator_user User     @relation(fields: [userId], references: [id])
   userId       String
+  private      Boolean  @default(true)
   start        Int
   length       Int
   is_deleted   Boolean  @default(false)
