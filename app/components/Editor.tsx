@@ -23,6 +23,7 @@ type selectionType = {
 const DefaultFontSize = 20;
 export default function Editor() {
   const [selectedText, setSelectedText] = React.useState("");
+  const [allowAnnotation, setAllowedAnnotation] = React.useState(true);
   const [edit, setEdit] = React.useState(false);
   const [openQuestionPortal, setOpenQuestionPortal] =
     React.useState<boolean>(false);
@@ -88,6 +89,9 @@ export default function Editor() {
       onSelectionUpdate: ({ editor }) => {
         let from = editor.state.selection.from;
         let to = editor.state.selection.to;
+        let selectionContent = editor.state.selection.content().toJSON()
+          ?.content[0]?.content;
+        setAllowedAnnotation(selectionContent?.length !== 1 ? false : true);
         setSelectionSpan({
           start: from,
           end: from === to ? to : to - 1,
@@ -153,7 +157,7 @@ export default function Editor() {
               >
                 Share
               </button>
-              {data.user && (
+              {data.user && allowAnnotation && (
                 <button
                   onClick={() => setEdit(true)}
                   className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
