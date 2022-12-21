@@ -1,4 +1,5 @@
 import { useLoaderData } from "@remix-run/react";
+import TogglePrivate from "./TogglePrivate";
 // import Vote from "./Vote";
 
 export default function AnnotationList({ selectedId, editor }: any) {
@@ -41,6 +42,7 @@ export default function AnnotationList({ selectedId, editor }: any) {
             style={{ display: "flex", justifyContent: "space-between" }}
             key={l.id}
           >
+            {creator === user?.name && <TogglePrivate />}
             <div onClick={handleSelectionClick} style={{ cursor: "pointer" }}>
               {creator + "  ->  " + content}
             </div>
