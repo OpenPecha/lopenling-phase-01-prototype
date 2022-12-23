@@ -1,12 +1,15 @@
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { computeParagraphIndex } from "~/utils/computeParagraphIndex";
 import React from "react";
+import { Editor } from "@tiptap/react";
 type PropsType = {
   selectionSpan: {
     start: number;
     end: number;
   } | null;
   selectedText: string;
+  editor: Editor;
+  setSelectedAnnotation: (id: number) => void;
 };
 
 export default function AddAnnotation(props: PropsType) {
@@ -14,8 +17,14 @@ export default function AddAnnotation(props: PropsType) {
   const userAnnotationFetcher = useFetcher();
   const { selectionSpan, selectedText } = props;
   const [offset, setOffset] = React.useState<number>(0);
-  const userannotationRef = React.useRef(null);
 
+  const userannotationRef = React.useRef(null);
+  const fetcherData = userAnnotationFetcher.data;
+  React.useEffect(() => {
+    if (fetcherData) {
+      props.setSelectedAnnotation(fetcherData.createAnnotation.start);
+    }
+  }, [fetcherData]);
   React.useEffect(() => {
     let actualStartData = computeParagraphIndex(
       selectionSpan.start,
@@ -26,9 +35,10 @@ export default function AddAnnotation(props: PropsType) {
 
   if (userAnnotationFetcher.state !== "idle")
     userannotationRef.current.value = "";
+
   return (
     <>
-      <div>
+      {/* <div>
         Edit details {selectedText}
         <br />
         start: {selectionSpan?.start}
@@ -39,7 +49,7 @@ export default function AddAnnotation(props: PropsType) {
         {selectedText.length}
         <br />
         offset - {offset}
-      </div>
+      </div> */}
       <userAnnotationFetcher.Form
         method="post"
         action="/api/create-user-annotation"

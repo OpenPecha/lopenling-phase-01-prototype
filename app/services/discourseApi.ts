@@ -1,5 +1,7 @@
 import { db } from "~/utils/db.server";
 import { v4 as uuidv4 } from "uuid";
+import FormData from "form-data";
+
 class DiscourseApi {
   DiscourseUrl: string;
   apiKey: string;
@@ -131,7 +133,6 @@ class DiscourseApi {
 
     return data;
   }
-
   async deleteTopic(id: number, username: string) {
     let auth_headers = this.authHeader(username);
     try {
@@ -144,38 +145,23 @@ class DiscourseApi {
       console.log(e);
     }
   }
+  async uploadFile(username: string, base64) {
+    let auth_headers = this.authHeader(username);
 
-  // async createUser(
-  //   name: string,
-  //   email: string,
-  //   password: string,
-  //   username: string,
-  //   ApiUsername: string = "tenkus47"
-  // ) {
-  //   let auth_headers = this.authHeader(ApiUsername);
-  //   let newUserData = {
-  //     name,
-  //     email,
-  //     password,
-  //     username,
-  //   };
-  //   let params = new URLSearchParams(newUserData).toString();
-  //   try {
-  //     const response = await fetch(
-  //       `${this.DiscourseUrl}/users.json?` + params,
-  //       {
-  //         method: "POST",
-  //         mode: "cors", // no-cors, *cors, same-origin
-  //         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-  //         credentials: "same-origin",
-  //         headers: auth_headers,
-  //       }
-  //     );
-  //     return response;
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
+    let fileDetail = {
+      type: "composer",
+      synchronous: true,
+    };
+    let params = new URLSearchParams(fileDetail).toString();
+    let res = await fetch(`${this.DiscourseUrl}/uploads?` + params, {
+      method: "post",
+      headers: { ...auth_headers, "Content-Type": "multipart/form-data" },
+      body: {
+        "file[]": base64,
+      },
+    });
+    console.log(res);
+  }
 }
 
 let DiscourseUrl = process.env.DISCOURSE_SITE;
@@ -229,9 +215,16 @@ export async function deleteQuestion(userName: string, topicId: number) {
 
 export async function getposts(topicId: number) {
   if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
+
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   const res = apiObj.fetchposts(topicId);
   return res;
 }
 
+export async function uploadFile(username: string, base64: string) {
+  if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
+  const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
+  const res = apiObj.uploadFile(username, base64);
+  return res;
+}
 export default DiscourseApi;

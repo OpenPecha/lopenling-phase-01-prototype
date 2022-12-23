@@ -1,4 +1,5 @@
 import { useLoaderData } from "@remix-run/react";
+import DeleteAnnotation from "./DeleteAnnotation";
 import TogglePrivate from "./TogglePrivate";
 // import Vote from "./Vote";
 
@@ -14,19 +15,24 @@ export default function AnnotationList({ selectedId, editor }: any) {
     var doc = window.document,
       sel,
       range;
-    let select = document.getElementById(from);
+    let select = document.getElementById(from) as Node;
     sel = window.getSelection();
     range = doc.createRange();
     range.selectNodeContents(select);
+    if (!sel) throw new Error("selection is empty");
     sel.removeAllRanges();
     sel.addRange(range);
   };
   if (!annotation) return <div>please refresh the page</div>;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <center>
-        <h3>Annotations</h3>
-      </center>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        background: "#eee",
+      }}
+    >
       {annotation?.map((l) => {
         let creator = l.creator_user?.name;
         const sources = data.sources;
@@ -43,34 +49,17 @@ export default function AnnotationList({ selectedId, editor }: any) {
             style={{ display: "flex", justifyContent: "space-between" }}
             key={l.id}
           >
-            {creator === user?.name && (
-              <TogglePrivate id={l.id} currentStatus={l.private} />
-            )}
             <div onClick={handleSelectionClick} style={{ cursor: "pointer" }}>
               {creator + "  ->  " + content}
             </div>
-            {content !== "deleted" && (
-              <div style={{ display: "flex", gap: 5 }}>
-                <button
-                  name="_action"
-                  value="likeVote"
-                  disabled={true}
-                  type="submit"
-                  className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  {0} 👍
-                </button>
-                <button
-                  name="_action"
-                  value="dislikeVote"
-                  type="submit"
-                  disabled={true}
-                  className="py-2 px-3 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  {0}👎
-                </button>
-              </div>
-            )}
+            <div style={{ display: "flex", gap: 10 }}>
+              {creator === user?.name && (
+                <>
+                  <TogglePrivate id={l.id} currentStatus={l.private} />
+                  <DeleteAnnotation id={l.id} />
+                </>
+              )}
+            </div>
           </div>
         );
       })}

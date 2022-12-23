@@ -25,6 +25,7 @@ model User {
   Annotation       UserAnnotation[]
   Likes            Likes[]
   DisLikes         DisLikes[]
+  Audio            Audio[]
 
   @@index([email])
 }
@@ -87,4 +88,15 @@ model UserAnnotation {
   type         String
   original     String
   content      String
+}
+
+model Audio {
+  id           Int     @unique @default(autoincrement())
+  creator_user User    @relation(fields: [userId], references: [id])
+  private      Boolean @default(true)
+  witnessId    Int
+  start        Int
+  length       Int
+  base64       String
+  userId       String
 }

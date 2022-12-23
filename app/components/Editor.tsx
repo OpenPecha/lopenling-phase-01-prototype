@@ -1,4 +1,4 @@
-import { useLoaderData, useTransition } from "@remix-run/react";
+import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import Document from "@tiptap/extension-document";
 import Highlight from "@tiptap/extension-highlight";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -16,6 +16,9 @@ import TextStyle from "@tiptap/extension-text-style";
 
 import HardBreak from "@tiptap/extension-hard-break";
 import AddAnnotation from "./AddAnnotation";
+import AddAudio from "./AddAudio";
+import ReactAudioPlayer from "react-audio-player";
+import AudioList from "./AudioList";
 type selectionType = {
   start: number;
   end: number;
@@ -25,6 +28,8 @@ export default function Editor() {
   const [selectedText, setSelectedText] = React.useState("");
   const [allowAnnotation, setAllowedAnnotation] = React.useState(true);
   const [edit, setEdit] = React.useState(false);
+  const [editAudio, setEditAudio] = React.useState(false);
+
   const [openQuestionPortal, setOpenQuestionPortal] =
     React.useState<boolean>(false);
   const [selectedAnnotation, setSelectedAnnotation] = React.useState<number>(0);
@@ -99,6 +104,7 @@ export default function Editor() {
         setOpenQuestionPortal(false);
         setSelectedText(editor?.state.doc.textBetween(from, to, ""));
         setEdit(false);
+        setEditAudio(false);
       },
     },
     [data.annotations]
@@ -165,24 +171,38 @@ export default function Editor() {
                   annotate
                 </button>
               )}
+              {data.user && (
+                <button
+                  onClick={() => setEditAudio(true)}
+                  className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                >
+                  audio
+                </button>
+              )}
             </BubbleMenu>
           )}
         </div>
       </div>
       <div style={{ overflow: "hidden", flex: 1 }}>
-        <AnnotationList selectedId={selectedAnnotation} editor={editor} />
         {edit && (
           <AddAnnotation
             selectionSpan={selectionSpan}
             selectedText={selectedText}
+            editor={editor}
+            setSelectedAnnotation={setSelectedAnnotation}
           />
         )}
+        {editAudio && (
+          <AddAudio start={selectionSpan?.start} end={selectionSpan?.end} />
+        )}
+        <AnnotationList selectedId={selectedAnnotation} editor={editor} />
         <Question
           openQuestionPortal={openQuestionPortal}
           editor={editor}
           questionArea={selectedText}
           ref={formRef}
         />
+        <AudioList editor={editor} />
       </div>
     </div>
   );

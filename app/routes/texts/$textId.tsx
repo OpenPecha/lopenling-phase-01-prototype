@@ -51,6 +51,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     return question.textId === parseInt(text?.id);
   });
   let content = text?.witness.find((t) => t.is_working === true).content;
+  let audio = await db.audio.findMany({
+    where: {
+      witnessId: textId,
+    },
+  });
 
   const data = {
     user: userInfo,
@@ -62,6 +67,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     sources,
     content,
     userAnnotation,
+    audio,
   };
   return json(data);
 };
