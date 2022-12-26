@@ -11,20 +11,21 @@ datasource db {
 }
 
 model User {
-  id               String          @id @unique @default(uuid())
+  id               String           @id @unique @default(uuid())
   name             String
-  username         String          @unique
-  email            String          @unique
-  role             Role            @default(BASIC)
+  username         String           @unique
+  email            String           @unique
+  role             Role             @default(BASIC)
   isAdmin          Boolean
-  userPreference   UserPreference? @relation(fields: [userPreferenceId], references: [id])
+  userPreference   UserPreference?  @relation(fields: [userPreferenceId], references: [id])
   userPreferenceId String?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
   Question         Question[]
-  Annotation       Annotation[]
+  Annotation       UserAnnotation[]
   Likes            Likes[]
   DisLikes         DisLikes[]
+  Audio            Audio[]
 
   @@index([email])
 }
@@ -61,7 +62,7 @@ model Likes {
   id         Int       @unique @default(autoincrement())
   likeBy     User      @relation(fields: [userId], references: [id])
   userId     String
-  Question   Question? @relation(fields: [questionId], references: [id])
+  Question   Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
   questionId String?
 }
 
@@ -69,20 +70,33 @@ model DisLikes {
   id         Int       @unique @default(autoincrement())
   dislikeBy  User      @relation(fields: [userId], references: [id])
   userId     String
-  Question   Question? @relation(fields: [questionId], references: [id])
+  Question   Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
   questionId String?
 }
 
-model Annotation {
-  id              String   @id @default(uuid())
-  creator_user    User     @relation(fields: [userId], references: [id])
-  userId          String
-  start           Int
-  length          Int
-  is_deleted      Boolean  @default(false)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  type            String
-  original        String
-  modifiedContent String
+model UserAnnotation {
+  id           String   @id @default(uuid())
+  witnessId    Int
+  creator_user User     @relation(fields: [userId], references: [id])
+  userId       String
+  private      Boolean  @default(true)
+  start        Int
+  length       Int
+  is_deleted   Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  type         String
+  original     String
+  content      String
+}
+
+model Audio {
+  id           Int     @unique @default(autoincrement())
+  creator_user User    @relation(fields: [userId], references: [id])
+  private      Boolean @default(true)
+  witnessId    Int
+  start        Int
+  length       Int
+  base64       String
+  userId       String
 }

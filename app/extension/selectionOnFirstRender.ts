@@ -8,11 +8,17 @@ const SelectTextOnRender = Extension.create({
     let end = url.searchParams.get("end");
     let start = url.searchParams.get("start");
     if (start && end) {
-      this.editor.commands.focus();
-      this.editor?.commands.setTextSelection({
-        from: parseInt(start),
-        to: parseInt(end),
-      });
+      setTimeout(() => {
+        this.editor
+          ?.chain()
+          .focus()
+          .setTextSelection({
+            from: parseInt(start),
+            to: parseInt(++end),
+          })
+          .scrollIntoView()
+          .run();
+      }, 300);
       url.searchParams.delete("start");
       url.searchParams.delete("end");
 

@@ -4,7 +4,9 @@
 }
 a {
 }
-
+.ProseMirror {
+  outline: none;
+}
 .ProseMirror > p {
   padding: 10px;
 }
@@ -15,8 +17,11 @@ a {
   flex-direction: row;
   gap: 10px;
 }
-span:hover {
-  font-weight: bold;
+.Text-Image {
+  width: 100%;
+}
+.hideImage img {
+  display: none;
 }
 
 @media screen and (max-width: 680px) {
@@ -24,4 +29,28 @@ span:hover {
     display: flex;
     flex-direction: column-reverse;
   }
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+button:disabled {
+  opacity: 0.3;
 }

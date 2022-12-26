@@ -34,12 +34,13 @@ export const annotationMark = (data: any, fetchAnnotation: any) =>
       elem.addEventListener("click", () => {
         fetchAnnotation(elem.id);
       });
+
       return elem;
     },
     addCommands(): any {
       return {
         setAnnotation:
-          () =>
+          (start: number) =>
           ({ commands }: any) => {
             return commands.setMark(this.name);
           },

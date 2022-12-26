@@ -1,16 +1,15 @@
-import { useLoaderData } from "@remix-run/react";
 import _ from "lodash";
 import { getUserSession } from "~/services/session.server";
-import { ActionFunction, json, redirect } from "@remix-run/node";
+import { ActionFunction, json, MetaFunction, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { db } from "~/utils/db.server";
 import { getText, getTextList } from "~/services/getText.server";
-import TextList from "~/components/TextList";
 import { getAnnotations } from "~/services/getAnnotations.server";
 import { getSources } from "~/services/getSources.server";
 import Editor from "~/components/Editor";
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUserSession(request);
+  const textId = parseInt(params.textId);
   let userInfo;
   if (user?.email) {
     try {
@@ -23,8 +22,22 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
   }
   const text = await getText(params);
+  let userAnnotation = user
+    ? await db.userAnnotation.findMany({
+        where: {
+          OR: [{ creator_user: { name: user.name } }, { private: false }],
+          witnessId: parseInt(text?.id),
+        },
+        include: {
+          creator_user: true,
+        },
+      })
+    : [];
+  let { v_annotations, p_annotations }: any = await getAnnotations(
+    params,
+    userAnnotation
+  );
   const sources = await getSources();
-  const annotations = await getAnnotations(params);
   const questionlist = await db.question.findMany({
     include: {
       createrUser: true,
@@ -32,19 +45,29 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       dislikes: true,
     },
   });
+  let textList = [];
+  textList = await getTextList();
   let filteredQuestionList = questionlist.filter((question) => {
     return question.textId === parseInt(text?.id);
   });
-  const textList = await getTextList();
   let content = text?.witness.find((t) => t.is_working === true).content;
+  let audio = await db.audio.findMany({
+    where: {
+      witnessId: textId,
+    },
+  });
+
   const data = {
     user: userInfo,
     text,
     questionlist: filteredQuestionList,
     textList,
-    annotations,
+    annotations: v_annotations,
+    pageBreakers: p_annotations,
     sources,
     content,
+    userAnnotation,
+    audio,
   };
   return json(data);
 };
@@ -57,15 +80,19 @@ export const action: ActionFunction = async ({ request }) => {
   }
   return null;
 };
-
+export const meta: MetaFunction = ({ data }) => {
+  let dataName = data?.text?.name;
+  let title = dataName ? dataName : "text";
+  return {
+    title,
+  };
+};
 export default function () {
-  const data = useLoaderData();
   return (
     <>
-      <main className="editorPage">
+      <main>
         <section style={{ flex: 1, border: "1px solid grey", padding: 5 }}>
           <h1 style={{ textAlign: "center" }}>Text Viewer</h1>
-          <TextList selectedText={data.text} />
           <Editor />
         </section>
       </main>

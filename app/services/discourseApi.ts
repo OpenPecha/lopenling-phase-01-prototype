@@ -1,5 +1,7 @@
 import { db } from "~/utils/db.server";
 import { v4 as uuidv4 } from "uuid";
+import FormData from "form-data";
+import fs from "fs";
 class DiscourseApi {
   DiscourseUrl: string;
   apiKey: string;
@@ -31,6 +33,15 @@ class DiscourseApi {
   async fetchposts(topicId: number) {
     if (topicId) {
       const res = await fetch(`${this.DiscourseUrl}/t/${topicId}/posts.json`);
+      const data = await res.json();
+      return data;
+    }
+  }
+  async fetchPostReplies(postId: number) {
+    if (postId) {
+      const res = await fetch(
+        `${this.DiscourseUrl}/posts/${postId}/replies.json`
+      );
       const data = await res.json();
       return data;
     }
@@ -83,7 +94,7 @@ class DiscourseApi {
     <div>
 <p>${bodyContent}</p>
 <br/>
-<iframe width="150" height="90" src="https://lopenling-phase-01-prototype-rust.vercel.app/embed/${questionId}"
+<iframe width="150" height="90" src="${process.env.ORIGIN_LOCATION}/embed/${questionId}"
 ></iframe><div>`;
     if (topic_name.length > 20) topic_name = topic_name.slice(0, 19) + "...";
     let new_Topic_data = {
@@ -131,7 +142,6 @@ class DiscourseApi {
 
     return data;
   }
-
   async deleteTopic(id: number, username: string) {
     let auth_headers = this.authHeader(username);
     try {
@@ -144,7 +154,24 @@ class DiscourseApi {
       console.log(e);
     }
   }
+  async uploadFile(username: string, formData: any) {
+    let auth_headers = this.authHeader(username);
+
+    try {
+      let res = await fetch(`${this.DiscourseUrl}/uploads.json`, {
+        method: "post",
+        headers: { ...auth_headers, "Content-Type": "multipart/form-data" },
+        body: formData,
+      });
+      console.log(res);
+    } catch (e) {
+      console.log("upload Failed" + e.message);
+    }
+  }
 }
+
+let DiscourseUrl = process.env.DISCOURSE_SITE;
+let api = process.env.DISCOURSE_API_KEY;
 
 export async function createQuestion(
   userName: string,
@@ -153,8 +180,6 @@ export async function createQuestion(
   bodyContent: FormDataEntryValue | null,
   start: FormDataEntryValue | null,
   end: FormDataEntryValue | null,
-  DiscourseUrl: string,
-  api: string,
   parent_category_id: string,
   textId: number
 ) {
@@ -163,6 +188,8 @@ export async function createQuestion(
   }
   if (!textName || !QuestionArea || !bodyContent)
     throw new Error("failed to access Topic Id");
+  if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
+
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   let response = await apiObj.fetchCategoryList(parent_category_id);
   let checkIfCategoryPresent = response?.find((l: any) => l.name === textName);
@@ -185,25 +212,30 @@ export async function createQuestion(
   );
 }
 
-export async function deleteQuestion(
-  DiscourseUrl: string,
-  api: string,
-  userName: string,
-  topicId: number
-) {
+export async function deleteQuestion(userName: string, topicId: number) {
+  if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   const res = apiObj.deleteTopic(topicId, userName);
   return res;
 }
 
-export async function getposts(
-  topicId: number,
-  DiscourseUrl: string,
-  api: string
-) {
+export async function getposts(topicId: number) {
+  if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
+
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   const res = apiObj.fetchposts(topicId);
   return res;
 }
-
+export async function getpostreplies(topicId: number) {
+  if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
+  const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
+  const res = apiObj.fetchPostReplies(topicId);
+  return res;
+}
+export async function uploadFile(username: string, formData: any) {
+  if (!DiscourseUrl || !api) throw new Error("asign api and url  in env");
+  const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
+  const res = apiObj.uploadFile(username, formData);
+  return res;
+}
 export default DiscourseApi;

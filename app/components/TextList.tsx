@@ -1,5 +1,4 @@
-import { redirect } from "@remix-run/node";
-import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import React from "react";
 
 type TextListProps = {
@@ -7,11 +6,23 @@ type TextListProps = {
     name: string;
     id: number;
   };
+  setTextLoading: (e: boolean) => void;
 };
-export default function TextList({ selectedText }: TextListProps) {
-  const { textList } = useLoaderData();
+export default function TextList({
+  selectedText,
+  setTextLoading,
+}: TextListProps) {
   const fetcher = useFetcher();
-  const handleChangeTextSelect = (e) => {
+  const { textList } = useLoaderData();
+  React.useEffect(() => {
+    if (fetcher.state === "submitting") {
+      setTextLoading(true);
+    }
+    if (fetcher.state === "idle") {
+      setTextLoading(false);
+    }
+  }, [fetcher.state]);
+  const handleChangeTextSelect = (e: any) => {
     fetcher.submit({ changeText: e.target.value }, { method: "post" });
   };
   return (
@@ -21,7 +32,7 @@ export default function TextList({ selectedText }: TextListProps) {
           defaultValue={selectedText.id}
           onChange={handleChangeTextSelect}
         >
-          {textList.map((item) => {
+          {textList.map((item: { id: number; name: string }) => {
             return (
               <option key={item.id} value={item.id}>
                 {item.name}

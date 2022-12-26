@@ -7,6 +7,7 @@ import {
 import {
   createQuestion,
   deleteQuestion,
+  getpostreplies,
   getposts,
 } from "~/services/discourseApi";
 import { getUserSession } from "~/services/session.server";
@@ -31,8 +32,6 @@ export const action: ActionFunction = async ({ request }) => {
     Object.fromEntries(formData);
   if (_action === "deleteQuestion") {
     const statusCode = await deleteQuestion(
-      DiscourseUrl,
-      api,
       user.username,
       parseInt(topicId.toString())
     );
@@ -59,8 +58,6 @@ export const action: ActionFunction = async ({ request }) => {
       addLinktoQuestion(bodyContent, url),
       value.start,
       value.end,
-      DiscourseUrl,
-      api,
       parent_category_id,
       parseInt(textId)
     );
@@ -68,7 +65,8 @@ export const action: ActionFunction = async ({ request }) => {
   }
   if (_action === "fetchReplies") {
     const numberTopicId = parseInt(topicId.toString());
-    const reply = await getposts(numberTopicId, DiscourseUrl, api);
+    const reply = await getpostreplies(numberTopicId, DiscourseUrl, api);
+
     return reply;
   }
   return json({ message: _action });

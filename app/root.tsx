@@ -2,8 +2,7 @@ import React from "react";
 import styles from "~/styles/tailwind.css";
 import globalstyles from "~/styles/global.css";
 import type { MetaFunction } from "@remix-run/node"; // or cloudflare/deno
-import { withSentry } from "@sentry/remix";
-import { Audio } from "react-loader-spinner";
+import { isMobile } from "react-device-detect";
 import {
   Links,
   LiveReload,
@@ -11,43 +10,34 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useCatch,
   useLoaderData,
   useParams,
   useResolvedPath,
   useTransition,
 } from "@remix-run/react";
-import {
-  getSession,
-  getUserSession,
-  login,
-  destroyUserSession,
-} from "./services/session.server";
-import {
-  ActionFunction,
-  json,
-  LoaderFunction,
-  redirect,
-} from "@remix-run/node";
+import { getUserSession } from "./services/session.server";
+import { json, LoaderFunction } from "@remix-run/node";
 import Headers from "~/components/Header";
+import ErrorPage from "./components/ErrorPage";
 export const loader: LoaderFunction = async ({ request }) => {
   let user = await getUserSession(request);
   return json({ user });
 };
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "Lopenling-App-Prototype",
   viewport: "width=device-width,initial-scale=1",
   description: "annotation of text and discussion on budhist text",
 });
 
 export function links() {
   return [
-    { rel: "stylesheet", href: styles },
-    { rel: "stylesheet", href: globalstyles },
+    { rel: "stylesheet", href: styles, as: "style" },
+    { rel: "stylesheet", href: globalstyles, as: "style" },
   ];
 }
 
-function App() {
+function Document({ children, title }: any) {
   let { user } = useLoaderData();
   let { state } = useTransition();
   let params = useParams();
@@ -56,6 +46,7 @@ function App() {
       <head>
         <Meta />
         <Links />
+        <title>{title}</title>
       </head>
       <body>
         {!params.annotation && <Headers user={user} />}
@@ -79,12 +70,55 @@ function App() {
             </svg>
           </div>
         )}
-        <Outlet />
+        {children}
         <ScrollRestoration />
         <Scripts />
+
         {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>
     </html>
   );
 }
-export default withSentry(App);
+
+export function CatchBoundary() {
+  return (
+    <>
+      <head>
+        <Meta />
+        <Links />
+        <title>Error</title>
+      </head>
+      <ErrorPage />;
+    </>
+  );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.log(error);
+  return (
+    <Document title={"error ooh"}>
+      <h1>App Error</h1>
+      <pre>{error.message}</pre>
+      <p>
+        try to go to here <a href="/">click</a>
+      </p>
+    </Document>
+  );
+}
+
+function App() {
+  if (isMobile)
+    return (
+      <Document title="mobile device">
+        <p>doesnt work on mobile currently</p>
+      </Document>
+    );
+  return (
+    <>
+      <Document title={"Lopenling Application"}>
+        <Outlet />
+      </Document>
+    </>
+  );
+}
+export default App;

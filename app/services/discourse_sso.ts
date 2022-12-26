@@ -29,7 +29,7 @@ export let redirectDiscourse = async function () {
   let payload = `nonce=${nonce}&return_sso_url=${return_url}`;
   let payloadBase64 = btoa(payload);
   var signature = crypto
-    .createHmac("sha256", process.env.DISCOURSE_SSO_KEY)
+    .createHmac("sha256", process.env.DISCOURSE_API_KEY)
     .update(Buffer.from(payloadBase64, "utf-8"))
     .digest("hex");
 

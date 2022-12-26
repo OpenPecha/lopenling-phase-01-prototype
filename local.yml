@@ -11,7 +11,7 @@ services:
       dockerfile: ./compose/development/remix/Dockerfile
     image: parkhang_local_remix2
     volumes:
-      - ./app/public:/usr/server/app/public:z
+      - ./app:/usr/server/app/app:z
     container_name: remixproject_parkhang2
     depends_on:
       - postgres
