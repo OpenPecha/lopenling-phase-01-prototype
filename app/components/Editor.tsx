@@ -202,7 +202,7 @@ export default function Editor() {
           questionArea={selectedText}
           ref={formRef}
         />
-        <AudioList editor={editor} />
+        {/* <AudioList editor={editor} /> */}
       </div>
     </div>
   );

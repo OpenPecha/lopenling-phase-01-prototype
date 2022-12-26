@@ -7,6 +7,7 @@ import {
 import {
   createQuestion,
   deleteQuestion,
+  getpostreplies,
   getposts,
 } from "~/services/discourseApi";
 import { getUserSession } from "~/services/session.server";
@@ -64,7 +65,8 @@ export const action: ActionFunction = async ({ request }) => {
   }
   if (_action === "fetchReplies") {
     const numberTopicId = parseInt(topicId.toString());
-    const reply = await getposts(numberTopicId, DiscourseUrl, api);
+    const reply = await getpostreplies(numberTopicId, DiscourseUrl, api);
+
     return reply;
   }
   return json({ message: _action });

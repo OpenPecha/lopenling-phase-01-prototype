@@ -1,56 +1,64 @@
+// writeAsyncIterableToWritable is a Node-only utility
 import {
   ActionFunction,
   unstable_composeUploadHandlers,
   unstable_createFileUploadHandler,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
+  writeAsyncIterableToWritable,
 } from "@remix-run/node";
-import fs from "fs";
-import { uploadFile } from "~/services/discourseApi";
+import type {
+  UploadApiOptions,
+  UploadApiResponse,
+  UploadStream,
+} from "cloudinary";
+import cloudinary from "cloudinary";
 import { getUserSession } from "~/services/session.server";
-import { db } from "~/utils/db.server";
+
+async function uploadImageToCloudinary(data: AsyncIterable<Uint8Array>) {
+  const uploadPromise = new Promise<UploadApiResponse>(
+    async (resolve, reject) => {
+      const uploadStream = cloudinary.v2.uploader.upload_stream(
+        {
+          folder: "remix",
+        },
+        (error, result) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve(result);
+        }
+      );
+      await writeAsyncIterableToWritable(data, uploadStream);
+    }
+  );
+
+  return uploadPromise;
+}
 
 export const action: ActionFunction = async ({ request }) => {
   const user = await getUserSession(request);
-  let data = await request.formData();
-  const base64 = data.get("binary");
-  const start = data.get("start");
-  const length = data.get("length");
-  const textId = data.get("textId");
-  const userId = data.get("userId");
-  // let filename = `comment-${textId}-${start}-${end}.wav`;
-  const _action = data.get("action");
-  const id = data.get("id");
 
-  if (_action === "create") {
-    try {
-      let res = await db.audio.create({
-        data: {
-          userId: userId,
-          witnessId: parseInt(textId),
-          start: parseInt(start),
-          length: parseInt(length),
-          base64: base64,
-        },
-      });
+  const uploadHandler = unstable_composeUploadHandlers(
+    unstable_createFileUploadHandler({
+      maxPartSize: 5_000_000,
+      file: ({ filename }) => `${filename}.webm`,
+      directory: `./app/file`,
+    }),
+    // parse everything else into memory
+    unstable_createMemoryUploadHandler()
+  );
 
-      uploadFile(user.username, base64);
+  const formData = await unstable_parseMultipartFormData(
+    request,
+    uploadHandler // <-- we'll look at this deeper next
+  );
 
-      return { res };
-    } catch (e) {
-      console.log(e);
-      return { e };
-    }
-  }
-  if (_action === "delete") {
-    try {
-      let res = await db.audio.delete({
-        where: { id: parseInt(id) },
-      });
-      return { res };
-    } catch (e) {
-      console.log(e);
-      return { e };
-    }
-  }
+  const audio = formData.get("audio");
+
+  console.log(audio);
+  // ... etc
+
+  return { success: "ok" };
 };

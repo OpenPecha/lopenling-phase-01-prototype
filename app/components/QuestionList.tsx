@@ -45,7 +45,7 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
   const deleteFetcher = useFetcher();
   const replyFetcher = useFetcher();
   let deleting = deleteFetcher.state !== "idle";
-  let replyPosts = replyFetcher.data;
+  let replies = replyFetcher.data;
   let showDeleteButton =
     user?.isAdmin || user?.username === l?.createrUser?.username;
   const pointOnEditor = (start: number, end: number) => {
@@ -82,7 +82,8 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
         </Link>
       )}
       <br />
-      <p>{l?.createrUser?.username}</p>
+      <label htmlFor="answer">reply </label>
+      <input id="answer" placeholder="answer"></input>
       <div style={{ display: "flex", gap: 4 }}>
         {props.selectQuestion ? (
           <Link
@@ -122,8 +123,8 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
             </button>
           </deleteFetcher.Form>
         )}
-        {/* <replyFetcher.Form method="post" action="/api/question">
-          <input hidden name="topicId" defaultValue={l.topicId}></input>
+        <replyFetcher.Form method="post" action="/api/question">
+          <input hidden name="topicId" defaultValue={l.postId}></input>
           <button
             type="submit"
             name="_action"
@@ -133,19 +134,7 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
           >
             🖊️
           </button>
-        </replyFetcher.Form> */}
-        {replyPosts?.post_stream.posts.slice(1).length && (
-          <div>
-            <p>post on topic</p>
-            {replyPosts.post_stream.posts.slice(1).map((post: any) => {
-              return (
-                <div key={post.id}>
-                  <a href={`https://lopenling.org/p/${post.id}`}>{post.id}</a>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        </replyFetcher.Form>
       </div>
     </div>
   );

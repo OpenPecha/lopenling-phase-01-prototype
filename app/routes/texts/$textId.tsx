@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     ? await db.userAnnotation.findMany({
         where: {
           OR: [{ creator_user: { name: user.name } }, { private: false }],
-          witnessId: textId,
+          witnessId: parseInt(text?.id),
         },
         include: {
           creator_user: true,
