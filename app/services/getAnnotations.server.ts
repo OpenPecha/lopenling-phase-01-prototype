@@ -10,8 +10,8 @@ export async function getAnnotations(
   const apiUrl = "https://parkhang.lopenling.org/api/";
   const text = await getText({ textId: textId });
   if (!text) throw new Error("text Not available");
-  const witnessId = text.witness?.find((t) => t.is_working === true).id;
-  const baseId = text.witness?.find((t) => t.is_base === true).id;
+  const witnessId = text.witness?.find((t) => t.is_working === true)?.id;
+  const baseId = text.witness?.find((t) => t.is_base === true)?.id;
   try {
     const url =
       apiUrl + "texts/" + textId + "/witnesses/" + witnessId + "/annotations/";
@@ -34,7 +34,7 @@ export async function getAnnotations(
 export async function getAnnotation(params: paramsType, annotationId: number) {
   const apiUrl = "https://parkhang.lopenling.org/api/";
   const witness = await getText({ textId: params.textId });
-  const witnessId = witness?.witness.id;
+  const witnessId = witness?.witness?.id;
 
   try {
     const url =

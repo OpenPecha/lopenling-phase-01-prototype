@@ -25,7 +25,7 @@ class DiscourseApi {
     );
     const categories = await res.json();
     const filterCategory = categories.category_list.categories.find(
-      (l) => l.id === parseInt(id)
+      (l) => l?.id === parseInt(id)
     );
     if (!filterCategory.subcategory_ids.length) return null;
     return filterCategory.subcategory_list;
@@ -54,7 +54,7 @@ class DiscourseApi {
     let auth_headers = this.authHeader(username);
     var randomColor = () => Math.floor(Math.random() * 16777215).toString(16);
     let newCategoryData = {
-      name: categoryName,
+      name: categoryName.slice(0, 40) + "..",
       color: randomColor(),
       text_color: randomColor(),
       parent_category_id,
@@ -192,14 +192,18 @@ export async function createQuestion(
 
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   let response = await apiObj.fetchCategoryList(parent_category_id);
-  let checkIfCategoryPresent = response?.find((l: any) => l.name === textName);
+  let checkIfCategoryPresent = response?.find(
+    (l: any) => l.name === textName.slice(0, 40) + ".."
+  );
   if (!checkIfCategoryPresent) {
     let res = await apiObj.addCategory(
       userName,
       textName.toString(),
       parseInt(parent_category_id)
     );
-    checkIfCategoryPresent.id = res.category.id;
+    checkIfCategoryPresent = {
+      id: res.category?.id,
+    };
   }
   return apiObj.addTopic(
     userName,
@@ -224,6 +228,7 @@ export async function getposts(topicId: number) {
 
   const apiObj: DiscourseApi = new DiscourseApi(DiscourseUrl, api);
   const res = apiObj.fetchposts(topicId);
+  console.log(res);
   return res;
 }
 export async function getpostreplies(topicId: number) {

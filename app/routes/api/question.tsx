@@ -19,11 +19,11 @@ export const loader: LoaderFunction = () => {
 
 export const action: ActionFunction = async ({ request }) => {
   let formData = await request.formData();
+  const user = await getUserSession(request);
 
   let DiscourseUrl = process.env.DISCOURSE_SITE;
   let api = process.env.DISCOURSE_API_KEY;
   let parent_category_id = process.env.DISCOURSE_QA_CATEGORY_ID;
-  const user = await getUserSession(request);
   if (!user) throw new Error("user not logged in");
   if (!DiscourseUrl || !api || !parent_category_id) {
     throw new Error("set a DISCOURSE_SITE/DISCOURSE_API_KEY in env");
@@ -64,9 +64,8 @@ export const action: ActionFunction = async ({ request }) => {
     return json({ message: "question created" });
   }
   if (_action === "fetchReplies") {
-    const numberTopicId = parseInt(topicId.toString());
-    const reply = await getpostreplies(numberTopicId, DiscourseUrl, api);
-
+    const Id = parseInt(topicId.toString());
+    const reply = await getposts(Id, DiscourseUrl, api);
     return reply;
   }
   return json({ message: _action });

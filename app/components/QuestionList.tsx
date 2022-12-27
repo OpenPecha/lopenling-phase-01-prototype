@@ -30,24 +30,25 @@ export default function QuestionList(props: QuestionProps) {
       ref={parent}
     >
       {props.list
-        .sort((a, b) => b.topicId - a.topicId)
-        .map((l) => (
-          <div key={l.id}>
-            <EachQuestion props={props} l={l} />
+        .sort((a, b) => b?.topicId - a?.topicId)
+        .map((post) => (
+          <div key={post.id}>
+            <EachQuestion props={props} post={post} />
           </div>
         ))}
     </div>
   );
 }
 
-export function EachQuestion({ l, props, linkReady = true }: any) {
-  const { user } = useLoaderData();
+export function EachQuestion({ post, props, linkReady = true }: any) {
+  const data = useLoaderData();
+  let user = data?.user;
   const deleteFetcher = useFetcher();
   const replyFetcher = useFetcher();
   let deleting = deleteFetcher.state !== "idle";
   let replies = replyFetcher.data;
   let showDeleteButton =
-    user?.isAdmin || user?.username === l?.createrUser?.username;
+    user?.isAdmin || user?.username === post?.createrUser?.username;
   const pointOnEditor = (start: number, end: number) => {
     if (props.editor) {
       props.editor
@@ -58,6 +59,7 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
         .run();
     }
   };
+  if (!post) return <div></div>;
   return (
     <div
       style={{
@@ -71,23 +73,23 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
     >
       {props.editor ? (
         <span
-          onClick={() => pointOnEditor(l.start, l.end)}
+          onClick={() => pointOnEditor(post.start, post.end)}
           style={{ cursor: "pointer" }}
         >
-          {l.topic} - {l.start}:{l.end}
+          {post?.topic} - {post?.start}:{post?.end}
         </span>
       ) : (
-        <Link to={"/texts/" + l.textId + `?start=${l.start}&end=${l.end}`}>
-          {l.topic} - {l.start}:{l.end}
+        <Link
+          to={"/texts/" + post.textId + `?start=${post.start}&end=${post.end}`}
+        >
+          {post?.topic} - {post?.start}:{post?.end}
         </Link>
       )}
       <br />
-      <label htmlFor="answer">reply </label>
-      <input id="answer" placeholder="answer"></input>
       <div style={{ display: "flex", gap: 4 }}>
         {props.selectQuestion ? (
           <Link
-            to={"/questions/" + l.topicId}
+            to={"/questions/" + post?.topicId}
             className="bg-blue-500 hover:bg-blue-700 text-white px-3 rounded"
           >
             view Discussion
@@ -101,16 +103,16 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
             }}
             className="bg-blue-500 hover:bg-blue-700 text-white px-3 rounded"
             target=" _blank"
-            href={`https://lopenling.org/t/${l.topicId}`}
+            href={`https://lopenling.org/t/${post?.topicId}`}
           >
             visit discussion
           </a>
         )}
-        {linkReady && <Vote questionDetail={l} />}
+        {linkReady && <Vote questionDetail={post} />}
         {showDeleteButton && (
           <deleteFetcher.Form method="post" action="/api/question">
-            <input type="hidden" value={l.id} name="questionId"></input>
-            <input type="hidden" value={l.topicId} name="topicId"></input>
+            <input type="hidden" value={post.id} name="questionId"></input>
+            <input type="hidden" value={post?.topicId} name="topicId"></input>
             <button
               type="submit"
               name="_action"
@@ -124,7 +126,7 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
           </deleteFetcher.Form>
         )}
         <replyFetcher.Form method="post" action="/api/question">
-          <input hidden name="topicId" defaultValue={l.postId}></input>
+          <input hidden name="topicId" defaultValue={post?.topicId}></input>
           <button
             type="submit"
             name="_action"
@@ -135,6 +137,16 @@ export function EachQuestion({ l, props, linkReady = true }: any) {
             🖊️
           </button>
         </replyFetcher.Form>
+        {replies?.post_stream?.posts.map((reply: any) => {
+          console.log(reply);
+          return (
+            <div key={reply.id}>
+              <a href={`https://lopenling.org/p/${reply.id}`}>
+                {reply.username}
+              </a>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
