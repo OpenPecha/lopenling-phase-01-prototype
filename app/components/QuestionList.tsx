@@ -2,6 +2,7 @@ import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { Editor } from "@tiptap/react";
 import Vote from "./Vote";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import Reply from "./Reply";
 type QuestionProps = {
   list: [
     {
@@ -148,6 +149,7 @@ export function EachQuestion({ post, props, linkReady = true }: any) {
           );
         })}
       </div>
+      <Reply topicId={post?.topicId} />
     </div>
   );
 }

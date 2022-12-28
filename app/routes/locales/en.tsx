@@ -4,5 +4,6 @@ export const loader: LoaderFunction = () => {
   return {
     greeting: "hi",
     fontSize: "fontSize",
+    Question: "Question",
   };
 };

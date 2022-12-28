@@ -135,6 +135,7 @@ export default function Editor() {
           <option value={22}>22</option>
         </select>
 
+        
         <div
           style={{
             maxHeight: "100vh",
@@ -160,7 +161,7 @@ export default function Editor() {
                 type="button"
                 onClick={() => setOpenQuestionPortal((prev) => !prev)}
               >
-                Question
+                {t("Question")}
               </button>
               <button
                 onClick={shareSelectedText}
