@@ -28,7 +28,7 @@ export const applyAnnotationFunction = (
     if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
       html += `<span id="` + i + `">`;
       let annotate = annotations[i];
-      let length = annotate[0].length;
+      let length = annotate[0]?.length;
       for (let j = i; j < i + length; j++) {
         html += content[j];
         skiplength.push(j);

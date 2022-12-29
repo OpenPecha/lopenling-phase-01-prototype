@@ -6,8 +6,8 @@ import { db } from "~/utils/db.server";
 export default function Vote({ questionDetail }) {
   let { user } = useLoaderData();
   let questionId = questionDetail.id;
-  let likeCount = questionDetail.likes.length || 0;
-  let dislikeCount = questionDetail.dislikes.length || 0;
+  let likeCount = questionDetail.likes?.length || 0;
+  let dislikeCount = questionDetail.dislikes?.length || 0;
   let questionFetcher = useFetcher();
   const location = useLocation();
   return (

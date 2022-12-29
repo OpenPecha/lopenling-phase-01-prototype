@@ -54,3 +54,11 @@ a {
 button:disabled {
   opacity: 0.3;
 }
+
+.lightbox-wrapper .meta {
+  display: none;
+}
+.lightbox-wrapper img {
+  max-width: 100px;
+  object-fit: contain;
+}

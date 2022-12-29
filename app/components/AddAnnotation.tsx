@@ -70,7 +70,7 @@ export default function AddAnnotation(props: PropsType) {
           hidden
           readOnly
           name="length"
-          value={selectedText.length}
+          value={selectedText?.length}
         ></input>
         <input hidden readOnly name="original" value={selectedText}></input>
         <input
