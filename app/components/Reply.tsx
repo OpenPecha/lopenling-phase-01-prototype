@@ -1,34 +1,92 @@
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import React from "react";
-export default function Reply({ topicId }) {
-  const replyToPost = useFetcher();
-  const [replyPostlist, setReplyPostList] = React.useState();
+export default function Reply({ topicId, showReply }) {
+  const data = useLoaderData();
+  const user = data?.user;
+  const postFetcher = useFetcher();
+  const postListFetcher = useFetcher();
   const inputRef = React.useRef();
-  if (replyToPost.state !== "idle") {
+  if (postFetcher.state !== "idle") {
     inputRef.current.value = "";
   }
   React.useEffect(() => {
-    fetch(`https://lopenling.org/t/${topicId}.json`)
-      .then((res) => res.json())
-      .then((data) => setReplyPostList(data.post_stream.posts));
-  }, []);
-  console.log(replyPostlist);
+    if (postFetcher.state === "idle") {
+      postListFetcher.submit({}, { method: "get", action: `/api/${topicId}` });
+    }
+  }, [postFetcher.state]);
+
+  const handleDelete = (id, TopicId) => {
+    postFetcher.submit(
+      {
+        postId: id,
+        topicId: TopicId,
+      },
+      {
+        method: "delete",
+        action: "/api/postReply",
+      }
+    );
+  };
   return (
     <>
-      {replyPostlist?.map((reply, index) => {
-        return (
-          <div key={reply.id}>
-            <p dangerouslySetInnerHTML={{ __html: reply.cooked }}></p>
-          </div>
-        );
-      })}
-      <replyToPost.Form action="/api/postReply" method="post">
+      {showReply &&
+        postListFetcher.data.slice(1).map((reply, index) => {
+          return (
+            <div
+              key={reply.id + index}
+              style={{
+                border: "3px solid white",
+                marginBlock: "2px",
+                fontFamily: "sans-serif",
+              }}
+            >
+              <a
+                href={`https://lopenling.org/p/${reply.id}`}
+                target="_blank"
+                dangerouslySetInnerHTML={{ __html: reply.cooked }}
+              ></a>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "0.6rem",
+                }}
+              >
+                <div>{reply.display_username}</div>
+                <div style={{ opacity: 0.3 }}>reply {reply.reply_count}</div>
+              </div>
+              {user.username === reply.username && (
+                <button
+                  onClick={() => {
+                    handleDelete(reply.id, topicId);
+                  }}
+                  disabled={
+                    postFetcher.state !== "idle" &&
+                    postFetcher.submission?.method === "DELETE" &&
+                    postFetcher.submission.formData.get("postId") ===
+                      reply.id.toString()
+                  }
+                >
+                  delete
+                </button>
+              )}
+            </div>
+          );
+        })}
+      <postFetcher.Form action="/api/postReply" method="post">
         <input hidden defaultValue={topicId} name="topicId" />
         <input type="text" name="postString" ref={inputRef} />
-        <button type="submit" disabled={replyToPost.state !== "idle"}>
+        <button
+          type="submit"
+          disabled={
+            postFetcher.state !== "idle" &&
+            postFetcher.submission?.method === "POST"
+          }
+        >
           reply
         </button>
-      </replyToPost.Form>
+      </postFetcher.Form>
     </>
   );
 }

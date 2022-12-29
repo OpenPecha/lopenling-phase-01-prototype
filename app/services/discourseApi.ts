@@ -164,6 +164,22 @@ class DiscourseApi {
       console.log(e);
     }
   }
+  async deletePost(postId: number) {
+    let auth_headers = this.authHeader();
+
+    try {
+      const response = await fetch(
+        `${this.DiscourseUrl}/posts/${postId}.json`,
+        {
+          method: "delete",
+          headers: auth_headers,
+        }
+      );
+      return response.status;
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   async deleteTopic(id: number) {
     let auth_headers = this.authHeader();
@@ -240,10 +256,9 @@ export async function deleteQuestion(userName: string, topicId: number) {
   return res;
 }
 
-export async function getposts(topicId: number) {
+export async function getposts(topicId: number, username: string) {
   const apiObj: DiscourseApi = new DiscourseApi(username);
   const res = apiObj.fetchposts(topicId);
-  console.log(res);
   return res;
 }
 export async function getpostreplies(topicId: number) {
@@ -265,4 +280,11 @@ export async function createPost(
   const res = apiObj.createPost(topicId, postString);
   return res;
 }
+export async function deletePost(postId: number, username: string) {
+  const apiObj: DiscourseApi = new DiscourseApi(username);
+
+  const res = apiObj.deletePost(postId);
+  return res;
+}
+
 export default DiscourseApi;

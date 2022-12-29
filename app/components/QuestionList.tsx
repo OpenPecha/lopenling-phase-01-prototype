@@ -3,6 +3,7 @@ import { Editor } from "@tiptap/react";
 import Vote from "./Vote";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Reply from "./Reply";
+import React from "react";
 type QuestionProps = {
   list: [
     {
@@ -45,9 +46,8 @@ export function EachQuestion({ post, props, linkReady = true }: any) {
   const data = useLoaderData();
   let user = data?.user;
   const deleteFetcher = useFetcher();
-  const replyFetcher = useFetcher();
   let deleting = deleteFetcher.state !== "idle";
-  let replies = replyFetcher.data;
+  const [showReply, setShowReply] = React.useState(false);
   let showDeleteButton =
     user?.isAdmin || user?.username === post?.createrUser?.username;
   const pointOnEditor = (start: number, end: number) => {
@@ -126,30 +126,15 @@ export function EachQuestion({ post, props, linkReady = true }: any) {
             </button>
           </deleteFetcher.Form>
         )}
-        <replyFetcher.Form method="post" action="/api/question">
-          <input hidden name="topicId" defaultValue={post?.topicId}></input>
-          <button
-            type="submit"
-            name="_action"
-            value="fetchReplies"
-            className="bg-blue-400 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
-            title="reply"
-          >
-            🖊️
-          </button>
-        </replyFetcher.Form>
-        {replies?.post_stream?.posts.map((reply: any) => {
-          console.log(reply);
-          return (
-            <div key={reply.id}>
-              <a href={`https://lopenling.org/p/${reply.id}`}>
-                {reply.username}
-              </a>
-            </div>
-          );
-        })}
+        <button
+          onClick={() => setShowReply((prev) => !prev)}
+          className="bg-blue-400 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+          title="replies"
+        >
+          🖊️
+        </button>
       </div>
-      <Reply topicId={post?.topicId} />
+      <Reply topicId={post?.topicId} showReply={showReply} />
     </div>
   );
 }
