@@ -47,7 +47,6 @@ export function EachQuestion({ post, props, linkReady = true }: any) {
   let user = data?.user;
   const deleteFetcher = useFetcher();
   let deleting = deleteFetcher.state !== "idle";
-  const [showReply, setShowReply] = React.useState(false);
   let showDeleteButton =
     user?.isAdmin || user?.username === post?.createrUser?.username;
   const pointOnEditor = (start: number, end: number) => {
@@ -126,15 +125,8 @@ export function EachQuestion({ post, props, linkReady = true }: any) {
             </button>
           </deleteFetcher.Form>
         )}
-        <button
-          onClick={() => setShowReply((prev) => !prev)}
-          className="bg-blue-400 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
-          title="replies"
-        >
-          🖊️
-        </button>
       </div>
-      <Reply topicId={post?.topicId} showReply={showReply} />
+      <Reply topicId={post?.topicId} />
     </div>
   );
 }

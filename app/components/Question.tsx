@@ -53,8 +53,8 @@ const Question = (
               hidden
               defaultValue={questionArea}
             ></input>
-            <input name="textId" hidden defaultValue={data.text.id}></input>
-            <input name="topic" hidden defaultValue={data.text.name}></input>
+            <input name="textId" hidden defaultValue={data.text?.id}></input>
+            <input name="topic" hidden defaultValue={data.text?.name}></input>
             <input name="body" ref={inputRef}></input>
             <button type="submit" name="_action" value="createQuestion">
               {createQuestion.submission ? "posting" : "post"}
@@ -66,7 +66,7 @@ const Question = (
       )}
       <center>
         <h2 className="text-1xl font-bold">
-          Questions for text {data.text.name}
+          Questions for text {data.text?.name}
         </h2>
       </center>
 

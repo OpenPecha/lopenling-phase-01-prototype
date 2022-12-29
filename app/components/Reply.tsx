@@ -1,6 +1,6 @@
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import React from "react";
-export default function Reply({ topicId, showReply }) {
+export default function Reply({ topicId }) {
   const data = useLoaderData();
   const user = data?.user;
   const postFetcher = useFetcher();
@@ -10,9 +10,7 @@ export default function Reply({ topicId, showReply }) {
     inputRef.current.value = "";
   }
   React.useEffect(() => {
-    if (postFetcher.state === "idle") {
-      postListFetcher.submit({}, { method: "get", action: `/api/${topicId}` });
-    }
+    postListFetcher.submit({}, { method: "get", action: `/api/${topicId}` });
   }, [postFetcher.state]);
 
   const handleDelete = (id, TopicId) => {
@@ -29,8 +27,8 @@ export default function Reply({ topicId, showReply }) {
   };
   return (
     <>
-      {showReply &&
-        postListFetcher.data.slice(1).map((reply, index) => {
+      {true &&
+        postListFetcher.data?.slice(1).map((reply, index) => {
           return (
             <div
               key={reply.id + index}
