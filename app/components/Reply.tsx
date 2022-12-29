@@ -79,7 +79,7 @@ export default function Reply({ topicId }) {
                 <div>{reply.display_username}</div>
                 <div style={{ opacity: 0.3 }}>reply {reply.reply_count}</div>
               </div>
-              {user.username === reply.username && (
+              {user?.username === reply.username && (
                 <button
                   onClick={() => {
                     handleDelete(reply.id, topicId);
