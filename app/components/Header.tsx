@@ -1,7 +1,20 @@
 import React from "react";
-import { Form, Link, useLocation } from "@remix-run/react";
+import { Form, Link, useLoaderData, useLocation } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
+import { useChangeLanguage } from "remix-i18next";
+export const handle = {
+  // In the handle export, we could add a i18n key with namespaces our route
+  // will need to load. This key can be a single string or an array of strings.
+  i18n: ["common"],
+};
+
 export default function Header({ user }: any) {
   const location = useLocation();
+  let { i18n } = useTranslation("common");
+  let locale = i18n.language;
+  function changeLanguage(lang) {
+    i18n.changeLanguage(lang);
+  }
   return (
     <div className="p-3 border-gray-200 rounded bg-gray-50 dark:bg-gray-800 dark:border-gray-700 flex justify-between items-center">
       <div className="flex gap-10 items-end">
@@ -13,6 +26,21 @@ export default function Header({ user }: any) {
         <Link to="/">Home</Link>
         <Link to="/questions">Questions</Link>
       </div>
+      <center>
+        <button
+          style={{ fontWeight: locale !== "bo" ? "normal" : "bold" }}
+          onClick={() => changeLanguage("bo")}
+        >
+          bo
+        </button>
+        /
+        <button
+          style={{ fontWeight: locale !== "en" ? "normal" : "bold" }}
+          onClick={() => changeLanguage("en")}
+        >
+          en
+        </button>
+      </center>
       {user ? (
         <div style={{ display: "flex", gap: 3 }}>
           <div className="relative">

@@ -12,7 +12,6 @@ export async function getText(params: any) {
       id: params.textId,
       witness: text,
     };
-
     return responseText;
   } catch (e: any) {
     console.log(e.message);

@@ -19,6 +19,7 @@ import AddAnnotation from "./AddAnnotation";
 import AddAudio from "./AddAudio";
 import ReactAudioPlayer from "react-audio-player";
 import AudioList from "./AudioList";
+import { useTranslation } from "react-i18next";
 type selectionType = {
   start: number;
   end: number;
@@ -53,13 +54,17 @@ export default function Editor() {
     navigator.clipboard.writeText(url);
     alert("Copied the url with selection: " + url);
   };
+  const { t } = useTranslation();
   React.useEffect(() => {
     if (!isAdding) {
       formRef?.current?.reset();
       setOpenQuestionPortal(false);
     }
   }, [isAdding, data.questionlist]);
-
+  const annotationReaction = React.useMemo(
+    () => data.annotations,
+    [data.annotations]
+  );
   const editor = useEditor(
     {
       extensions: [
@@ -107,7 +112,7 @@ export default function Editor() {
         setEditAudio(false);
       },
     },
-    [data.annotations]
+    [annotationReaction]
   );
 
   if (!editor) return null;
@@ -119,7 +124,7 @@ export default function Editor() {
         }}
       >
         {/* <TextList selectedText={data.text} setTextLoading={setTextLoading} /> */}
-        <label>fontsize</label>
+        <label>{t("fontSize")}</label>
         <select
           onChange={(e) => setFontSize(parseInt(e.target.value))}
           defaultValue={DefaultFontSize}
@@ -130,6 +135,7 @@ export default function Editor() {
           <option value={22}>22</option>
         </select>
 
+        
         <div
           style={{
             maxHeight: "100vh",
@@ -155,7 +161,7 @@ export default function Editor() {
                 type="button"
                 onClick={() => setOpenQuestionPortal((prev) => !prev)}
               >
-                Question
+                {t("Question")}
               </button>
               <button
                 onClick={shareSelectedText}
