@@ -30,20 +30,29 @@ export default function Reply({ topicId }) {
       {true &&
         postListFetcher.data?.slice(1).map((reply, index) => {
           const innerHtml = () => {
-            let doc = new DOMParser().parseFromString(reply.cooked, "text/xml");
-
-            let p = doc.getElementsByTagName("p")[0];
-            let audio = p.querySelectorAll("audio");
-            if (audio.length > 0) {
-              audio.forEach((l) => {
-                let originalsrc = l
-                  .getElementsByTagName("source")[0]
-                  .getAttribute("src");
-                let newUrl = "https://lopenling.org" + originalsrc;
-                l.getElementsByTagName("source")[0].setAttribute("src", newUrl);
-              });
+            let html = "";
+            if (reply?.cooked) {
+              let doc = new DOMParser().parseFromString(
+                reply.cooked,
+                "text/xml"
+              );
+              let p = doc.getElementsByTagName("p")[0];
+              let audio = p.querySelectorAll("audio");
+              if (audio?.length > 0) {
+                audio.forEach((l) => {
+                  let originalsrc = l
+                    .getElementsByTagName("source")[0]
+                    .getAttribute("src");
+                  let newUrl = "https://lopenling.org" + originalsrc;
+                  l.getElementsByTagName("source")[0].setAttribute(
+                    "src",
+                    newUrl
+                  );
+                });
+              }
+              html = p.outerHTML;
             }
-            return { __html: p.outerHTML };
+            return { __html: html };
           };
           return (
             <div
