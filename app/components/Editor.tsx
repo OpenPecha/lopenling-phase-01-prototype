@@ -17,9 +17,10 @@ import TextStyle from "@tiptap/extension-text-style";
 import HardBreak from "@tiptap/extension-hard-break";
 import AddAnnotation from "./AddAnnotation";
 import AddAudio from "./AddAudio";
-import ReactAudioPlayer from "react-audio-player";
-import AudioList from "./AudioList";
+// import ReactAudioPlayer from "react-audio-player";
+// import AudioList fro./AudioRecorderist";
 import { useTranslation } from "react-i18next";
+import AudioList from "./AudioList";
 type selectionType = {
   start: number;
   end: number;
@@ -135,7 +136,6 @@ export default function Editor() {
           <option value={22}>22</option>
         </select>
 
-        
         <div
           style={{
             maxHeight: "100vh",
@@ -201,6 +201,7 @@ export default function Editor() {
         {editAudio && (
           <AddAudio start={selectionSpan?.start} end={selectionSpan?.end} />
         )}
+        <AudioList />
         <AnnotationList selectedId={selectedAnnotation} editor={editor} />
         <Question
           openQuestionPortal={openQuestionPortal}

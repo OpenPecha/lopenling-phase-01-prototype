@@ -40,7 +40,7 @@ export default function AnnotationList({ selectedId, editor }: any) {
           let SourceId = data.text.witness.find(
             (w) => w.id === l.creator_witness
           ).source;
-          creator = sources.find((s) => s.id === SourceId).name;
+          creator = sources.find((s) => s.id === SourceId)?.name;
         }
         let content = l.content === "" ? "deleted" : l.content;
         if (creator !== user?.name && l.private === true) return null;

@@ -35,7 +35,7 @@ export default function TextList({
           {textList.map((item: { id: number; name: string }) => {
             return (
               <option key={item.id} value={item.id}>
-                {item.name}
+                {item?.name}
               </option>
             );
           })}

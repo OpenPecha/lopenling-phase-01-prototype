@@ -19,7 +19,6 @@ class DiscourseApi {
     let auth_headers = {
       "Api-Key": this.apiKey,
       "Api-Username": this.username,
-      "Content-Type": "application/json",
     };
     return auth_headers;
   }
@@ -195,14 +194,16 @@ class DiscourseApi {
   }
   async uploadFile(formData: any) {
     let auth_headers = this.authHeader();
-
     try {
       let res = await fetch(`${this.DiscourseUrl}/uploads.json`, {
-        method: "post",
-        headers: { ...auth_headers, "Content-Type": "multipart/form-data" },
+        method: "POST",
+        headers: auth_headers,
         body: formData,
       });
-      console.log(res);
+      if (res.status === 200) {
+        let data = await res.json();
+        return data.url;
+      }
     } catch (e) {
       console.log("upload Failed" + e.message);
     }
@@ -268,7 +269,7 @@ export async function getpostreplies(topicId: number) {
 }
 export async function uploadFile(username: string, formData: any) {
   const apiObj: DiscourseApi = new DiscourseApi(username);
-  const res = apiObj.uploadFile(username, formData);
+  const res = apiObj.uploadFile(formData);
   return res;
 }
 export async function createPost(

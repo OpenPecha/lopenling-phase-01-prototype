@@ -8,13 +8,18 @@ export default function AddAudio({ start, end }: any) {
   const audioFetcher = useFetcher();
   const [blob, audioURL, isRecording, startRecording, stopRecording] =
     useRecorder();
-  const submit = () => {
+  const submit = (e) => {
     audioFetcher.submit(
-      { audio: blob },
+      {
+        file: blob,
+        type: "composer",
+        start,
+        length: end - start,
+        witnessId: data.text.id,
+      },
       { method: "post", action: "api/audio", encType: "multipart/form-data" }
     );
   };
-
   return (
     <div style={{ borderRadius: 20, backgroundColor: "#e2e" }}>
       {audioURL && <ReactAudioPlayer src={audioURL} controls />}

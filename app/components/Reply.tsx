@@ -38,6 +38,8 @@ export default function Reply({ topicId }) {
               );
               let p = doc.getElementsByTagName("p")[0];
               let audio = p.querySelectorAll("audio");
+
+              if (!audio.length) return { __html: reply.cooked };
               if (audio?.length > 0) {
                 audio.forEach((l) => {
                   let originalsrc = l

@@ -97,6 +97,6 @@ model Audio {
   witnessId    Int
   start        Int
   length       Int
-  base64       String
+  url          String
   userId       String
 }

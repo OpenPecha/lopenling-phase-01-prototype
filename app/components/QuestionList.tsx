@@ -23,7 +23,7 @@ type QuestionProps = {
 };
 
 export default function QuestionList(props: QuestionProps) {
-  if (!props.list.length) return null;
+  if (!props.list?.length) return null;
   const [parent, enableAnimations] = useAutoAnimate(/* optional config */);
 
   return (

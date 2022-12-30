@@ -45,17 +45,17 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       dislikes: true,
     },
   });
+  const audio = await db.audio.findMany({
+    where: {
+      witnessId: parseInt(text?.id),
+    },
+  });
   let textList = [];
   textList = await getTextList();
   let filteredQuestionList = questionlist.filter((question) => {
     return question.textId === parseInt(text?.id);
   });
   let content = text?.witness.find((t) => t.is_working === true).content;
-  let audio = await db.audio.findMany({
-    where: {
-      witnessId: textId,
-    },
-  });
 
   const data = {
     user: userInfo,
