@@ -1,8 +1,6 @@
 import { useLoaderData } from "@remix-run/react";
 import { Editor } from "@tiptap/react";
 import React from "react";
-import searchText from "~/utils/searchText";
-import MiniSearch from "minisearch";
 export default function SearchString({
   editor,
   setSearchLocation,
@@ -15,34 +13,29 @@ export default function SearchString({
     if (index === data.content.split(" ").length - 1) return l;
     return l + " ";
   });
+  const [searchString, SetSearchString] = React.useState("");
 
   let start = 0;
   const jsonList = split.map((l, index) => {
     if (index !== 0) start = start + split[index - 1].length;
     return {
       start,
+      length: searchString.length,
       text: l,
+      searchedText: searchString,
     };
   });
-  const [searchString, SetSearchString] = React.useState("");
-  const searchIndex = new MiniSearch({
-    fields: ["text"],
-    storeFields: ["text", "start", "length"],
-    searchOptions: {
-      prefix: true,
-    },
-    idField: "start",
-  });
-  function handleSearch() {
-    searchIndex.addAll(jsonList);
-    let results = searchIndex.search(searchString);
 
+  function handleSearch() {
+    let results = jsonList.filter((l) => l.text.includes(searchString));
     setSearchLocation(results);
   }
   return (
-    <div>
+    <div style={{ border: "1px solid #eee", display: "flex" }}>
       <input
         type="text"
+        placeholder="type here"
+        style={{ borderRight: "2px solid black", flex: 1 }}
         onChange={(e) => SetSearchString(e.target.value)}
       ></input>
       <button onClick={handleSearch}>Search</button>
