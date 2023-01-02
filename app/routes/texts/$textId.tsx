@@ -49,6 +49,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     where: {
       witnessId: parseInt(text?.id),
     },
+    include: {
+      creator_user: true,
+    },
   });
   let textList = [];
   textList = await getTextList();

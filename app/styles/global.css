@@ -54,7 +54,9 @@ a {
 button:disabled {
   opacity: 0.3;
 }
-
+.search {
+  color: red;
+}
 .lightbox-wrapper .meta {
   display: none;
 }

@@ -21,6 +21,10 @@ import AddAudio from "./AddAudio";
 // import AudioList fro./AudioRecorderist";
 import { useTranslation } from "react-i18next";
 import AudioList from "./AudioList";
+import SearchString from "./SearchText";
+import { searchMark } from "~/extension/searchMark";
+// import { applySearchMark } from "~/extension/applySearchMark";
+import SearchList from "./SearchList";
 type selectionType = {
   start: number;
   end: number;
@@ -31,7 +35,7 @@ export default function Editor() {
   const [allowAnnotation, setAllowedAnnotation] = React.useState(true);
   const [edit, setEdit] = React.useState(false);
   const [editAudio, setEditAudio] = React.useState(false);
-
+  const [searchLocation, setSearchLocation] = React.useState([]);
   const [openQuestionPortal, setOpenQuestionPortal] =
     React.useState<boolean>(false);
   const [selectedAnnotation, setSelectedAnnotation] = React.useState<number>(0);
@@ -79,6 +83,8 @@ export default function Editor() {
         TextStyle,
         FontSize,
         SelectTextOnRender,
+        searchMark(),
+        // applySearchMark(searchLocation),
       ],
       content: data.content,
       editable: true,
@@ -113,7 +119,7 @@ export default function Editor() {
         setEditAudio(false);
       },
     },
-    [annotationReaction]
+    [annotationReaction, searchLocation]
   );
 
   if (!editor) return null;
@@ -146,6 +152,7 @@ export default function Editor() {
             transform: "all ease-in 2s",
           }}
         >
+          <SearchString editor={editor} setSearchLocation={setSearchLocation} />
           <EditorContent
             editor={editor}
             style={{ transition: "all ease 0.3s" }}
@@ -189,6 +196,7 @@ export default function Editor() {
           )}
         </div>
       </div>
+
       <div style={{ overflow: "hidden", flex: 1 }}>
         {edit && (
           <AddAnnotation
@@ -201,7 +209,9 @@ export default function Editor() {
         {editAudio && (
           <AddAudio start={selectionSpan?.start} end={selectionSpan?.end} />
         )}
-        <AudioList />
+        <SearchList list={searchLocation} editor={editor} />
+
+        <AudioList editor={editor} />
         <AnnotationList selectedId={selectedAnnotation} editor={editor} />
         <Question
           openQuestionPortal={openQuestionPortal}

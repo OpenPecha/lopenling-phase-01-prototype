@@ -54,7 +54,7 @@ class DiscourseApi {
     let auth_headers = this.authHeader();
     var randomColor = () => Math.floor(Math.random() * 16777215).toString(16);
     let newCategoryData = {
-      name: categoryName.slice(0, 40) + "..",
+      name: categoryName,
       color: randomColor(),
       text_color: randomColor(),
       parent_category_id,
@@ -65,9 +65,6 @@ class DiscourseApi {
         `${this.DiscourseUrl}/categories.json?` + params,
         {
           method: "POST",
-          mode: "cors", // no-cors, *cors, same-origin
-          cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-          credentials: "same-origin",
           headers: auth_headers,
         }
       );
@@ -232,10 +229,10 @@ export async function createQuestion(
   );
   if (!checkIfCategoryPresent) {
     let res = await apiObj.addCategory(
-      userName,
       textName.toString(),
       parseInt(parent_category_id)
     );
+    console.log(res, userName, textName, parent_category_id);
     checkIfCategoryPresent = {
       id: res.category?.id,
     };
