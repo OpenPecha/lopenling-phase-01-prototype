@@ -5,8 +5,8 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import React from "react";
-import { annotationMark } from "~/extension/annotationMark";
-import applyAnnotation from "~/extension/applyAnnotations";
+import { annotationMarks } from "~/extension/annotationMarks";
+import applyMarks from "~/extension/applyMarks";
 import SelectTextOnRender from "~/extension/selectionOnFirstRender";
 import Question from "./Question";
 import _ from "lodash";
@@ -23,8 +23,8 @@ import { useTranslation } from "react-i18next";
 import AudioList from "./AudioList";
 import SearchString from "./SearchText";
 import { searchMark } from "~/extension/searchMark";
-// import { applySearchMark } from "~/extension/applySearchMark";
 import SearchList from "./SearchList";
+import { searchMarks } from "~/extension/searchMarks";
 type selectionType = {
   start: number;
   end: number;
@@ -78,13 +78,12 @@ export default function Editor() {
         Text,
         Highlight.configure({ multicolor: true }),
         HardBreak,
-        // annotationMark(data, fetchAnnotation),
-        // applyAnnotation(data.annotations, data.pageBreakers),
+        // annotationMarks(data, fetchAnnotation),
+        searchMarks,
+        applyMarks(data.annotations, data.pageBreakers, searchLocation),
         TextStyle,
         FontSize,
         SelectTextOnRender,
-        searchMark(),
-        // applySearchMark(searchLocation),
       ],
       content: data.content,
       editable: true,
@@ -121,7 +120,6 @@ export default function Editor() {
     },
     [annotationReaction, searchLocation]
   );
-
   if (!editor) return null;
   return (
     <div className="editorPage">
@@ -208,7 +206,7 @@ export default function Editor() {
         {editAudio && (
           <AddAudio start={selectionSpan?.start} end={selectionSpan?.end} />
         )}
-        <SearchList list={searchLocation} editor={editor} />
+        {/* <SearchList list={searchLocation} editor={editor} /> */}
         {/* <AudioList editor={editor} /> */}
         {/* <AnnotationList selectedId={selectedAnnotation} editor={editor} /> */}
         <Question

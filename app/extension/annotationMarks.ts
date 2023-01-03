@@ -1,6 +1,6 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
 
-export const annotationMark = (data: any, fetchAnnotation: any) =>
+export const annotationMarks = (data: any, fetchAnnotation: any) =>
   Mark.create({
     name: "annotations",
 

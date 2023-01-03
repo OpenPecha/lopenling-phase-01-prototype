@@ -22,6 +22,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
   }
   const text = await getText(params);
+  let userAnnotation = [];
   // let userAnnotation = user
   //   ? await db.userAnnotation.findMany({
   //       where: {
@@ -33,10 +34,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   //       },
   //     })
   //   : [];
-  // let { v_annotations, p_annotations }: any = await getAnnotations(
-  //   params,
-  //   userAnnotation
-  // );
+  let { v_annotations, p_annotations }: any = await getAnnotations(
+    params,
+    userAnnotation
+  );
   const sources = await getSources();
   const questionlist = await db.question.findMany({
     include: {
@@ -62,8 +63,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     user: userInfo,
     text,
     questionlist: filteredQuestionList,
-    // annotations: v_annotations,
-    // pageBreakers: p_annotations,
+    annotations: v_annotations,
+    pageBreakers: p_annotations,
     sources,
     content,
     // userAnnotation,

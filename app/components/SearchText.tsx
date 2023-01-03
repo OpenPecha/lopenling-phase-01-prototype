@@ -20,15 +20,21 @@ export default function SearchString({
     if (index !== 0) start = start + split[index - 1].length;
     return {
       start,
-      length: searchString.length,
+      length: l.length,
       text: l,
-      searchedText: searchString,
+      searchString: searchString,
     };
   });
 
   function handleSearch() {
-    let results = jsonList.filter((l) => l.text.includes(searchString));
-    setSearchLocation(results);
+    if (searchString.length === 0) {
+      setSearchLocation([]);
+    } else {
+      let results = jsonList.filter((l) => l.text.includes(searchString));
+
+      setSearchLocation(results);
+    }
+    SetSearchString("");
     inputRef.current.value = "";
   }
   return (

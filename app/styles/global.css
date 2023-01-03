@@ -2,6 +2,9 @@
   color: blue;
   cursor: pointer;
 }
+body {
+  overflow: hidden;
+}
 a {
 }
 .ProseMirror {
@@ -55,7 +58,7 @@ button:disabled {
   opacity: 0.3;
 }
 .search {
-  color: red;
+  background-color: yellow;
 }
 .lightbox-wrapper .meta {
   display: none;

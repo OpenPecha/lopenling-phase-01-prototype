@@ -3,8 +3,9 @@ import { Editor } from "@tiptap/react";
 
 export const applyAnnotationFunction = (
   editor: Editor,
-  annotation: [],
+  annotation: any,
   pageBreaker: [],
+  searchLocation: [],
   updateContent = null
 ) => {
   let content: string = `${editor.getText()}`;
@@ -14,16 +15,33 @@ export const applyAnnotationFunction = (
   let annotations: any = annotation;
   let html = "<p>";
   let allkeys: string[] = [];
+  let searchKey = [];
   let allPageBreakerStart: string[] = [];
-  for (const [key, value] of Object.entries(annotations)) {
-    allkeys.push(key);
-  }
-  for (let startid of pageBreaker) {
-    allPageBreakerStart.push(startid?.start);
+  if (annotations)
+    for (const [key, value] of Object.entries(annotations)) {
+      allkeys.push(key);
+    }
+  if (pageBreaker)
+    for (let startid of pageBreaker) {
+      allPageBreakerStart.push(startid?.start);
+    }
+  if (searchLocation) {
+    searchKey = searchLocation.map((l) => l.start);
   }
 
   let skiplength: any = [];
   [...content].forEach((c, i: number) => {
+    if (searchKey.includes(i)) {
+      let s = searchLocation.find((p) => p.start === i);
+      html += `<i id="` + i + `">`;
+      let search = searchLocation[searchLocation.indexOf(s)];
+      let length = s?.length;
+      for (let j = i; j < i + length; j++) {
+        html += content[j];
+        skiplength.push(j);
+      }
+      html += "</i>";
+    }
     if (allPageBreakerStart.includes(i) && i !== 0) html += "<br>";
     if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
       html += `<span id="` + i + `">`;
@@ -46,7 +64,11 @@ export const applyAnnotationFunction = (
   html = "";
 };
 
-const applyAnnotation = (annotation: {}, pageBreaker: any) =>
+const applyAnnotation = (
+  annotation: [],
+  pageBreaker: any,
+  searchLocation: any
+) =>
   Extension.create({
     name: "v_annotation",
     addStorage() {
@@ -54,8 +76,21 @@ const applyAnnotation = (annotation: {}, pageBreaker: any) =>
         v_annotation: annotation,
       };
     },
-    onCreate(this: { editor: any }) {
-      applyAnnotationFunction(this.editor, annotation, pageBreaker);
+    onCreate(this: { editor: Editor }) {
+      applyAnnotationFunction(
+        this.editor,
+        annotation,
+        pageBreaker,
+        searchLocation
+      );
+      if (searchLocation.length) {
+        console.log(searchLocation.length);
+        this.editor
+          .chain()
+          .focus()
+          .setTextSelection(searchLocation[0].start)
+          .run();
+      }
     },
   });
 
