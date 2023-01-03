@@ -10,7 +10,7 @@ import { db } from "~/utils/db.server";
 import React, { useMemo } from "react";
 import { getUserSession } from "../services/session.server";
 import { getTextList } from "~/services/getText.server";
-import QuestionList from "~/components/QuestionList";
+import indrajalaLogo from "../file/indrajalaLogo.png";
 type dataType = {
   user: any;
   message: string;
@@ -55,10 +55,8 @@ export default function Index() {
   const data = useLoaderData();
   const searchedText = useFetcher();
 
-  const list = useMemo(
-    () => searchedText.data || data.textList,
-    [data.textList, searchedText.data]
-  );
+  const list = useMemo(() => searchedText.data, [searchedText.data]);
+
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
       <div
@@ -67,6 +65,7 @@ export default function Index() {
           justifyContent: "space-around",
           flexDirection: "row",
           padding: 20,
+          maxHeight: "50vh",
         }}
       >
         <div className="textList">
@@ -81,35 +80,51 @@ export default function Index() {
               type="submit"
               style={{
                 background: searchedText.state === "idle" ? "#eee" : "#ccc",
-                padding: 4,
               }}
             >
               search
             </button>
           </searchedText.Form>
-          <div style={{ maxHeight: 600, overflowY: "scroll" }}>
-            {list.map((list: { id: number; name: string }) => {
-              return (
-                <p key={"textList-" + list.id}>
-                  <strong>{list.id}</strong>
-                  <Link to={"/texts/" + list.id} key={list.id}>
-                    {list.name}
-                  </Link>
-                </p>
-              );
-            })}
-          </div>
-        </div>
-        <div className="questionList">
-          <h3>Recent Questions</h3>
-
-          <QuestionList
-            selectQuestion={null}
-            list={data.questionList.slice(0, 6)}
-            editor={null}
-          />
+          {list && (
+            <div
+              style={{
+                maxHeight: 300,
+                overflowY: "scroll",
+                scrollbarWidth: "none",
+              }}
+            >
+              {list.length === 0 && (
+                <div style={{ color: "red" }}>No result found</div>
+              )}
+              {list?.map((list: { id: number; name: string }) => {
+                return (
+                  <p key={"textList-" + list.id}>
+                    <Link to={"/texts/" + list.id} key={list.id}>
+                      {list.name}
+                    </Link>
+                  </p>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
+      <footer
+        style={{
+          position: "fixed",
+          bottom: 0,
+          margin: "0 auto",
+          background: "#888",
+          minWidth: "100%",
+        }}
+      >
+        <center>
+          <img
+            src={indrajalaLogo}
+            style={{ maxHeight: 40, objectFit: "contain" }}
+          ></img>
+        </center>
+      </footer>
     </div>
   );
 }

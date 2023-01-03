@@ -78,8 +78,8 @@ export default function Editor() {
         Text,
         Highlight.configure({ multicolor: true }),
         HardBreak,
-        annotationMark(data, fetchAnnotation),
-        applyAnnotation(data.annotations, data.pageBreakers),
+        // annotationMark(data, fetchAnnotation),
+        // applyAnnotation(data.annotations, data.pageBreakers),
         TextStyle,
         FontSize,
         SelectTextOnRender,
@@ -130,7 +130,6 @@ export default function Editor() {
           flex: 1,
         }}
       >
-        {/* <TextList selectedText={data.text} setTextLoading={setTextLoading} /> */}
         <label>{t("fontSize")}</label>
         <select
           onChange={(e) => setFontSize(parseInt(e.target.value))}
@@ -141,6 +140,7 @@ export default function Editor() {
           <option value={20}>20</option>
           <option value={22}>22</option>
         </select>
+        <SearchString editor={editor} setSearchLocation={setSearchLocation} />
 
         <div
           style={{
@@ -152,7 +152,6 @@ export default function Editor() {
             transform: "all ease-in 2s",
           }}
         >
-          <SearchString editor={editor} setSearchLocation={setSearchLocation} />
           <EditorContent
             editor={editor}
             style={{ transition: "all ease 0.3s" }}
@@ -210,9 +209,8 @@ export default function Editor() {
           <AddAudio start={selectionSpan?.start} end={selectionSpan?.end} />
         )}
         <SearchList list={searchLocation} editor={editor} />
-
-        <AudioList editor={editor} />
-        <AnnotationList selectedId={selectedAnnotation} editor={editor} />
+        {/* <AudioList editor={editor} /> */}
+        {/* <AnnotationList selectedId={selectedAnnotation} editor={editor} /> */}
         <Question
           openQuestionPortal={openQuestionPortal}
           editor={editor}

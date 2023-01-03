@@ -19,7 +19,6 @@ type QuestionProps = {
     }
   ];
   editor: Editor | null;
-  selectQuestion: number | null;
 };
 
 export default function QuestionList(props: QuestionProps) {

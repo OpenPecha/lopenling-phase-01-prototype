@@ -24,52 +24,49 @@ const Question = (
   }, [createQuestion.submission]);
   return (
     <section>
-      {data.user ? (
-        openQuestionPortal && (
-          <createQuestion.Form
-            ref={ref}
-            method="post"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              background: "#eee",
-              alignItems: "center",
-            }}
-            action="/api/question"
-          >
-            ask question here: {questionArea}
-            <input
-              hidden
-              defaultValue={editor.state.selection.from}
-              name="start"
-            ></input>
-            <input
-              hidden
-              defaultValue={editor.state.selection.to}
-              name="end"
-            ></input>
-            <input
-              name="QuestionArea"
-              hidden
-              defaultValue={questionArea}
-            ></input>
-            <input name="textId" hidden defaultValue={data.text?.id}></input>
-            <input name="topic" hidden defaultValue={data.text?.name}></input>
-            <input name="body" ref={inputRef}></input>
-            <button type="submit" name="_action" value="createQuestion">
-              {createQuestion.submission ? "posting" : "post"}
-            </button>
-          </createQuestion.Form>
-        )
-      ) : (
-        <div style={{ color: "red" }}>u must login first</div>
-      )}
-      <center>
-        <h2 className="text-1xl font-bold">
-          Questions for text {data.text?.name}
-        </h2>
-      </center>
-
+      <div
+        style={{ position: "absolute", zIndex: 20, right: 0, width: "40vw" }}
+      >
+        {data.user ? (
+          openQuestionPortal && (
+            <createQuestion.Form
+              ref={ref}
+              method="post"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                background: "#eee",
+                alignItems: "center",
+              }}
+              action="/api/question"
+            >
+              <input
+                hidden
+                defaultValue={editor.state.selection.from}
+                name="start"
+              ></input>
+              <input
+                hidden
+                defaultValue={editor.state.selection.to}
+                name="end"
+              ></input>
+              <input
+                name="QuestionArea"
+                hidden
+                defaultValue={questionArea}
+              ></input>
+              <input name="textId" hidden defaultValue={data.text?.id}></input>
+              <input name="topic" hidden defaultValue={data.text?.name}></input>
+              <input name="body" ref={inputRef}></input>
+              <button type="submit" name="_action" value="createQuestion">
+                {createQuestion.submission ? "posting" : "post"}
+              </button>
+            </createQuestion.Form>
+          )
+        ) : (
+          <div style={{ color: "red" }}>u must login first</div>
+        )}
+      </div>
       {createQuestion.submission && (
         <EachQuestion
           l={Object.fromEntries(createQuestion.submission?.formData)}

@@ -22,21 +22,21 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
   }
   const text = await getText(params);
-  let userAnnotation = user
-    ? await db.userAnnotation.findMany({
-        where: {
-          OR: [{ creator_user: { name: user?.name } }, { private: false }],
-          witnessId: parseInt(text?.id),
-        },
-        include: {
-          creator_user: true,
-        },
-      })
-    : [];
-  let { v_annotations, p_annotations }: any = await getAnnotations(
-    params,
-    userAnnotation
-  );
+  // let userAnnotation = user
+  //   ? await db.userAnnotation.findMany({
+  //       where: {
+  //         OR: [{ creator_user: { name: user?.name } }, { private: false }],
+  //         witnessId: parseInt(text?.id),
+  //       },
+  //       include: {
+  //         creator_user: true,
+  //       },
+  //     })
+  //   : [];
+  // let { v_annotations, p_annotations }: any = await getAnnotations(
+  //   params,
+  //   userAnnotation
+  // );
   const sources = await getSources();
   const questionlist = await db.question.findMany({
     include: {
@@ -45,16 +45,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       dislikes: true,
     },
   });
-  const audio = await db.audio.findMany({
-    where: {
-      witnessId: parseInt(text?.id),
-    },
-    include: {
-      creator_user: true,
-    },
-  });
-  let textList = [];
-  textList = await getTextList();
+  // const audio = await db.audio.findMany({
+  //   where: {
+  //     witnessId: parseInt(text?.id),
+  //   },
+  //   include: {
+  //     creator_user: true,
+  //   },
+  // });
   let filteredQuestionList = questionlist.filter((question) => {
     return question.textId === parseInt(text?.id);
   });
@@ -64,13 +62,12 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     user: userInfo,
     text,
     questionlist: filteredQuestionList,
-    textList,
-    annotations: v_annotations,
-    pageBreakers: p_annotations,
+    // annotations: v_annotations,
+    // pageBreakers: p_annotations,
     sources,
     content,
-    userAnnotation,
-    audio,
+    // userAnnotation,
+    // audio,
   };
   return json(data);
 };

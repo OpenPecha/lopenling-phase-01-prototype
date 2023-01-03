@@ -14,7 +14,7 @@ export default function SearchString({
     return l + " ";
   });
   const [searchString, SetSearchString] = React.useState("");
-
+  const inputRef = React.useRef();
   let start = 0;
   const jsonList = split.map((l, index) => {
     if (index !== 0) start = start + split[index - 1].length;
@@ -29,10 +29,12 @@ export default function SearchString({
   function handleSearch() {
     let results = jsonList.filter((l) => l.text.includes(searchString));
     setSearchLocation(results);
+    inputRef.current.value = "";
   }
   return (
     <div style={{ border: "1px solid #eee", display: "flex" }}>
       <input
+        ref={inputRef}
         type="text"
         placeholder="type here"
         style={{ borderRight: "2px solid black", flex: 1 }}
