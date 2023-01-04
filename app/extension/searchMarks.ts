@@ -14,7 +14,7 @@ export const searchMarks = Mark.create({
   parseHTML() {
     return [
       {
-        tag: "i",
+        tag: "search",
       },
     ];
   },

@@ -2,6 +2,7 @@ import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import Document from "@tiptap/extension-document";
 import Highlight from "@tiptap/extension-highlight";
 import Paragraph from "@tiptap/extension-paragraph";
+import Bold from "@tiptap/extension-bold";
 import Text from "@tiptap/extension-text";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
 import React from "react";
@@ -76,9 +77,10 @@ export default function Editor() {
         Document,
         Paragraph,
         Text,
+        Bold,
         Highlight.configure({ multicolor: true }),
         HardBreak,
-        // annotationMarks(data, fetchAnnotation),
+        annotationMarks(data, fetchAnnotation),
         searchMarks,
         applyMarks(data.annotations, data.pageBreakers, searchLocation),
         TextStyle,
