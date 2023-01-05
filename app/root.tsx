@@ -20,6 +20,7 @@ import ErrorPage from "./components/ErrorPage";
 import i18next from "./i18next.server";
 import i18n from "./i18n";
 import { useTranslation } from "react-i18next";
+import Footer from "./components/Footer";
 export const loader: LoaderFunction = async ({ request }) => {
   let user = await getUserSession(request);
   return json({ user });
@@ -53,14 +54,15 @@ function Document({ children, title }: any) {
         <Links />
         <title>{title}</title>
       </head>
-      <body>
+      <body className="min-h-screen">
         {!params.annotation && <Headers user={user} />}
 
         {children}
+        <Footer />
+        {process.env.NODE_ENV === "development" && <LiveReload />}
+
         <ScrollRestoration />
         <Scripts />
-
-        {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>
     </html>
   );

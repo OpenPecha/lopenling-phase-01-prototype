@@ -61,7 +61,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   const data = {
     user: userInfo,
-    text,
+    // text,
     questionlist: filteredQuestionList,
     annotations: v_annotations,
     pageBreakers: p_annotations,
@@ -70,9 +70,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     // userAnnotation,
     // audio,
   };
-  return json(data);
+  return data;
 };
-
 export const action: ActionFunction = async ({ request }) => {
   let formData = await request.formData();
   let changeText = formData.get("changeText");

@@ -10,7 +10,6 @@ import { db } from "~/utils/db.server";
 import React, { useMemo } from "react";
 import { getUserSession } from "../services/session.server";
 import { getTextList } from "~/services/getText.server";
-import indrajalaLogo from "../file/indrajalaLogo.png";
 type dataType = {
   user: any;
   message: string;
@@ -50,7 +49,6 @@ export const loader: LoaderFunction = async ({
 
   return { user: userinFo, message, textList, questionList };
 };
-
 export default function Index() {
   const data = useLoaderData();
   const searchedText = useFetcher();
@@ -66,6 +64,7 @@ export default function Index() {
           flexDirection: "row",
           padding: 20,
           maxHeight: "50vh",
+          flex: 1,
         }}
       >
         <div className="textList">
@@ -109,22 +108,6 @@ export default function Index() {
           )}
         </div>
       </div>
-      <footer
-        style={{
-          position: "fixed",
-          bottom: 0,
-          margin: "0 auto",
-          background: "#888",
-          minWidth: "100%",
-        }}
-      >
-        <center>
-          <img
-            src={indrajalaLogo}
-            style={{ maxHeight: 40, objectFit: "contain" }}
-          ></img>
-        </center>
-      </footer>
     </div>
   );
 }

@@ -224,15 +224,13 @@ export async function createQuestion(
     throw new Error("failed to access Topic Id");
   const apiObj: DiscourseApi = new DiscourseApi(userName);
   let response = await apiObj.fetchCategoryList(parent_category_id);
-  let checkIfCategoryPresent = response?.find(
-    (l: any) => l.name === textName.slice(0, 40) + ".."
-  );
+  let checkIfCategoryPresent = response?.find((l: any) => l.name === textName);
   if (!checkIfCategoryPresent) {
     let res = await apiObj.addCategory(
       textName.toString(),
       parseInt(parent_category_id)
     );
-    console.log(res, userName, textName, parent_category_id);
+    console.log(checkIfCategoryPresent, userName, textName, parent_category_id);
     checkIfCategoryPresent = {
       id: res.category?.id,
     };

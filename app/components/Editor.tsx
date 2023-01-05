@@ -14,7 +14,6 @@ import _ from "lodash";
 import AnnotationList from "./AnnotationList";
 import { FontSize } from "~/extension/fontSize";
 import TextStyle from "@tiptap/extension-text-style";
-
 import HardBreak from "@tiptap/extension-hard-break";
 import AddAnnotation from "./AddAnnotation";
 import AddAudio from "./AddAudio";
@@ -23,7 +22,6 @@ import AddAudio from "./AddAudio";
 import { useTranslation } from "react-i18next";
 import AudioList from "./AudioList";
 import SearchString from "./SearchText";
-import { searchMark } from "~/extension/searchMark";
 import SearchList from "./SearchList";
 import { searchMarks } from "~/extension/searchMarks";
 type selectionType = {
@@ -80,9 +78,9 @@ export default function Editor() {
         Bold,
         Highlight.configure({ multicolor: true }),
         HardBreak,
-        annotationMarks(data, fetchAnnotation),
+        // annotationMarks(data, fetchAnnotation),
         searchMarks,
-        applyMarks(data.annotations, data.pageBreakers, searchLocation),
+        // applyMarks(data.annotations, data.pageBreakers, searchLocation),
         TextStyle,
         FontSize,
         SelectTextOnRender,
@@ -130,7 +128,7 @@ export default function Editor() {
           flex: 1,
         }}
       >
-        <label>{t("fontSize")}</label>
+        {/* <label>{t("fontSize")}</label>
         <select
           onChange={(e) => setFontSize(parseInt(e.target.value))}
           defaultValue={DefaultFontSize}
@@ -141,7 +139,7 @@ export default function Editor() {
           <option value={22}>22</option>
         </select>
         <SearchString editor={editor} setSearchLocation={setSearchLocation} />
-
+        {searchLocation && <div>result: {searchLocation.length} </div>} */}
         <div
           style={{
             maxHeight: "100vh",
@@ -197,7 +195,7 @@ export default function Editor() {
       </div>
 
       <div style={{ overflow: "hidden", flex: 1 }}>
-        {edit && (
+        {/* {edit && (
           <AddAnnotation
             selectionSpan={selectionSpan}
             selectedText={selectedText}
@@ -207,16 +205,16 @@ export default function Editor() {
         )}
         {editAudio && (
           <AddAudio start={selectionSpan?.start} end={selectionSpan?.end} />
-        )}
+        )} */}
         {/* <SearchList list={searchLocation} editor={editor} /> */}
         {/* <AudioList editor={editor} /> */}
         {/* <AnnotationList selectedId={selectedAnnotation} editor={editor} /> */}
-        <Question
+        {/* <Question
           openQuestionPortal={openQuestionPortal}
           editor={editor}
           questionArea={selectedText}
           ref={formRef}
-        />
+        /> */}
         {/* <AudioList editor={editor} /> */}
       </div>
     </div>

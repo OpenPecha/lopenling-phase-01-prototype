@@ -1,9 +1,5 @@
-import { LoaderFunction } from "@remix-run/node";
-
+import { json, LoaderFunction } from "@remix-run/node";
+import en from "~/file/i18n/en.json";
 export const loader: LoaderFunction = () => {
-  return {
-    greeting: "hi",
-    fontSize: "fontSize",
-    Question: "Question",
-  };
+  return json(en);
 };

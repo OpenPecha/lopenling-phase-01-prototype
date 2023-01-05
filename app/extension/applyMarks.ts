@@ -33,7 +33,6 @@ export const applyAnnotationFunction = (
   [...content].forEach((c, i: number) => {
     if (searchKey.includes(i)) {
       let s = searchLocation.find((p) => p.start === i);
-      html += `<search id="` + s?.start + `">`;
       let length = s?.length;
       let text = "";
       for (let j = i; j < i + length; j++) {
@@ -41,25 +40,23 @@ export const applyAnnotationFunction = (
         skiplength.push(j);
       }
       html += getBoldOnHighlight(text, s?.searchString);
-
-      html += "</search>";
     }
     if (allPageBreakerStart.includes(i) && i !== 0) html += "<br>";
-    if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
-      html += `<span id="` + i + `">`;
-      let annotate = annotations[i];
-      let length = annotate[0]?.length;
-      for (let j = i; j < i + length; j++) {
-        html += content[j];
-        skiplength.push(j);
-      }
-      html += "</span>";
-    } else {
-      if (skiplength.includes(i)) {
-        return;
-      }
-      html += c;
+    // if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
+    //   html += `<span id="` + i + `">`;
+    //   let annotate = annotations[i];
+    //   let length = annotate[0]?.length;
+    //   for (let j = i; j < i + length; j++) {
+    //     html += content[j];
+    //     skiplength.push(j);
+    //   }
+    //   html += "</span>";
+    // } else {
+    if (skiplength.includes(i)) {
+      return;
     }
+    html += c;
+    // }
   });
   html += "</p>";
   editor.commands.setContent(html);
@@ -86,11 +83,11 @@ const applyAnnotation = (
         searchLocation
       );
       if (searchLocation.length) {
-        console.log(searchLocation.length);
+        let d = searchLocation[0];
         this.editor
           .chain()
           .focus()
-          .setTextSelection(searchLocation[0].start)
+          .setTextSelection(d.start + d.length)
           .run();
       }
     },
@@ -107,7 +104,7 @@ function getBoldOnHighlight(text: string, highlight: string) {
     return show;
   });
 
-  return search.join("");
+  return `<search>${search.join("")}</search>`;
 }
 
 export default applyAnnotation;
