@@ -21,7 +21,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       console.log(e);
     }
   }
-  const text = await getText(params);
   let userAnnotation = [];
   // let userAnnotation = user
   //   ? await db.userAnnotation.findMany({
@@ -34,11 +33,16 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   //       },
   //     })
   //   : [];
-  let { v_annotations, p_annotations }: any = await getAnnotations(
-    params,
-    userAnnotation
-  );
-  const sources = await getSources();
+  let textPromise = getText(params);
+  let annotationPromise = await getAnnotations(params, userAnnotation);
+  let sourcesPromise = getSources();
+
+  let [text, sources, annotation] = await Promise.all([
+    textPromise,
+    sourcesPromise,
+    annotationPromise,
+  ]);
+
   const questionlist = await db.question.findMany({
     include: {
       createrUser: true,
@@ -57,14 +61,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   let filteredQuestionList = questionlist.filter((question) => {
     return question.textId === parseInt(text?.id);
   });
-  let content = text?.witness.find((t) => t.is_working === true).content;
-
+  let content = text?.witness?.find((t) => t.is_working === true).content;
   const data = {
     user: userInfo,
-    // text,
-    questionlist: filteredQuestionList,
-    annotations: v_annotations,
-    pageBreakers: p_annotations,
+    text,
+    // questionlist: filteredQuestionList,
+    annotations: annotation?.v_annotations,
+    pageBreakers: annotation?.p_annotations,
     sources,
     content,
     // userAnnotation,
