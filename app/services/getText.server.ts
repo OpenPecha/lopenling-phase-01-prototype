@@ -4,11 +4,11 @@ export async function getText(params: any) {
     const url = apiUrl + "texts/" + params.textId + "/witnesses/";
     const res = await fetch(url);
     const text = await res.json();
-    const textName = await getTextList();
-    if (typeof textName === "undefined") throw new Error("textName undefined");
-    const name = textName?.find((l) => l?.id === parseInt(params.textId))?.name;
+    // const textList = await getTextList();
+    // if (typeof textList === "undefined") throw new Error("textList undefined");
+    // const name = textList?.find((l) => l?.id === parseInt(params.textId))?.name;
     const responseText = {
-      name,
+      // name,
       id: params.textId,
       witness: text,
     };
@@ -17,6 +17,7 @@ export async function getText(params: any) {
     console.log(e.message);
   }
 }
+
 export async function getTextList(): Promise<
   [{ id: number; name: string }] | undefined
 > {

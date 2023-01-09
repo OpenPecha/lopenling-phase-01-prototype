@@ -3,10 +3,11 @@ import { getUserSession } from "~/services/session.server";
 import { ActionFunction, json, MetaFunction, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { db } from "~/utils/db.server";
-import { getText } from "~/services/getText.server";
+import { getText, getTextList } from "~/services/getText.server";
 import { getAnnotations } from "~/services/getAnnotations.server";
 import { getSources } from "~/services/getSources.server";
 import Editor from "~/components/Editor";
+
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUserSession(request);
   let userInfo;
@@ -21,7 +22,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
   }
   let userAnnotation = [];
-  // let userAnnotation = user
+  // let userAnnotation = user;
   //   ? await db.userAnnotation.findMany({
   //       where: {
   //         OR: [{ creator_user: { name: user?.name } }, { private: false }],
@@ -33,14 +34,19 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   //     })
   //   : [];
   let textPromise = getText(params);
+  let textListPromise = getTextList();
+
   // let annotationPromise = await getAnnotations(params, userAnnotation);
   let sourcesPromise = getSources();
 
-  let [text, sources] = await Promise.all([
+  let [text, sources, textList] = await Promise.all([
     textPromise,
     sourcesPromise,
+    textListPromise,
     // annotationPromise,
   ]);
+  if (typeof textList === "undefined") throw new Error("textList undefined");
+  text.name = textList?.find((l) => l?.id === parseInt(text.id))?.name;
   const questionlist = await db.question.findMany({
     include: {
       createrUser: true,
