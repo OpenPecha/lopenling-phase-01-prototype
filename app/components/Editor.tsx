@@ -69,6 +69,8 @@ export default function Editor() {
     () => data.annotations,
     [data.annotations]
   );
+  let content = data.text?.witness.find((l) => l.is_working === true).content;
+
   const editor = useEditor(
     {
       extensions: [
@@ -80,12 +82,12 @@ export default function Editor() {
         HardBreak,
         // annotationMarks(data, fetchAnnotation),
         searchMarks,
-        // applyMarks(data.annotations, data.pageBreakers, searchLocation),
+        applyMarks(data.annotations, data.pageBreakers, searchLocation),
         TextStyle,
         FontSize,
         SelectTextOnRender,
       ],
-      content: data.content,
+      content: content,
       editable: true,
       editorProps: {
         handleDOMEvents: {
@@ -128,7 +130,7 @@ export default function Editor() {
           flex: 1,
         }}
       >
-        {/* <label>{t("fontSize")}</label>
+        <label>{t("fontSize")}</label>
         <select
           onChange={(e) => setFontSize(parseInt(e.target.value))}
           defaultValue={DefaultFontSize}
@@ -139,7 +141,7 @@ export default function Editor() {
           <option value={22}>22</option>
         </select>
         <SearchString editor={editor} setSearchLocation={setSearchLocation} />
-        {searchLocation && <div>result: {searchLocation.length} </div>} */}
+        {searchLocation && <div>result: {searchLocation.length} </div>}
         <div
           style={{
             maxHeight: "100vh",
@@ -209,12 +211,12 @@ export default function Editor() {
         {/* <SearchList list={searchLocation} editor={editor} /> */}
         {/* <AudioList editor={editor} /> */}
         {/* <AnnotationList selectedId={selectedAnnotation} editor={editor} /> */}
-        {/* <Question
+        <Question
           openQuestionPortal={openQuestionPortal}
           editor={editor}
           questionArea={selectedText}
           ref={formRef}
-        /> */}
+        />
         {/* <AudioList editor={editor} /> */}
       </div>
     </div>

@@ -9,8 +9,10 @@ export default function SearchString({
   setSearchLocation: (list: any) => void;
 }) {
   const data = useLoaderData();
-  const split = data.content.split(" ").map((l, index) => {
-    if (index === data.content.split(" ").length - 1) return l;
+  let content = data.text?.witness.find((l) => l.is_working === true).content;
+
+  const split = content?.split(" ").map((l, index) => {
+    if (index === content.split(" ").length - 1) return l;
     return l + " ";
   });
   const [searchString, SetSearchString] = React.useState("");

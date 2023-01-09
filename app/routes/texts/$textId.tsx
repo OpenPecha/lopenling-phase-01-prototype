@@ -3,13 +3,12 @@ import { getUserSession } from "~/services/session.server";
 import { ActionFunction, json, MetaFunction, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { db } from "~/utils/db.server";
-import { getText, getTextList } from "~/services/getText.server";
+import { getText } from "~/services/getText.server";
 import { getAnnotations } from "~/services/getAnnotations.server";
 import { getSources } from "~/services/getSources.server";
 import Editor from "~/components/Editor";
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await getUserSession(request);
-  const textId = parseInt(params.textId);
   let userInfo;
   if (user?.email) {
     try {
@@ -34,15 +33,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   //     })
   //   : [];
   let textPromise = getText(params);
-  let annotationPromise = await getAnnotations(params, userAnnotation);
+  // let annotationPromise = await getAnnotations(params, userAnnotation);
   let sourcesPromise = getSources();
 
-  let [text, sources, annotation] = await Promise.all([
+  let [text, sources] = await Promise.all([
     textPromise,
     sourcesPromise,
-    annotationPromise,
+    // annotationPromise,
   ]);
-
   const questionlist = await db.question.findMany({
     include: {
       createrUser: true,
@@ -61,19 +59,17 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   let filteredQuestionList = questionlist.filter((question) => {
     return question.textId === parseInt(text?.id);
   });
-  let content = text?.witness?.find((t) => t.is_working === true).content;
   const data = {
     user: userInfo,
     text,
-    // questionlist: filteredQuestionList,
-    annotations: annotation?.v_annotations,
-    pageBreakers: annotation?.p_annotations,
+    questionlist: filteredQuestionList,
+    // annotations: annotation?.v_annotations,
+    // pageBreakers: annotation?.p_annotations,
     sources,
-    content,
     // userAnnotation,
     // audio,
   };
-  return data;
+  return json(data, { status: 200 });
 };
 export const action: ActionFunction = async ({ request }) => {
   let formData = await request.formData();
