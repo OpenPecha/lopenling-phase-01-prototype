@@ -21,30 +21,32 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       console.log(e);
     }
   }
-  let userAnnotation = [];
-  // let userAnnotation = user;
-  //   ? await db.userAnnotation.findMany({
-  //       where: {
-  //         OR: [{ creator_user: { name: user?.name } }, { private: false }],
-  //         witnessId: parseInt(text?.id),
-  //       },
-  //       include: {
-  //         creator_user: true,
-  //       },
-  //     })
-  //   : [];
+  // let userAnnotation = [];
+
   let textPromise = getText(params);
   let textListPromise = getTextList();
-
-  // let annotationPromise = await getAnnotations(params, userAnnotation);
+  let userAnnotation = user
+    ? await db.userAnnotation.findMany({
+        where: {
+          OR: [{ creator_user: { name: user?.name } }, { private: false }],
+          witnessId: parseInt(params.textId),
+        },
+        include: {
+          creator_user: true,
+        },
+      })
+    : [];
+  console.log(userAnnotation);
+  let annotationPromise = await getAnnotations(params, userAnnotation);
   let sourcesPromise = getSources();
 
-  let [text, sources, textList] = await Promise.all([
+  let [text, sources, textList, annotation] = await Promise.all([
     textPromise,
     sourcesPromise,
     textListPromise,
-    // annotationPromise,
+    annotationPromise,
   ]);
+
   if (typeof textList === "undefined") throw new Error("textList undefined");
   text.name = textList?.find((l) => l?.id === parseInt(text.id))?.name;
   const questionlist = await db.question.findMany({
@@ -69,10 +71,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     user: userInfo,
     text,
     questionlist: filteredQuestionList,
-    // annotations: annotation?.v_annotations,
-    // pageBreakers: annotation?.p_annotations,
+    annotations: annotation?.v_annotations,
+    pageBreakers: annotation?.p_annotations,
     sources,
-    // userAnnotation,
+    userAnnotation,
     // audio,
   };
   return json(data, { status: 200 });

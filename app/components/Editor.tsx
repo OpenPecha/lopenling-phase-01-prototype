@@ -80,7 +80,7 @@ export default function Editor() {
         Bold,
         Highlight.configure({ multicolor: true }),
         HardBreak,
-        // annotationMarks(data, fetchAnnotation),
+        annotationMarks(data, fetchAnnotation),
         searchMarks,
         applyMarks(data.annotations, data.pageBreakers, searchLocation),
         TextStyle,
@@ -116,6 +116,7 @@ export default function Editor() {
         });
         setOpenQuestionPortal(false);
         setSelectedText(editor?.state.doc.textBetween(from, to, ""));
+
         setEdit(false);
         setEditAudio(false);
       },
@@ -197,7 +198,7 @@ export default function Editor() {
       </div>
 
       <div style={{ overflow: "hidden", flex: 1 }}>
-        {/* {edit && (
+        {edit && (
           <AddAnnotation
             selectionSpan={selectionSpan}
             selectedText={selectedText}
@@ -205,12 +206,12 @@ export default function Editor() {
             setSelectedAnnotation={setSelectedAnnotation}
           />
         )}
-        {editAudio && (
+        {/* {editAudio && (
           <AddAudio start={selectionSpan?.start} end={selectionSpan?.end} />
         )} */}
         {/* <SearchList list={searchLocation} editor={editor} /> */}
         {/* <AudioList editor={editor} /> */}
-        {/* <AnnotationList selectedId={selectedAnnotation} editor={editor} /> */}
+        <AnnotationList selectedId={selectedAnnotation} editor={editor} />
         <Question
           openQuestionPortal={openQuestionPortal}
           editor={editor}

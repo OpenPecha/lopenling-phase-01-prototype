@@ -41,22 +41,22 @@ export const applyAnnotationFunction = (
       }
       html += getBoldOnHighlight(text, s?.searchString);
     }
-    if (allPageBreakerStart.includes(i) && i !== 0) html += "<br>";
-    // if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
-    //   html += `<span id="` + i + `">`;
-    //   let annotate = annotations[i];
-    //   let length = annotate[0]?.length;
-    //   for (let j = i; j < i + length; j++) {
-    //     html += content[j];
-    //     skiplength.push(j);
-    //   }
-    //   html += "</span>";
-    // } else {
-    if (skiplength.includes(i)) {
-      return;
+    if (allPageBreakerStart.includes(i) && i !== 0) html += "</p><p>";
+    if (allkeys.includes(i.toString()) && !skiplength.includes(i)) {
+      html += `<span id="v_` + i + ` " class='v_annotations'>`;
+      let annotate = annotations[i];
+      let length = annotate[0]?.length;
+      for (let j = i; j < i + length; j++) {
+        html += content[j];
+        skiplength.push(j);
+      }
+      html += "</span>";
+    } else {
+      if (skiplength.includes(i)) {
+        return;
+      }
+      html += `<span id='s_${i}'>${c}</span>`;
     }
-    html += c;
-    // }
   });
   html += "</p>";
   editor.commands.setContent(html);

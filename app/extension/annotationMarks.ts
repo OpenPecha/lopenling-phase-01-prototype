@@ -7,7 +7,7 @@ export const annotationMarks = (data: any, fetchAnnotation: any) =>
     addOptions() {
       return {
         HTMLAttributes: {
-          class: "v_annotations",
+          // class: "v_annotations",
         },
       };
     },
@@ -23,6 +23,9 @@ export const annotationMarks = (data: any, fetchAnnotation: any) =>
       return {
         id: {
           parseHTML: (element) => element.id,
+        },
+        class: {
+          parseHTML: (element) => element.className,
         },
       };
     },
